@@ -31,6 +31,8 @@ input,textarea,select{font:inherit}
 .hbtn.primary:hover{background:#1d4ed8}
 .hbtn.danger{color:#b91c1c}
 .hbtn.danger:hover{background:#fdeaea;border-color:#f3c0c0}
+.hbtn.file{position:relative;overflow:hidden}
+.hfile{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 .app-main{display:grid;grid-template-columns:360px minmax(520px,1fr) 430px;min-height:0;transition:grid-template-columns .18s ease}
 .app-main.left-collapsed{grid-template-columns:44px minmax(520px,1fr) 430px}
 .app-main.right-collapsed{grid-template-columns:360px minmax(520px,1fr) 44px}
@@ -89,7 +91,7 @@ input,textarea,select{font:inherit}
 .detail-code{font-size:17px;font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .detail-name{font-size:13.5px;color:#3c4a66}
 .detail-credits{font-size:12px;color:var(--muted)}
-.detail-desc{font-size:12px;color:#56617a;margin-top:8px;max-height:66px;overflow:hidden;text-overflow:ellipsis}
+.detail-desc{font-size:12px;color:#56617a;margin-top:8px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
 .detail-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .chip{font-size:11px;padding:3px 8px;border-radius:999px;background:#f0f3f8;color:#46536e}
 .chip.prereq{background:#fdf3e7;color:#9a5b13;cursor:pointer}
@@ -112,6 +114,15 @@ input,textarea,select{font:inherit}
 .mtg-row{font-size:12px;color:#3c4a66;padding:3px 0 3px 2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .mtg-day{font-weight:700;color:var(--ink);min-width:34px}
 .mtg-tag{color:var(--muted)}
+.tchr{position:relative;display:inline}
+.tchr-name{color:#3c4a66;border-bottom:1px dashed #b7c0d4;cursor:default}
+.tchr-name:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.tchr-pop{position:fixed;z-index:80;min-width:220px;max-width:280px;background:#182036;color:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 10px 28px rgba(16,24,40,.28);font-size:12px;line-height:1.45;pointer-events:none}
+.tchr-pop .tp-name{font-weight:800;font-size:13px}
+.tchr-pop .tp-role{color:#b7c8ea;font-size:11px;margin:2px 0 6px}
+.tchr-pop .tp-row{display:flex;gap:8px;color:#dbe3f2;margin-top:2px;word-break:break-all}
+.tchr-pop .tp-k{color:#93a0bb;min-width:58px;flex:0 0 auto}
+.tchr-pop .tp-empty{color:#93a0bb}
 .sec-actions{display:flex;gap:8px;margin-top:7px}
 .sbtn{font-size:12px;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600}
 .sbtn:hover{border-color:#c7d3e8}
@@ -157,6 +168,13 @@ input,textarea,select{font:inherit}
 .tab.active{background:var(--accent2);color:var(--accent)}
 .tab-body{flex:1;overflow-y:auto;padding:14px;min-height:0}
 .sched-help{font-size:12px;color:var(--muted);margin-bottom:8px}
+.mode-switch{display:flex;align-items:center;gap:8px;margin:0 0 10px}
+.mode-switch .mode-label{font-size:11.5px;font-weight:700;color:#5a6580}
+.switch{position:relative;display:inline-flex;background:#eef2f7;border:1px solid var(--line);border-radius:999px;padding:2px}
+.switch button{border:0;background:transparent;border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:700;color:#5a6580}
+.switch button.on{background:#fff;color:#1d4ed8;box-shadow:0 1px 2px rgba(16,24,40,.12)}
+.switch-hint{font-size:11px;color:var(--muted)}
+.sched-slot{flex:1;min-width:0;height:28px;border:1px solid var(--line);border-radius:7px;padding:0 6px;background:#fff;font-size:11.5px}
 .sched-rows{display:flex;flex-direction:column;gap:8px}
 .sched-row{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fbfcfe}
 .sched-row-top{display:flex;gap:6px;align-items:center}
@@ -222,24 +240,13 @@ input,textarea,select{font:inherit}
 .file-row label{font-size:12.5px;font-weight:700;min-width:96px}
 .file-row input{font-size:11.5px;flex:1}
 .file-row .fstate{font-size:11px;font-weight:700;color:#0c7a4d;min-width:52px;text-align:right}
-.server-cmd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:#101828;color:#a5f3c8;border-radius:8px;padding:8px 10px;margin:10px 0;text-align:left;line-height:1.6;overflow-x:auto}
 .toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:100;align-items:center;pointer-events:none}
 .toast{background:#101828;color:#fff;font-size:12.5px;padding:9px 16px;border-radius:999px;box-shadow:0 6px 18px rgba(16,24,40,.28);animation:pop .18s ease;max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
-#err{display:none;position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;font-size:12px;padding:8px 14px;z-index:200;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
 </style>
 </head>
 <body>
 <div id="root"></div>
-<div id="err"></div>
-<script>
-window.addEventListener('error', function(e){
-  try{
-    var d = document.getElementById('err');
-    if (d){ d.style.display = 'block'; d.textContent = String(e.message || e.error || e); }
-  }catch(_){}
-});
-</script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <script>
@@ -319,9 +326,27 @@ function normalizeCourse(c, catalogMap){
       const days = String(m.weekDay || '').split(',').map(x => parseInt(x, 10)).filter(x => x >= 1 && x <= 5);
       const start = toDec(m.meetingStartTime), end = toDec(m.meetingEndTime);
       if (!days.length || !isFinite(start) || !isFinite(end) || end <= start) continue;
-      const teacher = (m.instructorList || []).map(i => cleanTeacher(i.instructorName)).filter(Boolean).join('; ');
+      const instructors = [];
+      const seenInst = {};
+      for (const raw of (m.instructorList || [])){
+        const name = cleanTeacher(raw.instructorName) || [cleanTeacher(raw.lastName), cleanTeacher(raw.firstName)].filter(Boolean).join(' ');
+        if (!name) continue;
+        const inst = {
+          name: name,
+          email: cleanField(raw.email),
+          account: cleanField(raw.userAccount),
+          role: cleanField(raw.instructorRoleIndEnDesc) || cleanField(raw.instructorRoleIndDesc),
+          firstName: cleanField(raw.firstName),
+          lastName: cleanField(raw.lastName)
+        };
+        const key = inst.name + '|' + inst.email + '|' + inst.account;
+        if (seenInst[key]) continue;
+        seenInst[key] = true;
+        instructors.push(inst);
+      }
+      const teacher = instructors.map(x => x.name).join('; ');
       const room = String(m.facilityName || '').trim();
-      for (const day of days) meetings.push({ day: day, start: start, end: end, room: room, teacher: teacher });
+      for (const day of days) meetings.push({ day: day, start: start, end: end, room: room, teacher: teacher, instructors: instructors });
     }
     meetings.sort((a, b) => a.day - b.day || a.start - b.start);
     const assoc = Number(s.associatedClass);
@@ -949,7 +974,7 @@ function ManualLoad({ onData }){
       const catalogMap = buildCatalog(files.catalog);
       const courses = normalizeCourses(files.courses, catalogMap);
       if (!courses.length) throw new Error('no courses could be parsed');
-      onData({ courses: courses, catalogMap: catalogMap });
+      onData({ courses: courses, catalogMap: catalogMap, rawCourses: files.courses, rawCatalog: files.catalog });
     }catch(ex){
       setErr('Could not parse data: ' + ex.message);
       setBusy(false);
@@ -958,8 +983,7 @@ function ManualLoad({ onData }){
   return (
     <div className="screen"><div className="screen-card">
       <h2>📚 HKUST SIS Course Planner</h2>
-      <p>Your browser blocks local file access (file:// pages cannot fetch sibling JSON files).<br/>Start a local server in this folder, or pick the two JSON files manually.</p>
-      <div className="server-cmd">cd ~/Desktop/Codex/CourseHelper<br/>python3 -m http.server 8000<br/># then open http://localhost:8000/</div>
+      <p>Could not auto-load JSON from this folder. Select <code>courses.json</code> and <code>data.json</code> below.</p>
       <div className="file-row">
         <label>courses.json</label>
         <input type="file" accept=".json,application/json" onChange={(e) => onPick('courses', e)} />
@@ -998,7 +1022,7 @@ function searchCourses(courses, q){
     if (score) scored.push({ c: c, score: score });
   }
   scored.sort((a, b) => b.score - a.score || a.c.code.localeCompare(b.c.code));
-  return scored.slice(0, 200).map(s => s.c);
+  return scored.map(s => s.c);
 }
 const EMPTY_FILTERS = { subject: '', credits: '', career: '', days: [], slot: '', instructor: '', noConflict: false, available: false, hasParallel: false, hasLab: false, hasTut: false, hasPrereq: false };
 function subjectOf(c){ return c.subject || ((c.code || '').match(/^[A-Z]+/) || [''])[0]; }
@@ -1149,6 +1173,45 @@ function CourseCard({ c, onClick }){
     </div>
   );
 }
+function TeacherChip({ inst }){
+  const [box, setBox] = React.useState(null);
+  const name = inst.name || 'Instructor';
+  function show(e){
+    const r = e.currentTarget.getBoundingClientRect();
+    const width = 250;
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
+    const estH = 118;
+    const top = (r.bottom + 8 + estH > window.innerHeight)
+      ? Math.max(8, r.top - estH - 8)
+      : r.bottom + 8;
+    setBox({ left: left, top: top });
+  }
+  return (
+    <span className="tchr" onMouseEnter={show} onMouseLeave={() => setBox(null)}>
+      <span className="tchr-name">{name}</span>
+      {box ? (
+        <span className="tchr-pop" style={{ left: box.left, top: box.top }}>
+          <div className="tp-name">{name}</div>
+          {inst.role ? <div className="tp-role">{inst.role}</div> : null}
+          {inst.email ? <div className="tp-row"><span className="tp-k">Email</span><span>{inst.email}</span></div> : null}
+          {inst.account ? <div className="tp-row"><span className="tp-k">Account</span><span>{inst.account}</span></div> : null}
+          {!inst.role && !inst.email && !inst.account ? <div className="tp-empty">No extra profile on file.</div> : null}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+function TeacherList({ meeting }){
+  const list = meeting.instructors && meeting.instructors.length
+    ? meeting.instructors
+    : (meeting.teacher ? meeting.teacher.split('; ').filter(Boolean).map(name => ({ name: name })) : []);
+  if (!list.length) return null;
+  return (
+    <span className="mtg-tag">· {list.map((inst, i) => (
+      <React.Fragment key={i}>{i ? '; ' : null}<TeacherChip inst={inst} /></React.Fragment>
+    ))}</span>
+  );
+}
 function SectionCard({ course, s, scheduledIds, conflictSections, onAdd, onRemove, onDragStartSec }){
   const has = scheduledIds.has(s.id);
   const conf = conflictSections.has(s.id);
@@ -1169,7 +1232,7 @@ function SectionCard({ course, s, scheduledIds, conflictSections, onAdd, onRemov
           <span className="mtg-day">{DAY_NAMES[m.day]}</span>
           <span>{fmtRange(m)}</span>
           {m.room ? <span className="mtg-tag">· {m.room}</span> : null}
-          {m.teacher ? <span className="mtg-tag">· {m.teacher}</span> : null}
+          <TeacherList meeting={m} />
         </div>
       ))}
       <div className="sec-actions">
@@ -1315,6 +1378,20 @@ function hourOptions(){
   }
   return out;
 }
+function courseTimeOptions(course){
+  return ((course && course.sections) || []).filter(s => s.meetings && s.meetings.length).map(s => ({
+    id: s.id,
+    label: s.label,
+    component: s.componentName || s.component || '',
+    times: s.meetings.map(m => ({ day: m.day, time: m.start, end: m.end, labels: [s.label] })),
+    summary: s.meetings.map(m => DAY_NAMES[m.day] + ' ' + fmtRange(m)).join(' / ')
+  }));
+}
+function slotKey(s){ return s.id || (s.day + '-' + s.time); }
+function slotLabel(s){
+  const range = s.end != null ? (fmtDec(s.start != null ? s.start : s.time) + '–' + fmtDec(s.end)) : fmtDec(s.time);
+  return DAY_NAMES[s.day] + ' ' + range;
+}
 function CourseCombo({ value, courses, used, onChange, inputRef }){
   const [q, setQ] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -1327,14 +1404,16 @@ function CourseCombo({ value, courses, used, onChange, inputRef }){
   }, []);
   const list = React.useMemo(() => {
     const avail = courses.filter(c => !used[c.code] || c.code === value);
-    return searchCourses(avail, q).slice(0, 20);
+    const query = String(q || '').trim();
+    if (!query) return avail.slice().sort((a, b) => a.code.localeCompare(b.code));
+    return searchCourses(avail, query);
   }, [courses, used, value, q]);
   return (
     <div className="combo" ref={boxRef}>
       <input ref={inputRef} value={open ? q : (selected ? selected.code + '  ' + selected.name : q)}
         placeholder="Search course code / name"
         spellCheck={false}
-        onFocus={() => { setOpen(true); setQ(selected ? selected.code : q); }}
+        onFocus={() => { setOpen(true); setQ(''); }}
         onChange={(e) => { setQ(e.target.value); setOpen(true); if (!e.target.value) onChange(''); }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && list[0]){ onChange(list[0].code); setOpen(false); setQ(''); e.preventDefault(); }
@@ -1356,14 +1435,27 @@ function CourseCombo({ value, courses, used, onChange, inputRef }){
     </div>
   );
 }
-function SchedCourseRow({ item, courses, used, onChange, onRemove, inputRef }){
+function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRef }){
   const [day, setDay] = React.useState(1);
   const [time, setTime] = React.useState(9);
+  const [slot, setSlot] = React.useState('');
   const course = courses.find(c => c.code === item.code) || null;
   const times = item.times || [];
-  function addTime(){
+  const slots = React.useMemo(() => courseTimeOptions(course), [course]);
+  React.useEffect(() => { setSlot(slots[0] ? slotKey(slots[0]) : ''); }, [item.code]);
+  function addTimeFromClock(){
     if (times.some(t => t.day === day && t.time === time)) return;
     onChange(Object.assign({}, item, { times: times.concat([{ day: day, time: time }]) }));
+  }
+  function addTimeFromCourse(){
+    const hit = slots.find(s => slotKey(s) === slot);
+    if (!hit) return;
+    const extra = [];
+    hit.times.forEach(tm => {
+      if (!times.concat(extra).some(t => t.day === tm.day && t.time === tm.time)) extra.push(tm);
+    });
+    if (!extra.length) return;
+    onChange(Object.assign({}, item, { times: times.concat(extra) }));
   }
   function removeTime(idx){
     onChange(Object.assign({}, item, { times: times.filter((_, i) => i !== idx) }));
@@ -1376,33 +1468,46 @@ function SchedCourseRow({ item, courses, used, onChange, onRemove, inputRef }){
   return (
     <div className="sched-row">
       <div className="sched-row-top">
-        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code }))} inputRef={inputRef} />
+        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [] }))} inputRef={inputRef} />
         <button className="sbtn rm" onClick={onRemove}>Remove</button>
       </div>
       <div className="sched-row-times">
-        <div className="sched-time-add">
-          <select value={day} onChange={(e) => setDay(Number(e.target.value))}>
-            {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(p => <option key={p[0]} value={p[0]}>{p[1]}</option>)}
-          </select>
-          <select value={time} onChange={(e) => setTime(Number(e.target.value))}>
-            {hourOptions().map(h => <option key={h} value={h}>{fmtDec(h)}</option>)}
-          </select>
-          <button className="sbtn" onClick={addTime} disabled={!item.code}>Add time</button>
-        </div>
+        {mode === 'course' ? (
+          <div className="sched-time-add">
+            <select className="sched-slot" value={slot} disabled={!course || !slots.length} onChange={(e) => setSlot(e.target.value)}>
+              {!course ? <option value="">Select a course first</option> : null}
+              {course && !slots.length ? <option value="">No scheduled times</option> : null}
+              {slots.map(s => <option key={slotKey(s)} value={slotKey(s)}>{s.label} {s.component ? '(' + s.component + ') ' : ''}· {s.summary}</option>)}
+            </select>
+            <button className="sbtn" onClick={addTimeFromCourse} disabled={!course || !slot}>Add this class time</button>
+          </div>
+        ) : (
+          <div className="sched-time-add">
+            <select value={day} onChange={(e) => setDay(Number(e.target.value))}>
+              {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(p => <option key={p[0]} value={p[0]}>{p[1]}</option>)}
+            </select>
+            <select value={time} onChange={(e) => setTime(Number(e.target.value))}>
+              {hourOptions().map(h => <option key={h} value={h}>{fmtDec(h)}</option>)}
+            </select>
+            <button className="sbtn" onClick={addTimeFromClock} disabled={!item.code}>Add time</button>
+          </div>
+        )}
         {times.map((tm, i) => (
-          <span className="tchip" key={i}>{DAY_NAMES[tm.day]} {fmtDec(tm.time)}<button type="button" onClick={() => removeTime(i)}>×</button></span>
+          <span className="tchip" key={i}>
+            {slotLabel(tm)}{tm.labels && tm.labels.length ? ' · ' + tm.labels.join('/') : ''}
+            <button type="button" onClick={() => removeTime(i)}>×</button>
+          </span>
         ))}
         {remain ? <span className="sched-note">{remain} bundles cover the selected time(s)</span> : null}
-        {course && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} 平行班 · optional time pin</span> : null}
+        {course && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} 平行班</span> : null}
       </div>
     </div>
   );
 }
 function SchedulerTab({ courses, coursesById, onApply, focusTick }){
+  const [mode, setMode] = React.useState('time');
   const [items, setItems] = React.useState([
-    { id: uid(), code: 'AIAA2205', times: [] },
-    { id: uid(), code: 'AIAA3102', times: [] },
-    { id: uid(), code: 'DSAA2042', times: [] }
+    { id: uid(), code: '', times: [] }
   ]);
   const [result, setResult] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
@@ -1421,13 +1526,21 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick }){
   }
   return (
     <div>
+      <div className="mode-switch">
+        <span className="mode-label">Pin by</span>
+        <div className="switch">
+          <button type="button" className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>Time first</button>
+          <button type="button" className={mode === 'course' ? 'on' : ''} onClick={() => setMode('course')}>Course first</button>
+        </div>
+        <span className="switch-hint">{mode === 'course' ? 'Pick a time from this course’s own class times' : 'Pick any clock time, keep parallel classes that cover it'}</span>
+      </div>
       <div className="sched-help">
-        Add courses from the searchable list. Optional time pins keep only parallel classes whose meetings cover that day and time.
+        Add courses from the searchable list. Time pins keep only parallel classes whose meetings cover that day and time.
         Lecture/Tutorial same-index pairing is honoured. Up to {MAX_SOLUTIONS} conflict-free timetables are returned.
       </div>
       <div className="sched-rows">
         {items.map((it, i) => (
-          <SchedCourseRow key={it.id} item={it} courses={courses} used={used}
+          <SchedCourseRow key={it.id} item={it} courses={courses} used={used} mode={mode}
             inputRef={i === 0 ? firstRef : null}
             onChange={(next) => setItems(prev => prev.map(x => x.id === it.id ? next : x))}
             onRemove={() => setItems(prev => prev.filter(x => x.id !== it.id))} />
@@ -1470,10 +1583,12 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick }){
 
 /* ================= dependency graph tab ================= */
 function DepsTab({ initialCode, courses, coursesById, catalogMap, names, onJump }){
-  const [input, setInput] = React.useState(initialCode || 'AIAA2205');
-  const [code, setCode] = React.useState(normCode(input || 'AIAA2205'));
+  const [input, setInput] = React.useState(initialCode || '');
+  const [code, setCode] = React.useState(normCode(initialCode || ''));
   const offered = new Set(courses.map(c => c.code));
-  const course = coursesById[code] || (catalogMap[code] ? { code: code, name: catalogMap[code].crseTitle || '', prereq: cleanField(catalogMap[code].crsePrerequisite), coreq: cleanField(catalogMap[code].crseCorequisite) } : null);
+  const course = code
+    ? (coursesById[code] || (catalogMap[code] ? { code: code, name: catalogMap[code].crseTitle || '', prereq: cleanField(catalogMap[code].crsePrerequisite), coreq: cleanField(catalogMap[code].crseCorequisite) } : null))
+    : null;
   const parse = React.useMemo(() => course ? parsePrereq(course.prereq) : null, [course]);
   function go(c){ setCode(normCode(c)); setInput(c); }
   return (
@@ -1488,7 +1603,9 @@ function DepsTab({ initialCode, courses, coursesById, catalogMap, names, onJump 
         </datalist>
         <button className="sbtn add" onClick={() => go(input)}>Load</button>
       </div>
-      {!course ? (
+      {!code ? (
+        <div className="dep-canvas"><div className="dep-note">Enter a course code to see its prerequisite graph.</div></div>
+      ) : !course ? (
         <div className="warn bad">Unknown course code "{code}" — not found in courses.json or data.json.</div>
       ) : (
         <div>
@@ -1505,7 +1622,7 @@ function DepsTab({ initialCode, courses, coursesById, catalogMap, names, onJump 
             <div className="dep-canvas"><div className="dep-note">
               {course.prereq
                 ? 'This prerequisite is described in prose without parseable course codes.'
-                : 'No prerequisite listed. Try a course with a prerequisite, e.g. DSAA3073 or AIAA2205.'}
+                : 'No prerequisite listed for this course.'}
             </div></div>
           ) : (
             <DepGraph key={'g' + code} courseCode={code} courseName={course.name} ast={parse.node} names={names} onJump={onJump} />
@@ -1541,8 +1658,11 @@ function App(){
   const [schedFocusTick, setSchedFocusTick] = React.useState(0);
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
+  const [dataLabels, setDataLabels] = React.useState({ courses: 'courses.json', catalog: 'data.json' });
   const gridRef = React.useRef(null);
   const loadedRef = React.useRef(false);
+  const rawCoursesRef = React.useRef(null);
+  const rawCatalogRef = React.useRef(null);
 
   const coursesById = React.useMemo(() => { const m = {}; courses.forEach(c => m[c.code] = c); return m; }, [courses]);
   const names = React.useMemo(() => {
@@ -1564,6 +1684,46 @@ function App(){
     setToasts(t => t.concat([{ id: id, msg: msg }]));
     setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 2600);
   }
+  function applyLoadedData(rawCourses, rawCatalog, labels){
+    const cm = buildCatalog(rawCatalog || []);
+    const cs = normalizeCourses(Array.isArray(rawCourses) ? rawCourses : [], cm);
+    if (!cs.length) throw new Error('no courses could be parsed');
+    rawCoursesRef.current = rawCourses;
+    rawCatalogRef.current = rawCatalog;
+    setCatalogMap(cm);
+    setCourses(cs);
+    setDataLabels(Object.assign({ courses: 'courses.json', catalog: 'data.json' }, labels || {}));
+    setSelected(null);
+    const ids = {};
+    cs.forEach(c => c.sections.forEach(s => { ids[s.id] = true; }));
+    setSchedule(prev => prev.filter(en => ids[en.section]));
+  }
+  function readJsonFile(file){
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => { try { resolve(JSON.parse(r.result)); } catch (ex){ reject(ex); } };
+      r.onerror = () => reject(new Error('read failed'));
+      r.readAsText(file);
+    });
+  }
+  async function onPickCustom(kind, e){
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    try{
+      const data = await readJsonFile(f);
+      if (kind === 'courses'){
+        if (!Array.isArray(data)) throw new Error('courses file must be a JSON array');
+        applyLoadedData(data, rawCatalogRef.current, { courses: f.name, catalog: dataLabels.catalog });
+        toast('Loaded course data · ' + f.name);
+      } else {
+        applyLoadedData(rawCoursesRef.current, data, { courses: dataLabels.courses, catalog: f.name });
+        toast('Loaded catalog · ' + f.name);
+      }
+    }catch(ex){
+      toast('Could not load ' + (f && f.name ? f.name : 'file') + ': ' + ex.message);
+    }
+  }
 
   React.useEffect(() => {
     let alive = true;
@@ -1578,8 +1738,11 @@ function App(){
         const cm = buildCatalog(dt);
         const cs = normalizeCourses(cr, cm);
         if (!cs.length) throw new Error('no courses parsed');
+        rawCoursesRef.current = cr;
+        rawCatalogRef.current = dt;
         setCatalogMap(cm);
         setCourses(cs);
+        setDataLabels({ courses: 'courses.json', catalog: 'data.json' });
         setStatus('ready');
       }catch(err){
         if (alive) setStatus('manual');
@@ -1690,17 +1853,32 @@ function App(){
   }
 
   if (status === 'loading') return <LoadScreen />;
-  if (status === 'manual') return <ManualLoad onData={(d) => { setCourses(d.courses); setCatalogMap(d.catalogMap); setStatus('ready'); }} />;
+  if (status === 'manual') return <ManualLoad onData={(d) => {
+    rawCoursesRef.current = d.rawCourses || null;
+    rawCatalogRef.current = d.rawCatalog || null;
+    setCourses(d.courses);
+    setCatalogMap(d.catalogMap);
+    setDataLabels({ courses: d.coursesName || 'courses.json', catalog: d.catalogName || 'data.json' });
+    setStatus('ready');
+  }} />;
 
   const results = applyFilters(searchCourses(courses, query), filters, schedule);
   return (
     <div className="app">
       <header className="app-header">
-        <div className="brand">HKUST SIS Course Planner<small>single-file React app · drag sections onto the timetable</small></div>
+        <div className="brand">HKUST SIS Course Planner</div>
         <div className="header-status">
-          <span className="status-pill ok">courses.json · {courses.length}</span>
-          <span className="status-pill ok">catalog · {Object.keys(catalogMap).length}</span>
+          <span className="status-pill ok" title={dataLabels.courses}>{dataLabels.courses} · {courses.length}</span>
+          <span className="status-pill ok" title={dataLabels.catalog}>{dataLabels.catalog} · {Object.keys(catalogMap).length}</span>
         </div>
+        <label className="hbtn file" title="Replace course sections JSON">
+          Load courses
+          <input className="hfile" type="file" accept=".json,application/json" onChange={(e) => onPickCustom('courses', e)} />
+        </label>
+        <label className="hbtn file" title="Replace catalog / prerequisite JSON">
+          Load catalog
+          <input className="hfile" type="file" accept=".json,application/json" onChange={(e) => onPickCustom('catalog', e)} />
+        </label>
         <div className="spacer"></div>
         <button className="hbtn primary" onClick={() => { setTab('sched'); setRightOpen(true); setSchedFocusTick(t => t + 1); }}>Generate Schedule</button>
         <button className="hbtn" onClick={() => openDeps(selected || '')}>Dependencies</button>
