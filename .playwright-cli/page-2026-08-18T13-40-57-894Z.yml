@@ -1,0 +1,3 @@
+- generic [ref=f3e3]:
+  - heading "Loading course data…" [level=2] [ref=f3e5]
+  - paragraph [ref=f3e6]: Fetching courses.json and data.json from the same folder.

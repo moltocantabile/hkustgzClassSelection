@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HKUST SIS Course Planner</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<link rel="stylesheet" href="https://unpkg.com/@xyflow/react@12.3.5/dist/style.css">
+<style>
+:root{
+  --bg:#eef1f7; --card:#ffffff; --line:#e2e7f0; --ink:#182036; --muted:#65708c;
+  --accent:#2456e6; --accent2:#dbe5fd; --ok:#0e9f6e; --bad:#e02424; --amber:#9a5b13;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+button{font:inherit;cursor:pointer}
+input,textarea,select{font:inherit}
+.app{display:grid;grid-template-rows:56px 1fr;height:100vh;min-width:860px}
+.app-header{display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--card);border-bottom:1px solid var(--line);z-index:30;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.brand{font-size:16px;font-weight:800;letter-spacing:.2px;line-height:1.2}
+.brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.4px}
+.header-status{display:flex;gap:8px;margin-left:8px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;background:#eef2f7;color:#46536e;font-size:11.5px;font-weight:600;white-space:nowrap}
+.status-pill.ok{background:#e7f8f0;color:#0c7a4d}
+.status-pill.bad{background:#fdeaea;color:#b91c1c}
+.spacer{flex:1}
+.hbtn{padding:7px 14px;border:1px solid var(--line);background:#fff;border-radius:9px;font-weight:600;font-size:13px;color:var(--ink);white-space:nowrap}
+.hbtn:hover{border-color:#c9d3e3;background:#f8fafd}
+.hbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.hbtn.primary:hover{background:#1d4ed8}
+.hbtn.danger{color:#b91c1c}
+.hbtn.danger:hover{background:#fdeaea;border-color:#f3c0c0}
+.app-main{display:grid;grid-template-columns:360px minmax(520px,1fr) 430px;min-height:0;transition:grid-template-columns .18s ease}
+.app-main.left-collapsed{grid-template-columns:44px minmax(520px,1fr) 430px}
+.app-main.right-collapsed{grid-template-columns:360px minmax(520px,1fr) 44px}
+.app-main.left-collapsed.right-collapsed{grid-template-columns:44px minmax(520px,1fr) 44px}
+.left,.right{display:flex;flex-direction:column;min-height:0;min-width:0}
+.left{border-right:1px solid var(--line);background:var(--card)}
+.right{border-left:1px solid var(--line);background:var(--card)}
+.pane-head{display:flex;align-items:center;gap:8px;padding:10px 12px 0}
+.pane-title{font-size:11.5px;font-weight:800;color:#3c4a66;letter-spacing:.4px;text-transform:uppercase}
+.pane-head .spacer{flex:1}
+.pane-toggle{width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:8px;color:#46536e;font-size:16px;line-height:1;padding:0;flex:0 0 auto}
+.pane-toggle:hover{border-color:#c7d3e8;background:#f8fafd}
+.pane-rail{flex:1;width:100%;border:0;background:transparent;writing-mode:vertical-rl;transform:rotate(180deg);font-weight:800;font-size:12px;letter-spacing:2px;color:#46536e;cursor:pointer;padding:16px 0}
+.pane-rail:hover{background:#f5f7fb;color:var(--ink)}
+.center{overflow:hidden;display:flex;flex-direction:column;padding:14px 16px;min-width:0}
+.search-box{padding:12px 12px 8px;position:relative}
+.search-box input{width:100%;padding:10px 32px 10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:13.5px;outline:none}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12)}
+.search-clear{position:absolute;right:22px;top:21px;border:0;background:transparent;color:var(--muted);font-size:13px;padding:2px}
+.search-clear:hover{color:var(--ink)}
+.filters{padding:0 12px 8px}
+.filter-row{display:flex;gap:6px;margin-bottom:6px}
+.filter-row select{flex:1;min-width:0;height:30px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:#fff;font-size:12px;color:var(--ink)}
+.filter-row select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12)}
+.filter-row input{flex:1;min-width:0;height:30px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:#fff;font-size:12px;color:var(--ink)}
+.filter-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12)}
+.filter-chips{display:flex;flex-wrap:wrap;gap:5px}
+.fchip{border:1px solid var(--line);background:#fff;color:#46536e;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:600;line-height:1.2}
+.fchip:hover{border-color:#c7d3e8;background:#f8fafd}
+.fchip.on{background:var(--accent2);border-color:#b7c8ea;color:#1d4ed8}
+.filter-meta{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.filter-clear{border:0;background:none;color:var(--accent);font-size:11.5px;font-weight:700;padding:0}
+.filter-clear:disabled{color:#b7becc;cursor:default}
+.filter-count{font-size:11px;color:var(--muted);font-weight:600}
+.left-scroll{flex:1;overflow-y:auto;padding:4px 12px 16px}
+.list-hint{font-size:11.5px;color:var(--muted);padding:6px 4px 8px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.course-card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:8px;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+.course-card:hover{border-color:#c7d3e8;box-shadow:0 2px 6px rgba(16,24,40,.06)}
+.cc-top{display:flex;align-items:center;gap:8px}
+.cc-code{font-weight:800;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.cc-credits{margin-left:auto;font-size:11px;color:var(--muted);background:#f0f3f8;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.cc-name{font-size:12.5px;color:#3c4a66;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-meta{font-size:11.5px;color:var(--muted);margin-top:3px}
+.cc-secs{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#3c4a66;margin-top:4px;line-height:1.45}
+.cc-par{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#9a5b13;background:#fdf3e7;padding:1px 6px;border-radius:999px}
+.cc-career{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#1d4ed8;background:#eef4ff;padding:1px 6px;border-radius:999px}
+.comp-group{margin-bottom:12px}
+.comp-head{display:flex;align-items:baseline;gap:8px;margin:4px 0 8px}
+.comp-title{font-size:12px;font-weight:800;color:#182036}
+.comp-note{font-size:11px;color:var(--muted)}
+.sec-assoc{font-size:10.5px;color:var(--muted);background:#eef1f6;padding:1px 6px;border-radius:999px}
+.detail{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.detail-head{padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+.detail-back{background:none;border:0;color:var(--accent);font-size:12px;font-weight:700;padding:0 0 6px}
+.detail-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.detail-code{font-size:17px;font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.detail-name{font-size:13.5px;color:#3c4a66}
+.detail-credits{font-size:12px;color:var(--muted)}
+.detail-desc{font-size:12px;color:#56617a;margin-top:8px;max-height:66px;overflow:hidden;text-overflow:ellipsis}
+.detail-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-size:11px;padding:3px 8px;border-radius:999px;background:#f0f3f8;color:#46536e}
+.chip.prereq{background:#fdf3e7;color:#9a5b13;cursor:pointer}
+.chip.prereq:hover{background:#fbe8cf}
+.chip.coreq{background:#eef4ff;color:#1d4ed8}
+.chip.equiv{background:#f0f8f1;color:#0c7a4d}
+.detail-body{padding:10px 14px 14px}
+.detail-sub{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:6px 0 6px}
+.sec-card{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px;background:#fbfcfe}
+.sec-card[draggable=true]{cursor:grab}
+.sec-card[draggable=true]:active{cursor:grabbing}
+.sec-card.in-sched{border-color:#b7c8ea;background:#f3f7ff}
+.sec-card.conf{border-color:#f3b7b7;background:#fff7f7}
+.sec-head{display:flex;align-items:center;gap:8px}
+.sec-label{font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.sec-type{font-size:10.5px;color:var(--muted);background:#eef1f6;padding:1px 6px;border-radius:999px}
+.sec-badge{margin-left:auto;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;white-space:nowrap}
+.sec-badge.in{color:#1d4ed8;background:#dbe5fd}
+.sec-badge.conf{color:#b91c1c;background:#fdeaea}
+.mtg-row{font-size:12px;color:#3c4a66;padding:3px 0 3px 2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mtg-day{font-weight:700;color:var(--ink);min-width:34px}
+.mtg-tag{color:var(--muted)}
+.sec-actions{display:flex;gap:8px;margin-top:7px}
+.sbtn{font-size:12px;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600}
+.sbtn:hover{border-color:#c7d3e8}
+.sbtn.add{background:var(--accent);border-color:var(--accent);color:#fff}
+.sbtn.add:hover{background:#1d4ed8}
+.sbtn.add:disabled{background:#aeb9d2;border-color:#aeb9d2;cursor:not-allowed}
+.sbtn.rm{color:#b91c1c}
+.sbtn.rm:hover{background:#fdeaea;border-color:#f3c0c0}
+.no-sections{font-size:12px;color:var(--muted);padding:8px 2px}
+.cal-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.cal-head{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.cal-title{font-weight:800;font-size:15px}
+.cal-credits{display:inline-flex;align-items:baseline;gap:6px;padding:3px 9px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-weight:800;font-size:12.5px;white-space:nowrap}
+.cal-credits small{font-weight:600;font-size:11px;color:#5a6580}
+.cal-hint{font-size:11.5px;color:var(--muted)}
+.cal-hint.bad{color:#b91c1c;font-weight:700}
+.cal-legend{margin-left:auto;display:flex;gap:10px;font-size:11px;color:var(--muted)}
+.lg{display:inline-flex;align-items:center;gap:5px}
+.lg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.cal{flex:1;min-height:0;display:grid;grid-template-columns:70px repeat(5,1fr);grid-template-rows:40px repeat(13,56px);overflow:auto;position:relative;background:#fff}
+.cal-corner{grid-column:1;grid-row:1;border-bottom:1px solid var(--line);border-right:1px solid var(--line);background:#f6f8fb}
+.cal-dayhead{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#46536e;background:#f6f8fb;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.cal-time{grid-column:1;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 8px 0 0;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;border-right:1px solid var(--line)}
+.cal-line{grid-column:2 / -1;border-top:1px solid #eef1f6;z-index:1;pointer-events:none}
+.cal-col{z-index:0;pointer-events:none}
+.cal-col-hover{background:rgba(36,86,230,.07)}
+.cal-block{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border-left:4px solid;padding:3px 7px;font-size:11px;z-index:2;box-shadow:0 1px 2px rgba(16,24,40,.1);overflow:hidden;cursor:default}
+.cal-block:hover{box-shadow:0 3px 8px rgba(16,24,40,.16)}
+.cal-block-code{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:14px}
+.cal-block-sec{font-weight:600;opacity:.85}
+.cal-block-room{font-size:10px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-block-conf{box-shadow:0 0 0 1.5px var(--bad);}
+.cal-block-warn{position:absolute;top:2px;right:16px;color:#b91c1c;font-weight:800;font-size:11px}
+.cal-block-x{position:absolute;top:1px;right:2px;border:0;background:transparent;color:inherit;opacity:0;font-size:10px;padding:1px 4px;border-radius:4px}
+.cal-block:hover .cal-block-x{opacity:.85}
+.cal-block-x:hover{opacity:1;background:rgba(0,0,0,.12)}
+.cal-preview{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border:2px dashed rgba(36,86,230,.85);background:rgba(36,86,230,.16);z-index:3;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#1d4ed8;pointer-events:none;text-align:center;padding:0 4px}
+.cal-preview-bad{border-color:var(--bad);background:rgba(224,36,36,.15);color:#b91c1c}
+.cal-empty{grid-column:2 / -1;grid-row:2 / -1;display:flex;align-items:center;justify-content:center;color:#a6b0c4;font-size:13px;font-weight:600;letter-spacing:.3px;border:2px dashed #dbe2ee;border-radius:10px;margin:10px;background:#fbfcfe;z-index:1;pointer-events:none}
+.tabs{display:flex;gap:6px;align-items:center;padding:8px 12px 0;border-bottom:1px solid var(--line)}
+.tab{padding:7px 14px;border-radius:9px;border:1px solid transparent;background:transparent;font-weight:700;font-size:12.5px;color:#5a6580}
+.tab:hover{background:#f1f4fa}
+.tab.active{background:var(--accent2);color:var(--accent)}
+.tab-body{flex:1;overflow-y:auto;padding:14px;min-height:0}
+.sched-help{font-size:12px;color:var(--muted);margin-bottom:8px}
+.sched-input{width:100%;min-height:96px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;outline:none;background:#fbfcfe}
+.sched-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12);background:#fff}
+.sched-actions{display:flex;gap:8px;align-items:center;margin:10px 0}
+.sched-btn{background:var(--accent);border:1px solid var(--accent);color:#fff;font-weight:700;font-size:13px;padding:8px 16px;border-radius:9px}
+.sched-btn:hover{background:#1d4ed8}
+.sched-btn:disabled{background:#aeb9d2;border-color:#aeb9d2;cursor:not-allowed}
+.sched-note{font-size:11.5px;color:var(--muted)}
+.solution{margin-top:12px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fbfcfe}
+.solution h4{margin:0 0 6px;font-size:13px;display:flex;align-items:center;gap:8px}
+.sol-row{font-size:12px;padding:2px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sol-code{font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.sol-sec{font-weight:700;color:var(--accent)}
+.sol-time{color:var(--muted)}
+.sol-apply{margin-left:auto}
+.warn{font-size:12px;color:#9a5b13;background:#fdf3e7;border:1px solid #f5ddb8;border-radius:9px;padding:8px 10px;margin-top:10px}
+.warn.bad{color:#b91c1c;background:#fdeaea;border-color:#f3c0c0}
+.deps-controls{display:flex;gap:8px;margin-bottom:10px}
+.deps-input{flex:1;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;outline:none}
+.deps-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12)}
+.deps-card{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.deps-card .dc-title{font-size:13px;font-weight:800}
+.deps-card .dc-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.deps-raw{font-size:11.5px;color:#56617a;background:#f6f8fb;border:1px solid var(--line);border-radius:8px;padding:7px 9px;margin-top:8px;white-space:pre-wrap;word-break:break-word}
+.deps-summary{font-size:12.5px;margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#eef4ff;border:1px solid #cddcf8;border-radius:8px;padding:7px 9px;color:#1e3a8a}
+.deps-ignored{font-size:11.5px;color:#9a5b13;margin-top:8px}
+.dep-canvas{height:430px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fbfcfe;position:relative}
+.dep-note{padding:14px;font-size:12.5px;color:var(--muted)}
+.rf-node{border-radius:10px;border:1.5px solid;padding:8px 12px;font-size:12px;box-shadow:0 2px 5px rgba(16,24,40,.09);cursor:pointer;position:relative;min-width:60px}
+.rf-node-code{font-weight:800;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+.rf-node-name{font-size:10px;opacity:.8;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rf-op{border-radius:999px;font-weight:800;font-size:11px;letter-spacing:1px;padding:6px 18px;text-align:center;background:#111827;color:#fff;border-color:#111827}
+.rf-note{background:#fff8e8;border-color:#e9c46a;color:#7c5a10;max-width:200px;font-size:11px}
+.react-flow__handle{opacity:0}
+.svg-tree{width:100%;height:100%;touch-action:none;display:block}
+.svg-zoom{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:5}
+.svg-zoom button{width:26px;height:26px;border:1px solid var(--line);background:#fff;border-radius:7px;font-weight:800;color:var(--muted);box-shadow:0 1px 2px rgba(16,24,40,.08)}
+.svg-zoom button:hover{color:var(--ink)}
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:50}
+.screen-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 30px rgba(16,24,40,.1);padding:28px 32px;max-width:560px;width:90%;text-align:center}
+.spinner{width:34px;height:34px;border:4px solid #dfe6f2;border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.screen-card h2{margin:0 0 6px;font-size:17px}
+.screen-card p{font-size:13px;color:var(--muted);margin:6px 0 14px}
+.file-row{display:flex;align-items:center;gap:10px;border:1px dashed #c9d3e3;border-radius:10px;padding:10px 12px;margin-bottom:8px;text-align:left;background:#fbfcfe}
+.file-row label{font-size:12.5px;font-weight:700;min-width:96px}
+.file-row input{font-size:11.5px;flex:1}
+.file-row .fstate{font-size:11px;font-weight:700;color:#0c7a4d;min-width:52px;text-align:right}
+.server-cmd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:#101828;color:#a5f3c8;border-radius:8px;padding:8px 10px;margin:10px 0;text-align:left;line-height:1.6;overflow-x:auto}
+.toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:100;align-items:center;pointer-events:none}
+.toast{background:#101828;color:#fff;font-size:12.5px;padding:9px 16px;border-radius:999px;box-shadow:0 6px 18px rgba(16,24,40,.28);animation:pop .18s ease;max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+#err{display:none;position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;font-size:12px;padding:8px 14px;z-index:200;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="err"></div>
+<script>
+window.addEventListener('error', function(e){
+  try{
+    var d = document.getElementById('err');
+    if (d){ d.style.display = 'block'; d.textContent = String(e.message || e.error || e); }
+  }catch(_){}
+});
+</script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+window.jsxRuntime = {
+  Fragment: window.React.Fragment,
+  jsx: function(type, props, key){ if (key != null){ props = Object.assign({}, props, {key: key}); } return window.React.createElement(type, props); },
+  jsxs: function(type, props, key){ if (key != null){ props = Object.assign({}, props, {key: key}); } return window.React.createElement(type, props); }
+};
+</script>
+<script src="https://unpkg.com/@xyflow/react@12.3.5/dist/umd/index.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+'use strict';
+
+/* ================= constants ================= */
+const START_HOUR = 8, END_HOUR = 21, HOUR_H = 56, HEADER_H = 40, TIME_COL = 70;
+const DAY_NAMES = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const LS_KEY = 'hkust-course-planner-v1';
+const MAX_SOLUTIONS = 6;
+const CODE_RE = /[A-Za-z]{2,5}\s?\d{3,4}[A-Za-z]?/g;
+
+/* ================= small helpers ================= */
+const RF = window.ReactFlow || null;
+function normCode(s){ return String(s || '').toUpperCase().replace(/\s+/g, ''); }
+function toDec(hhmm){
+  const p = String(hhmm || '').split(':').map(Number);
+  if (p.length < 2 || isNaN(p[0]) || isNaN(p[1])) return NaN;
+  return p[0] + p[1] / 60;
+}
+function fmtDec(t){
+  let h = Math.floor(t), m = Math.round((t - h) * 60);
+  if (m === 60){ h += 1; m = 0; }
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+function fmtRange(m){ return fmtDec(m.start) + '–' + fmtDec(m.end); }
+function cleanTeacher(n){ return String(n || '').replace(/,\s*/g, ' ').replace(/\s+/g, ' ').trim(); }
+function cleanField(v){ const s = String(v || '').trim(); return (s && s !== ' ') ? s : ''; }
+function hashHue(s){ let h = 0; for (let i = 0; i < s.length; i++){ h = (h * 31 + s.charCodeAt(i)) >>> 0; } return h % 360; }
+function courseColor(code){
+  const h = hashHue(code);
+  return { bg: 'hsla(' + h + ',72%,92%,.92)', border: 'hsl(' + h + ',55%,45%)', text: 'hsl(' + h + ',48%,22%)' };
+}
+function truncate(s, n){ s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+function summaryOf(meetings){
+  if (!meetings || !meetings.length) return 'TBA';
+  const m = meetings[0];
+  let s = DAY_NAMES[m.day] + ' ' + fmtRange(m);
+  if (meetings.length > 1) s += ' · +' + (meetings.length - 1) + ' more';
+  return s;
+}
+let _uid = 0;
+const uid = () => 'id-' + (++_uid);
+
+/* ================= catalog (data.json) ================= */
+function buildCatalog(raw){
+  const map = {};
+  for (const d of (raw || [])){
+    const code = normCode(d.crseCode);
+    if (!code) continue;
+    const score = ['crsePrerequisite', 'crseCorequisite', 'crseDescr', 'crseTitle', 'equivCourseCode']
+      .filter(k => { const v = d[k]; return v && String(v).trim() && String(v).trim() !== ' '; }).length;
+    const cur = map[code];
+    if (!cur || score > cur._score){ map[code] = Object.assign({}, d, {_score: score}); }
+  }
+  return map;
+}
+
+/* ================= normalizer (courses.json -> app model) ================= */
+function normalizeCourse(c, catalogMap){
+  const ci = c.courseInfo || {};
+  const code = normCode(ci.crseCode);
+  const cat = catalogMap[code] || {};
+  const sections = (c.classSections || []).map(s => {
+    const meetings = [];
+    for (const m of (s.meetingInfoList || [])){
+      const days = String(m.weekDay || '').split(',').map(x => parseInt(x, 10)).filter(x => x >= 1 && x <= 5);
+      const start = toDec(m.meetingStartTime), end = toDec(m.meetingEndTime);
+      if (!days.length || !isFinite(start) || !isFinite(end) || end <= start) continue;
+      const teacher = (m.instructorList || []).map(i => cleanTeacher(i.instructorName)).filter(Boolean).join('; ');
+      const room = String(m.facilityName || '').trim();
+      for (const day of days) meetings.push({ day: day, start: start, end: end, room: room, teacher: teacher });
+    }
+    meetings.sort((a, b) => a.day - b.day || a.start - b.start);
+    const assoc = Number(s.associatedClass);
+    return {
+      id: s.classId || (code + '-' + s.classSection),
+      label: s.classSection || s.classCode || '',
+      type: s.ssrComponent || s.crseComponentName || '',
+      component: s.ssrComponent || 'OTH',
+      componentName: s.crseComponentName || s.ssrComponent || 'Section',
+      associatedClass: isFinite(assoc) ? assoc : 0,
+      optional: s.optionalComponent === 'Y',
+      primary: s.primaryComponent === 'Y',
+      capacity: s.enrollmentCapacity || 0,
+      enrolled: s.enrollmentNbr || 0,
+      meetings: meetings
+    };
+  });
+  sections.sort((a, b) => a.component.localeCompare(b.component) || a.label.localeCompare(b.label, undefined, {numeric: true}));
+  return {
+    code: code,
+    name: ci.crseName || '',
+    credits: ci.totalCredits || 0,
+    shortDesc: cleanField(ci.crseShortDesc),
+    desc: cleanField(cat.crseDescr) || cleanField(ci.crseShortDesc),
+    sections: sections,
+    isMulti: ci.isMultiComponent === 'Y',
+    associateMsg: cleanField(ci.associateMsg),
+    subject: cleanField(ci.subjectArea) || (code.match(/^[A-Z]+/) || [''])[0],
+    career: cleanField(ci.academicCareer) || cleanField((c.classSections && c.classSections[0] && c.classSections[0].careerId) || ''),
+    prereq: cleanField(cat.crsePrerequisite),
+    coreq: cleanField(cat.crseCorequisite),
+    equiv: cleanField(cat.equivCourseCode),
+    title: cleanField(cat.crseTitle)
+  };
+}
+function normalizeCourses(raw, catalogMap){
+  return (Array.isArray(raw) ? raw : []).map(c => normalizeCourse(c, catalogMap)).filter(c => c.code);
+}
+
+const COMP_ORDER = ['LEC', 'TUT', 'LAB', 'SEM', 'IND', 'PRJ'];
+function isWildcardAssoc(n){ return n == null || n === 0 || n === 9999; }
+function groupSections(sections){
+  const map = {};
+  for (const sec of (sections || [])){
+    const k = sec.component || sec.type || 'OTH';
+    (map[k] = map[k] || []).push(sec);
+  }
+  return Object.keys(map).sort((a, b) => {
+    const ia = COMP_ORDER.indexOf(a), ib = COMP_ORDER.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+  }).map(k => ({ component: k, name: map[k][0].componentName || k, sections: map[k] }));
+}
+function sectionSummary(course){
+  return groupSections(course.sections).map(g => {
+    const labels = g.sections.map(x => x.label);
+    const shown = labels.length > 6 ? labels.slice(0, 4).join('/') + '/…/' + labels[labels.length - 1] : labels.join('/');
+    return g.component + ' ' + shown;
+  }).join(' · ');
+}
+function parallelClassCount(course){
+  const groups = groupSections(course.sections || []);
+  if (!groups.length) return 0;
+  return Math.max.apply(null, groups.map(g => g.sections.length));
+}
+function companionSections(course, section){
+  if (!course || !section || isWildcardAssoc(section.associatedClass)) return [];
+  const extra = [];
+  for (const g of groupSections(course.sections)){
+    if (g.component === section.component) continue;
+    const match = g.sections.filter(x => x.associatedClass === section.associatedClass && x.meetings.length);
+    if (match.length === 1) extra.push(match[0]);
+  }
+  return extra;
+}
+function makeEntry(courseCode, section){
+  return { course: courseCode, section: section.id, label: section.label, meetings: section.meetings, component: section.component, associatedClass: section.associatedClass };
+}
+function formatCredits(n){
+  const x = Number(n);
+  if (!isFinite(x)) return '0';
+  const r = Math.round(x * 100) / 100;
+  return String(r);
+}
+function scheduleCreditSummary(schedule, coursesById){
+  const map = {};
+  for (const en of (schedule || [])){
+    if (!en || !en.course || map[en.course] != null) continue;
+    const c = coursesById && coursesById[en.course];
+    map[en.course] = c ? (Number(c.credits) || 0) : 0;
+  }
+  const rows = Object.keys(map).sort().map(code => ({ code: code, credits: map[code] }));
+  const total = rows.reduce((s, r) => s + r.credits, 0);
+  return { total: total, courses: rows.length, rows: rows };
+}
+function upsertSectionChoice(prev, course, section){
+  const bundle = [section].concat(companionSections(course, section));
+  let next = prev.filter(en => !(en.course === course.code && bundle.some(s => s.component === en.component)));
+  for (const s of bundle){
+    if (s.meetings && s.meetings.length) next.push(makeEntry(course.code, s));
+  }
+  return next;
+}
+function cartesian(arrays){
+  return arrays.reduce((acc, arr) => {
+    const out = [];
+    for (const a of acc) for (const b of arr) out.push(a.concat([b]));
+    return out;
+  }, [[]]);
+}
+function courseBundles(course){
+  const groups = groupSections((course.sections || []).filter(s => s.meetings.length));
+  const required = groups.filter(g => g.sections.some(s => !s.optional));
+  const use = required.length ? required : groups;
+  if (!use.length) return [];
+  const needsMatch = !!(course.associateMsg) || use.some(g => g.sections.filter(s => !isWildcardAssoc(s.associatedClass)).length > 1);
+  let combos;
+  if (needsMatch){
+    const ids = new Set();
+    use.forEach(g => g.sections.forEach(s => { if (!isWildcardAssoc(s.associatedClass)) ids.add(s.associatedClass); }));
+    if (!ids.size) combos = cartesian(use.map(g => g.sections));
+    else {
+      combos = [];
+      for (const id of ids){
+        const picks = [];
+        let ok = true;
+        for (const g of use){
+          const exact = g.sections.filter(s => s.associatedClass === id);
+          const any = g.sections.filter(s => isWildcardAssoc(s.associatedClass));
+          const opts = exact.length ? exact : any;
+          if (!opts.length){ ok = false; break; }
+          picks.push(opts);
+        }
+        if (ok) combos = combos.concat(cartesian(picks));
+      }
+    }
+  } else {
+    combos = cartesian(use.map(g => g.sections));
+  }
+  const out = [];
+  for (const secs of combos){
+    const entries = secs.map(sec => makeEntry(course.code, sec));
+    let bad = false;
+    for (let i = 0; i < entries.length; i++){
+      if (findConflicts(entries[i].meetings, entries.filter((_, j) => j !== i)).length){ bad = true; break; }
+    }
+    if (!bad) out.push(entries);
+  }
+  return out;
+}
+
+/* ================= dependency parser (real tokenizer, no includes()) ================= */
+function extractCodes(text){
+  const out = [], seen = new Set();
+  const m = String(text || '').matchAll(CODE_RE);
+  for (const hit of m){
+    const c = normCode(hit[0]);
+    if (c && !seen.has(c)){ seen.add(c); out.push({ code: c, raw: hit[0].replace(/\s+/g, ' ') }); }
+  }
+  return out;
+}
+function tokenize(text){
+  let s = String(text || '').toUpperCase();
+  s = s.replace(/\bAND\b/g, ' AND ').replace(/\bOR\b/g, ' OR ');
+  s = s.replace(/[;,]/g, ' AND ');
+  s = s.replace(/\([A-Z]\)/g, ' AND ');
+  s = s.replace(/\s+/g, ' ').trim();
+  const toks = [];
+  const re = /\(|\)|AND|OR|[A-Z]{2,5}\s?\d{3,4}[A-Za-z]?|[A-Za-z][A-Za-z0-9&+#.'\/-]*/g;
+  let m;
+  while ((m = re.exec(s))){
+    const t = m[0].trim();
+    if (!t) continue;
+    if (t === 'AND' || t === 'OR' || t === '(' || t === ')') toks.push(t);
+    else if (/[A-Z]{2,5}\s?\d{3,4}[A-Za-z]?/.test(t)) toks.push({ code: t });
+    else toks.push({ text: t });
+  }
+  return toks;
+}
+function sanitizeTokens(toks){
+  const ignored = toks.filter(t => t && t.text).map(t => t.text);
+  const t2 = toks.filter(t => !(t && t.text));
+  let changed = true;
+  while (changed){
+    changed = false;
+    for (let i = 0; i < t2.length; i++){
+      if (t2[i] !== '(') continue;
+      let depth = 0, matched = -1;
+      for (let j = i; j < t2.length; j++){
+        if (t2[j] === '(') depth++;
+        else if (t2[j] === ')'){ depth--; if (depth === 0){ matched = j; break; } }
+      }
+      if (matched >= 0){
+        const inner = t2.slice(i + 1, matched);
+        const meaningful = inner.some(t => (t && t.code) || t === 'AND' || t === 'OR');
+        if (!meaningful){ t2.splice(i, matched - i + 1); changed = true; break; }
+      }
+    }
+  }
+  let bal = 0;
+  for (const t of t2){ if (t === '(') bal++; else if (t === ')') bal--; }
+  if (bal !== 0){
+    for (let i = t2.length - 1; i >= 0; i--){ if (t2[i] === '(' || t2[i] === ')') t2.splice(i, 1); }
+  }
+  while (t2.length && (t2[0] === 'AND' || t2[0] === 'OR')) t2.shift();
+  while (t2.length && (t2[t2.length - 1] === 'AND' || t2[t2.length - 1] === 'OR')) t2.pop();
+  for (let i = t2.length - 1; i > 0; i--){
+    if ((t2[i] === 'AND' || t2[i] === 'OR') && (t2[i - 1] === 'AND' || t2[i - 1] === 'OR')){
+      if (t2[i] === 'OR') t2[i - 1] = 'OR';
+      t2.splice(i, 1);
+    }
+  }
+  return { toks: t2, ignored: ignored };
+}
+class DepParser {
+  constructor(t){ this.t = t; this.i = 0; this.bad = false; }
+  peek(){ return this.t[this.i]; }
+  next(){ return this.t[this.i++]; }
+  parseOr(){
+    const parts = [];
+    const first = this.parseAnd();
+    if (!first){ this.bad = true; return null; }
+    parts.push(first);
+    while (this.peek() === 'OR'){
+      this.next();
+      const p = this.parseAnd();
+      if (!p){ this.bad = true; return null; }
+      parts.push(p);
+    }
+    return parts.length === 1 ? parts[0] : { kind: 'or', children: parts };
+  }
+  parseAnd(){
+    const parts = [];
+    const first = this.parseUnary();
+    if (!first){ this.bad = true; return null; }
+    parts.push(first);
+    while (this.peek() === 'AND'){
+      this.next();
+      const p = this.parseUnary();
+      if (!p){ this.bad = true; return null; }
+      parts.push(p);
+    }
+    while (this.peek() && typeof this.peek() === 'object'){
+      const p = this.parseUnary();
+      if (!p){ this.bad = true; return null; }
+      parts.push(p);
+    }
+    return parts.length === 1 ? parts[0] : { kind: 'and', children: parts };
+  }
+  parseUnary(){
+    const t = this.peek();
+    if (t === '('){
+      this.next();
+      const n = this.parseOr();
+      if (this.peek() === ')') this.next();
+      else this.bad = true;
+      return n;
+    }
+    if (t && typeof t === 'object' && t.code){
+      this.next();
+      return { kind: 'code', code: normCode(t.code), label: t.code.replace(/\s+/g, ' ') };
+    }
+    this.bad = true;
+    return null;
+  }
+}
+function astHasCode(n){
+  if (!n) return false;
+  if (n.kind === 'code') return true;
+  return !!(n.children && n.children.some(astHasCode));
+}
+function parsePrereq(text){
+  const raw = String(text || '').trim();
+  if (!raw) return { ok: false, node: null, raw: '', approximate: false, ignored: [] };
+  const tk = tokenize(raw);
+  const cleaned = sanitizeTokens(tk);
+  const codes = extractCodes(raw);
+  if (!cleaned.toks.length){
+    if (codes.length === 1) return { ok: true, node: { kind: 'code', code: codes[0].code, label: codes[0].raw }, raw: raw, approximate: false, ignored: cleaned.ignored };
+    return { ok: false, node: null, raw: raw, approximate: false, ignored: cleaned.ignored };
+  }
+  const p = new DepParser(cleaned.toks);
+  const root = p.parseOr();
+  const leftover = p.t.slice(p.i);
+  if (!root || p.bad || leftover.length){
+    if (codes.length === 1) return { ok: true, node: { kind: 'code', code: codes[0].code, label: codes[0].raw }, raw: raw, approximate: false, ignored: cleaned.ignored };
+    if (codes.length > 1){
+      const op = /\bOR\b/i.test(raw) ? 'or' : 'and';
+      return { ok: true, node: { kind: op, children: codes.map(c => ({ kind: 'code', code: c.code, label: c.raw })) }, raw: raw, approximate: true, ignored: cleaned.ignored };
+    }
+    return { ok: false, node: null, raw: raw, approximate: false, ignored: cleaned.ignored };
+  }
+  if (!astHasCode(root)) return { ok: false, node: null, raw: raw, approximate: false, ignored: cleaned.ignored };
+  return { ok: true, node: root, raw: raw, approximate: false, ignored: cleaned.ignored };
+}
+function astString(n){
+  if (!n) return '';
+  if (n.kind === 'code') return n.label || n.code;
+  if (n.kind === 'note') return '"' + n.label + '"';
+  const inner = n.children.map(astString);
+  if (inner.length === 1) return inner[0];
+  return '(' + inner.join(' ' + n.kind.toUpperCase() + ' ') + ')';
+}
+
+/* ================= conflict engine ================= */
+function findConflicts(meetings, entries){
+  const res = [];
+  for (const en of (entries || [])){
+    for (const m1 of (meetings || [])){
+      for (const m2 of (en.meetings || [])){
+        if (m1.day !== m2.day) continue;
+        if (!(m1.start < m2.end && m2.start < m1.end)) continue;
+        const other = en.course + ' ' + (en.label || '');
+        res.push({ type: 'time', other: other });
+        if (m1.room && m2.room && m1.room === m2.room) res.push({ type: 'room', other: other, room: m1.room });
+        if (m1.teacher && m2.teacher && m1.teacher === m2.teacher) res.push({ type: 'instructor', other: other, teacher: m1.teacher });
+      }
+    }
+  }
+  return res;
+}
+function conflictCount(conflicts){
+  return new Set(conflicts.map(c => c.type)).size;
+}
+
+/* ================= drag targeting (times stay official) ================= */
+function pointerOverCalendar(e, rect){
+  if (!rect || rect.width <= 0) return false;
+  const x = e.clientX - rect.left - TIME_COL;
+  const y = e.clientY - rect.top - HEADER_H;
+  return x >= 0 && y >= 0 && e.clientX <= rect.right && e.clientY <= rect.bottom;
+}
+
+/* ================= auto scheduler (backtracking + pruning) ================= */
+function generateSchedules(inputText, coursesById){
+  const codes = [];
+  const seen = new Set();
+  const m = String(inputText || '').matchAll(CODE_RE);
+  for (const hit of m){
+    const c = normCode(hit[0]);
+    if (c && !seen.has(c)){ seen.add(c); codes.push(c); }
+  }
+  const warnings = [];
+  const pool = [];
+  for (const code of codes){
+    const c = coursesById[code];
+    if (!c){ warnings.push(code + ': not offered this term (no class sections)'); continue; }
+    const bundles = courseBundles(c);
+    if (!bundles.length){ warnings.push(code + ': no valid section combination (check parallel classes / components)'); continue; }
+    const nPar = groupSections(c.sections).filter(g => g.sections.length > 1).length;
+    if (nPar) warnings.push(code + ': ' + nPar + ' component(s) have parallel classes — scheduler tries each alternative');
+    pool.push({ code: code, name: c.name, bundles: bundles });
+  }
+  if (!pool.length) return { solutions: [], warnings: warnings, truncated: false };
+  pool.sort((a, b) => a.bundles.length - b.bundles.length);
+  const solutions = [], chosen = [];
+  let nodes = 0;
+  const MAX_NODES = 400000;
+  let truncated = false;
+  function cloneChosen(){
+    return chosen.map(e => ({ course: e.course, section: e.section, label: e.label, meetings: e.meetings.map(m => Object.assign({}, m)), component: e.component }));
+  }
+  function bt(i){
+    nodes++;
+    if (nodes > MAX_NODES){ truncated = true; return; }
+    if (i === pool.length){ solutions.push(cloneChosen()); return; }
+    for (const bundle of pool[i].bundles){
+      let ok = true;
+      for (const entry of bundle){
+        if (findConflicts(entry.meetings, chosen).length){ ok = false; break; }
+      }
+      if (!ok) continue;
+      const n = bundle.length;
+      for (const entry of bundle) chosen.push(entry);
+      bt(i + 1);
+      chosen.length -= n;
+      if (solutions.length >= MAX_SOLUTIONS || truncated) return;
+    }
+  }
+  bt(0);
+  return { solutions: solutions, warnings: warnings, truncated: truncated };
+}
+
+/* ================= graph layout for dependency AST ================= */
+function buildGraphData(courseCode, courseName, ast, names){
+  const nodes = [], edges = [];
+  let seq = 0;
+  const addNode = (type, data, pos) => { const id = 'n' + (++seq); nodes.push({ id: id, type: type, data: data, position: pos }); return id; };
+  const addEdge = (s, t) => edges.push({ id: 'e' + (++seq), source: s, target: t });
+
+  const XS = 190, YS = 140, shiftY = 90;
+  const astPos = new Map();
+  const leaves = [];
+  (function collect(n){
+    if (n.children && n.children.length) n.children.forEach(collect);
+    else leaves.push(n);
+  })(ast);
+  const depthOf = new Map();
+  (function setDepth(n, d){ depthOf.set(n, d); if (n.children) n.children.forEach(c => setDepth(c, d + 1)); })(ast, 1);
+  leaves.forEach((n, i) => astPos.set(n, { x: i * XS, y: depthOf.get(n) * YS + shiftY }));
+  (function place(n){
+    if (n.children && n.children.length){
+      n.children.forEach(place);
+      const xs = n.children.map(c => astPos.get(c).x);
+      astPos.set(n, { x: (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2, y: depthOf.get(n) * YS + shiftY });
+    }
+  })(ast);
+
+  const totalW = Math.max(1, leaves.length) * XS;
+  const rootId = addNode('course', { label: courseCode, code: courseCode, name: courseName || '' }, { x: totalW / 2 - XS / 2, y: 0 });
+  const idOf = new Map();
+  (function build(n){
+    if (idOf.has(n)) return idOf.get(n);
+    let id;
+    if (n.kind === 'code') id = addNode('course', { label: n.label || n.code, code: n.code, name: names[n.code] || '' }, astPos.get(n));
+    else if (n.kind === 'note') id = addNode('note', { label: n.label, code: null }, astPos.get(n));
+    else id = addNode('op', { label: n.kind.toUpperCase() }, astPos.get(n));
+    idOf.set(n, id);
+    if (n.children) n.children.forEach(ch => addEdge(id, build(ch)));
+    return id;
+  })(ast);
+  return { nodes: nodes, edges: edges };
+}
+
+
+/* ================= React Flow components ================= */
+function RFCourseNode({ data }){
+  const col = data.code ? courseColor(data.code) : { bg: '#eef2ff', border: '#6366f1', text: '#3730a3' };
+  return (
+    <div className="rf-node rf-course" style={{ background: col.bg, borderColor: col.border, color: col.text }}
+      title={(data.name || '') + '\nClick to jump to this course'}>
+      <div className="rf-node-code">{data.label}</div>
+      {data.name ? <div className="rf-node-name">{data.name}</div> : null}
+      {RF ? <RF.Handle type="target" position={RF.Position.Top} /> : null}
+      {RF ? <RF.Handle type="source" position={RF.Position.Bottom} /> : null}
+    </div>
+  );
+}
+function RFOpNode({ data }){
+  return <div className="rf-node rf-op">{data.label}</div>;
+}
+function RFNoteNode({ data }){
+  return <div className="rf-node rf-note" title={data.label}>{data.label}</div>;
+}
+const NODE_TYPES = { course: RFCourseNode, op: RFOpNode, note: RFNoteNode };
+
+function DepGraph({ courseCode, courseName, ast, names, onJump }){
+  const data = React.useMemo(() => buildGraphData(courseCode, courseName, ast, names), [courseCode, courseName, ast, names]);
+  const [nodes, setNodes] = React.useState(data.nodes);
+  const [edges] = React.useState(data.edges);
+  React.useEffect(() => { setNodes(data.nodes); }, [data]);
+  if (!RF){
+    return <SimpleSvgTree data={data} onJump={onJump} />;
+  }
+  return (
+    <div className="dep-canvas">
+      <RF.ReactFlow
+        key={courseCode}
+        nodes={nodes} edges={edges}
+        nodeTypes={NODE_TYPES}
+        onNodesChange={(changes) => setNodes(ns => RF.applyNodeChanges(changes, ns))}
+        onNodeClick={(ev, nd) => { if (nd.type === 'course' && nd.data.code) onJump(nd.data.code); }}
+        fitView fitViewOptions={{ padding: 0.2 }}
+        nodesConnectable={false}
+        minZoom={0.15} maxZoom={2.5}
+        proOptions={{ hideAttribution: false }}
+      >
+        <RF.Background gap={18} size={1} color="#e5e9f0" />
+        <RF.Controls showInteractive={false} />
+        <RF.MiniMap pannable zoomable nodeColor={(n) => n.type === 'course' ? courseColor(n.data.code || 'X').border : '#111827'} />
+      </RF.ReactFlow>
+    </div>
+  );
+}
+
+function SimpleSvgTree({ data, onJump }){
+  const [view, setView] = React.useState({ x: 0, y: 0, k: 1 });
+  const dragRef = React.useRef(null);
+  const onPointerDown = (e) => { dragRef.current = { sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y }; e.currentTarget.setPointerCapture(e.pointerId); };
+  const onPointerMove = (e) => {
+    if (!dragRef.current) return;
+    setView(v => ({ ...v, x: dragRef.current.vx + e.clientX - dragRef.current.sx, y: dragRef.current.vy + e.clientY - dragRef.current.sy }));
+  };
+  const onPointerUp = () => { dragRef.current = null; };
+  const onWheel = (e) => {
+    e.preventDefault();
+    setView(v => ({ ...v, k: Math.min(2.5, Math.max(0.3, v.k * (e.deltaY < 0 ? 1.12 : 0.89))) }));
+  };
+  if (!data.nodes.length){
+    return <div className="dep-canvas"><div className="dep-note">Nothing to draw.</div></div>;
+  }
+  const xs = data.nodes.map(n => n.position.x), ys = data.nodes.map(n => n.position.y);
+  const minX = Math.min.apply(null, xs) - 80, maxX = Math.max.apply(null, xs) + 220;
+  const minY = Math.min.apply(null, ys) - 60, maxY = Math.max.apply(null, ys) + 110;
+  const W = maxX - minX, H = maxY - minY;
+  return (
+    <div className="dep-canvas">
+      <svg className="svg-tree" viewBox={minX + ' ' + minY + ' ' + W + ' ' + H}
+        onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onWheel={onWheel}
+        style={{ cursor: 'grab' }}>
+        <g transform={'translate(' + view.x + ' ' + view.y + ') scale(' + view.k + ')'}>
+          {data.edges.map(e => {
+            const s = data.nodes.find(n => n.id === e.source), t = data.nodes.find(n => n.id === e.target);
+            if (!s || !t) return null;
+            const x1 = s.position.x + 90, y1 = s.position.y + (s.type === 'course' ? 36 : 22);
+            const x2 = t.position.x + 90, y2 = t.position.y;
+            return <line key={e.id} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 3" />;
+          })}
+          {data.nodes.map(n => {
+            if (n.type === 'op'){
+              return (
+                <g key={n.id} transform={'translate(' + n.position.x + ' ' + n.position.y + ')'}>
+                  <rect width="64" height="26" rx="13" fill="#111827" />
+                  <text x="32" y="17" fontSize="11" fontWeight="800" fill="#fff" textAnchor="middle">{n.data.label}</text>
+                </g>
+              );
+            }
+            if (n.type === 'note'){
+              return (
+                <g key={n.id} transform={'translate(' + n.position.x + ' ' + n.position.y + ')'}>
+                  <rect width="150" height="28" rx="8" fill="#fff8e8" stroke="#e9c46a" />
+                  <text x="8" y="18" fontSize="10.5" fill="#7c5a10">{truncate(n.data.label, 20)}</text>
+                </g>
+              );
+            }
+            const col = courseColor(n.data.code || 'X');
+            return (
+              <g key={n.id} transform={'translate(' + n.position.x + ' ' + n.position.y + ')'} style={{ cursor: 'pointer' }}
+                onClick={() => { if (n.data.code) onJump(n.data.code); }}>
+                <rect width="180" height="42" rx="9" fill={col.bg} stroke={col.border} strokeWidth="1.3" />
+                <text x="10" y="18" fontSize="12" fontWeight="800" fill={col.text}>{n.data.label}</text>
+                {n.data.name ? <text x="10" y="32" fontSize="9.5" fill={col.text} opacity="0.85">{truncate(n.data.name, 24)}</text> : null}
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+      <div className="svg-zoom">
+        <button onClick={() => setView(v => ({ ...v, k: Math.min(2.5, v.k * 1.15) }))} title="Zoom in">+</button>
+        <button onClick={() => setView(v => ({ ...v, k: Math.max(0.3, v.k * 0.87) }))} title="Zoom out">−</button>
+        <button onClick={() => setView({ x: 0, y: 0, k: 1 })} title="Reset">reset</button>
+      </div>
+    </div>
+  );
+}
+
+/* ================= load screens ================= */
+function LoadScreen(){
+  return (
+    <div className="screen"><div className="screen-card">
+      <div className="spinner"></div>
+      <h2>Loading course data…</h2>
+      <p>Fetching courses.json and data.json from the same folder.</p>
+    </div></div>
+  );
+}
+function ManualLoad({ onData }){
+  const [files, setFiles] = React.useState({ courses: null, catalog: null });
+  const [err, setErr] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  function readFile(file){
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => { try { resolve(JSON.parse(r.result)); } catch (ex){ reject(ex); } };
+      r.onerror = () => reject(new Error('read failed'));
+      r.readAsText(file);
+    });
+  }
+  async function onPick(key, e){
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setErr('');
+    try{
+      const data = await readFile(f);
+      setFiles(prev => ({ ...prev, [key]: data }));
+    }catch(ex){
+      setErr(key === 'courses' ? 'courses.json is not valid JSON: ' + ex.message : 'data.json is not valid JSON: ' + ex.message);
+    }
+  }
+  async function load(){
+    if (!files.courses || !files.catalog){ setErr('Please select both JSON files.'); return; }
+    setBusy(true);
+    try{
+      const catalogMap = buildCatalog(files.catalog);
+      const courses = normalizeCourses(files.courses, catalogMap);
+      if (!courses.length) throw new Error('no courses could be parsed');
+      onData({ courses: courses, catalogMap: catalogMap });
+    }catch(ex){
+      setErr('Could not parse data: ' + ex.message);
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="screen"><div className="screen-card">
+      <h2>📚 HKUST SIS Course Planner</h2>
+      <p>Your browser blocks local file access (file:// pages cannot fetch sibling JSON files).<br/>Start a local server in this folder, or pick the two JSON files manually.</p>
+      <div className="server-cmd">cd ~/Desktop/Codex/CourseHelper<br/>python3 -m http.server 8000<br/># then open http://localhost:8000/</div>
+      <div className="file-row">
+        <label>courses.json</label>
+        <input type="file" accept=".json,application/json" onChange={(e) => onPick('courses', e)} />
+        <span className="fstate">{files.courses ? '✓ loaded' : ''}</span>
+      </div>
+      <div className="file-row">
+        <label>data.json</label>
+        <input type="file" accept=".json,application/json" onChange={(e) => onPick('catalog', e)} />
+        <span className="fstate">{files.catalog ? '✓ loaded' : ''}</span>
+      </div>
+      {err ? <div className="warn bad" style={{ textAlign: 'left' }}>{err}</div> : null}
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 12 }}>
+        <button className="hbtn primary" onClick={load} disabled={busy}>{busy ? 'Loading…' : 'Load data'}</button>
+        <button className="hbtn" onClick={() => window.location.reload()}>Try auto-load again</button>
+      </div>
+    </div></div>
+  );
+}
+
+/* ================= search & detail ================= */
+function searchCourses(courses, q){
+  const query = String(q || '').trim().toLowerCase();
+  if (!query) return courses;
+  const scored = [];
+  for (const c of courses){
+    const code = c.code.toLowerCase(), name = c.name.toLowerCase();
+    const short = c.shortDesc.toLowerCase(), desc = c.desc.toLowerCase();
+    const labels = c.sections.map(s => (s.label || '').toLowerCase()).join(' ');
+    let score = 0;
+    if (code === query) score = 100;
+    else if (code.startsWith(query)) score = 80;
+    else if (code.includes(query)) score = 60;
+    if (name.includes(query)) score = Math.max(score, 50);
+    if (short.includes(query) || desc.includes(query)) score = Math.max(score, 30);
+    if (labels.includes(query)) score = Math.max(score, 40);
+    if (score) scored.push({ c: c, score: score });
+  }
+  scored.sort((a, b) => b.score - a.score || a.c.code.localeCompare(b.c.code));
+  return scored.slice(0, 200).map(s => s.c);
+}
+const EMPTY_FILTERS = { subject: '', credits: '', career: '', days: [], slot: '', instructor: '', noConflict: false, available: false, hasParallel: false, hasLab: false, hasTut: false, hasPrereq: false };
+function subjectOf(c){ return c.subject || ((c.code || '').match(/^[A-Z]+/) || [''])[0]; }
+function careerOf(c){ return String((c && c.career) || '').toUpperCase(); }
+function careerLabel(code){
+  const k = String(code || '').toUpperCase();
+  if (k === 'UGRD' || k === 'UG') return 'UG';
+  if (k === 'TPG') return 'TPG';
+  if (k === 'RPG') return 'RPG';
+  if (k === 'PG') return 'PG';
+  return k || '—';
+}
+function careerMatches(c, selected){
+  if (!selected) return true;
+  const k = careerOf(c);
+  if (selected === 'UG' || selected === 'UGRD') return k === 'UGRD';
+  if (selected === 'PG') return k === 'TPG' || k === 'RPG';
+  return k === selected;
+}
+function meetingInSlot(m, slot){
+  if (!slot) return true;
+  if (slot === 'am') return m.end <= 12;
+  if (slot === 'pm') return m.start < 18 && m.end > 12;
+  if (slot === 'eve') return m.start >= 18;
+  return true;
+}
+function sectionMatchesFilters(s, f, schedule){
+  const meetings = (s && s.meetings) || [];
+  if (f.days && f.days.length){
+    if (!meetings.some(m => f.days.indexOf(m.day) >= 0)) return false;
+  }
+  if (f.slot && !meetings.some(m => meetingInSlot(m, f.slot))) return false;
+  if (f.instructor){
+    const q = String(f.instructor).trim().toLowerCase();
+    if (q && !meetings.some(m => String(m.teacher || '').toLowerCase().indexOf(q) >= 0)) return false;
+  }
+  if (f.available && !(s.capacity > 0 && s.enrolled < s.capacity)) return false;
+  if (f.noConflict && schedule && schedule.length && findConflicts(meetings, schedule).length) return false;
+  return true;
+}
+function courseDays(c){
+  const d = {};
+  (c.sections || []).forEach(s => (s.meetings || []).forEach(m => { d[m.day] = true; }));
+  return d;
+}
+function courseHasParallel(c){
+  return parallelClassCount(c) > 1;
+}
+function filtersActive(f){
+  return !!(f.subject || f.credits !== '' || f.career || (f.days && f.days.length) || f.slot || (f.instructor && String(f.instructor).trim()) || f.noConflict || f.available || f.hasParallel || f.hasLab || f.hasTut || f.hasPrereq);
+}
+function applyFilters(courses, f, schedule){
+  if (!filtersActive(f)) return courses;
+  return courses.filter(c => {
+    if (f.subject && subjectOf(c) !== f.subject) return false;
+    if (f.credits !== '' && Number(c.credits) !== Number(f.credits)) return false;
+    if (f.career && !careerMatches(c, f.career)) return false;
+    if (f.hasParallel && !courseHasParallel(c)) return false;
+    if (f.hasLab && !(c.sections || []).some(s => s.component === 'LAB')) return false;
+    if (f.hasTut && !(c.sections || []).some(s => s.component === 'TUT')) return false;
+    if (f.hasPrereq && !c.prereq) return false;
+    const timed = (f.days && f.days.length) || f.slot || (f.instructor && String(f.instructor).trim()) || f.available || f.noConflict;
+    if (timed){
+      const secs = (c.sections || []).filter(s => s.meetings && s.meetings.length && sectionMatchesFilters(s, f, schedule));
+      if (!secs.length) return false;
+    }
+    return true;
+  });
+}
+function FilterBar({ courses, filters, setFilters }){
+  const subjects = React.useMemo(() => {
+    const s = {};
+    courses.forEach(c => { const k = subjectOf(c); if (k) s[k] = (s[k] || 0) + 1; });
+    return Object.keys(s).sort().map(k => ({ k: k, n: s[k] }));
+  }, [courses]);
+  const creditOpts = React.useMemo(() => {
+    const s = {};
+    courses.forEach(c => { s[String(c.credits)] = true; });
+    return Object.keys(s).sort((a, b) => Number(a) - Number(b));
+  }, [courses]);
+  function toggleDay(d){
+    setFilters(prev => {
+      const has = prev.days.indexOf(d) >= 0;
+      return Object.assign({}, prev, { days: has ? prev.days.filter(x => x !== d) : prev.days.concat([d]).sort() });
+    });
+  }
+  function toggleFlag(key){
+    setFilters(prev => Object.assign({}, prev, { [key]: !prev[key] }));
+  }
+  const active = filtersActive(filters);
+  return (
+    <div className="filters">
+      <div className="filter-row">
+        <select value={filters.subject} onChange={(e) => setFilters(prev => Object.assign({}, prev, { subject: e.target.value }))}>
+          <option value="">All subjects</option>
+          {subjects.map(s => <option key={s.k} value={s.k}>{s.k} ({s.n})</option>)}
+        </select>
+        <select value={filters.credits} onChange={(e) => setFilters(prev => Object.assign({}, prev, { credits: e.target.value }))}>
+          <option value="">All credits</option>
+          {creditOpts.map(cr => <option key={cr} value={cr}>{cr} cr</option>)}
+        </select>
+      </div>
+      <div className="filter-row">
+        <input value={filters.instructor || ''} placeholder="Instructor, e.g. Liu"
+          onChange={(e) => setFilters(prev => Object.assign({}, prev, { instructor: e.target.value }))} />
+      </div>
+      <div className="filter-chips">
+        {[['UG','UG'],['PG','PG'],['TPG','TPG'],['RPG','RPG']].map(pair => (
+          <button key={pair[0]} className={'fchip' + (filters.career === pair[0] ? ' on' : '')}
+            onClick={() => setFilters(prev => Object.assign({}, prev, { career: prev.career === pair[0] ? '' : pair[0] }))}>{pair[1]}</button>
+        ))}
+        {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(pair => (
+          <button key={pair[0]} className={'fchip' + (filters.days.indexOf(pair[0]) >= 0 ? ' on' : '')} onClick={() => toggleDay(pair[0])}>{pair[1]}</button>
+        ))}
+        {[['am','Morning'],['pm','Afternoon'],['eve','Evening']].map(pair => (
+          <button key={pair[0]} className={'fchip' + (filters.slot === pair[0] ? ' on' : '')}
+            onClick={() => setFilters(prev => Object.assign({}, prev, { slot: prev.slot === pair[0] ? '' : pair[0] }))}>{pair[1]}</button>
+        ))}
+        <button className={'fchip' + (filters.noConflict ? ' on' : '')} onClick={() => toggleFlag('noConflict')}>Fits timetable</button>
+        <button className={'fchip' + (filters.available ? ' on' : '')} onClick={() => toggleFlag('available')}>Has seats</button>
+        <button className={'fchip' + (filters.hasParallel ? ' on' : '')} onClick={() => toggleFlag('hasParallel')}>平行班</button>
+        <button className={'fchip' + (filters.hasTut ? ' on' : '')} onClick={() => toggleFlag('hasTut')}>Tutorial</button>
+        <button className={'fchip' + (filters.hasLab ? ' on' : '')} onClick={() => toggleFlag('hasLab')}>Lab</button>
+        <button className={'fchip' + (filters.hasPrereq ? ' on' : '')} onClick={() => toggleFlag('hasPrereq')}>Has prereq</button>
+      </div>
+      <div className="filter-meta">
+        <span className="filter-count">{active ? 'Filters on' : 'Filter by UG/PG, subject, day, time'}</span>
+        <button className="filter-clear" disabled={!active} onClick={() => setFilters(EMPTY_FILTERS)}>Clear filters</button>
+      </div>
+    </div>
+  );
+}
+function CourseCard({ c, onClick }){
+  const nPar = parallelClassCount(c);
+  return (
+    <div className="course-card" onClick={onClick}>
+      <div className="cc-top">
+        <span className="cc-code">{c.code}</span>
+        <span className="cc-career">{careerLabel(c.career)}</span>
+        <span className="cc-credits">{c.credits} cr</span>
+      </div>
+      <div className="cc-name">{c.name}</div>
+      <div className="cc-secs">
+        {sectionSummary(c) || 'No sections'}
+        {nPar > 1 ? <span className="cc-par">{nPar} 平行班</span> : null}
+      </div>
+      <div className="cc-meta">{c.sections.length} section{c.sections.length === 1 ? '' : 's'}{c.isMulti ? ' · multi-component' : ''}{c.prereq ? ' · has prerequisite' : ''}</div>
+    </div>
+  );
+}
+function SectionCard({ course, s, scheduledIds, conflictSections, onAdd, onRemove, onDragStartSec }){
+  const has = scheduledIds.has(s.id);
+  const conf = conflictSections.has(s.id);
+  return (
+    <div className={'sec-card' + (has ? ' in-sched' : '') + (conf ? ' conf' : '')}
+      draggable={s.meetings.length > 0}
+      onDragStart={(e) => { if (s.meetings.length){ onDragStartSec(e, course, s); } }}>
+      <div className="sec-head">
+        <span className="sec-label">{s.label || '—'}</span>
+        {s.componentName ? <span className="sec-type">{s.componentName}</span> : null}
+        {!isWildcardAssoc(s.associatedClass) ? <span className="sec-assoc">pair #{s.associatedClass}</span> : null}
+        {has ? <span className="sec-badge in">in schedule</span> : null}
+        {conf ? <span className="sec-badge conf">conflict</span> : null}
+        {!s.meetings.length ? <span className="sec-badge conf">TBA</span> : null}
+      </div>
+      {s.meetings.map((m, i) => (
+        <div className="mtg-row" key={i}>
+          <span className="mtg-day">{DAY_NAMES[m.day]}</span>
+          <span>{fmtRange(m)}</span>
+          {m.room ? <span className="mtg-tag">· {m.room}</span> : null}
+          {m.teacher ? <span className="mtg-tag">· {m.teacher}</span> : null}
+        </div>
+      ))}
+      <div className="sec-actions">
+        {has
+          ? <button className="sbtn rm" onClick={() => onRemove(s.id)}>Remove from timetable</button>
+          : <button className="sbtn add" disabled={!s.meetings.length} onClick={() => onAdd(course, s)}>Add this class</button>}
+        {s.meetings.length ? <span className="mtg-tag" style={{ alignSelf: 'center' }}>⋮⋮ drag to place</span> : null}
+        {s.capacity ? <span className="mtg-tag" style={{ marginLeft: 'auto', alignSelf: 'center' }}>{s.enrolled}/{s.capacity}</span> : null}
+      </div>
+    </div>
+  );
+}
+function CourseDetail({ course, scheduledIds, conflictSections, onAdd, onRemove, onOpenDeps, onBack, onDragStartSec, filters, schedule }){
+  const sectionFilterOn = !!(filters && ((filters.days && filters.days.length) || filters.slot || (filters.instructor && String(filters.instructor).trim()) || filters.available || filters.noConflict));
+  const groups = groupSections(course.sections).map(g => {
+    const visible = sectionFilterOn ? g.sections.filter(s => sectionMatchesFilters(s, filters, schedule)) : g.sections;
+    return Object.assign({}, g, { visible: visible });
+  });
+  return (
+    <div className="detail">
+      <div className="detail-head">
+        <button className="detail-back" onClick={onBack}>← Back to results</button>
+        <div className="detail-title">
+          <span className="detail-code">{course.code}</span>
+          <span className="detail-credits">{careerLabel(course.career)} · {course.credits} credits</span>
+        </div>
+        <div className="detail-name">{course.name}</div>
+        {course.desc ? <div className="detail-desc">{course.desc}</div> : null}
+        <div className="detail-chips">
+          {course.prereq ? <span className="chip prereq" onClick={() => onOpenDeps(course.code)} title="Open dependency graph">Prerequisite: {truncate(course.prereq.replace(/\s+/g, ' '), 60)} →</span> : null}
+          {course.coreq ? <span className="chip coreq">Corequisite: {course.coreq}</span> : null}
+          {course.equiv ? <span className="chip equiv">Equivalent: {course.equiv}</span> : null}
+          {course.associateMsg ? <span className="chip">{course.associateMsg}</span> : null}
+        </div>
+      </div>
+      <div className="detail-body">
+        {!course.sections.length ? <div className="no-sections">No scheduled sections found for this term.</div> : null}
+        {groups.map(g => (
+          <div className="comp-group" key={g.component}>
+            <div className="comp-head">
+              <span className="comp-title">{g.name}</span>
+              <span className="comp-note">
+                {g.sections.length > 1
+                  ? (sectionFilterOn ? g.visible.length + '/' + g.sections.length + ' 平行班 · ' : g.sections.length + ' 平行班 · pick one  · ') + g.visible.map(x => x.label).join(' / ')
+                  : (g.visible[0] ? g.visible[0].label : (g.sections[0] ? g.sections[0].label : ''))}
+              </span>
+            </div>
+            {g.visible.map(sec => (
+              <SectionCard key={sec.id} course={course} s={sec} scheduledIds={scheduledIds}
+                conflictSections={conflictSections} onAdd={onAdd} onRemove={onRemove} onDragStartSec={onDragStartSec} />
+            ))}
+            {sectionFilterOn && !g.visible.length ? (
+              <div className="no-sections">No {g.name.toLowerCase()} matches the current filters.</div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ================= timetable ================= */
+function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry }){
+  const rows = [];
+  for (let h = START_HOUR; h <= END_HOUR; h++) rows.push(h);
+  const creditSum = React.useMemo(() => scheduleCreditSummary(schedule, coursesById), [schedule, coursesById]);
+  const conflictMap = React.useMemo(() => {
+    const m = new Map();
+    schedule.forEach((en, i) => m.set(en.section, findConflicts(en.meetings, schedule.filter((e, j) => j !== i))));
+    return m;
+  }, [schedule]);
+  let hint = 'Drag a section onto the grid — it stays at its official class time';
+  let hintBad = false;
+  if (drag){
+    if (hover){
+      if (hover.conflicts.some(c => c.type === 'duplicate')) { hint = 'Already in the timetable'; hintBad = true; }
+      else if (hover.conflicts.length){ hint = hover.conflicts.length + ' conflict(s) — releasing will still add it'; hintBad = true; }
+      else hint = 'Official time · no conflicts — release to add';
+    } else hint = 'Move over the grid to preview official meeting times…';
+  }
+  return (
+    <div className="cal-wrap">
+      <div className="cal-head">
+        <div className="cal-title">Timetable</div>
+        <div className="cal-credits" title={creditSum.rows.map(r => r.code + ' · ' + formatCredits(r.credits) + ' cr').join('\n') || 'No courses in timetable'}>
+          {formatCredits(creditSum.total)} cr
+          <small>{creditSum.courses} course{creditSum.courses === 1 ? '' : 's'}</small>
+        </div>
+        <div className={'cal-hint' + (hintBad ? ' bad' : '')}>{hint}</div>
+        <div className="cal-legend">
+          <span className="lg"><i style={{ background: 'rgba(36,86,230,.25)', border: '2px dashed #2456e6' }}></i>preview</span>
+          <span className="lg"><i style={{ background: '#fff', boxShadow: '0 0 0 1.5px #e02424' }}></i>conflict</span>
+        </div>
+      </div>
+      <div className="cal" ref={gridRef} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+        <div className="cal-corner"></div>
+        {DAY_LABELS.map((d, i) => <div key={d} className="cal-dayhead" style={{ gridRow: 1, gridColumn: i + 2 }}>{d}</div>)}
+        {rows.map(h => (
+          <React.Fragment key={h}>
+            <div className="cal-time" style={{ gridRow: h - START_HOUR + 2, gridColumn: 1 }}>{String(h).padStart(2, '0')}:00</div>
+            <div className="cal-line" style={{ gridRow: h - START_HOUR + 2, gridColumn: '2 / -1' }}></div>
+          </React.Fragment>
+        ))}
+        {DAY_LABELS.map((d, i) => (
+          <div key={'col' + d} className={'cal-col' + (drag && hover && hover.meetings && hover.meetings.some(m => m.day === i + 1) ? ' cal-col-hover' : '')} style={{ gridRow: '2 / -1', gridColumn: i + 2 }}></div>
+        ))}
+        {schedule.map(en => en.meetings.map(m => {
+          const col = courseColor(en.course);
+          const conf = conflictMap.get(en.section) || [];
+          return (
+            <div key={en.section + '-' + m.day + '-' + m.start}
+              className={'cal-block' + (conf.length ? ' cal-block-conf' : '')}
+              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, background: col.bg, borderLeftColor: col.border }}
+              title={(en.course + ' ' + en.label) + '\n' + DAY_NAMES[m.day] + ' ' + fmtRange(m) + (m.room ? '\n' + m.room : '') + (m.teacher ? '\n' + m.teacher : '') + (conf.length ? '\n⚠ conflicts: ' + conf.map(c => c.type + ' w/ ' + c.other).join('; ') : '')}>
+              <div className="cal-block-code" style={{ color: col.text }}>{en.course} <span className="cal-block-sec">{en.label}</span></div>
+              <div className="cal-block-room">{m.room || 'TBA'}</div>
+              {conf.length ? <div className="cal-block-warn">⚠</div> : null}
+              <button className="cal-block-x" onClick={(e) => { e.stopPropagation(); onRemoveEntry(en.section); }}>✕</button>
+            </div>
+          );
+        }))}
+        {drag && hover && hover.meetings ? hover.meetings.map((m, i) => {
+          const bad = hover.conflicts.length > 0;
+          return (
+            <div key={'prev' + i} className={'cal-preview' + (bad ? ' cal-preview-bad' : '')}
+              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8 }}>
+              {drag.label + (bad ? ' ⚠' + conflictCount(hover.conflicts) : '')}
+            </div>
+          );
+        }) : null}
+        {!schedule.length && !drag ? <div className="cal-empty">Drag course sections here to build your schedule</div> : null}
+      </div>
+    </div>
+  );
+}
+
+/* ================= auto scheduler tab ================= */
+function SchedulerTab({ coursesById, onApply, focusTick }){
+  const [text, setText] = React.useState('AIAA2205\nAIAA3102\nDSAA2042');
+  const [result, setResult] = React.useState(null);
+  const [busy, setBusy] = React.useState(false);
+  const inputRef = React.useRef(null);
+  React.useEffect(() => { if (focusTick && inputRef.current) inputRef.current.focus(); }, [focusTick]);
+  function generate(){
+    setBusy(true);
+    setResult(null);
+    setTimeout(() => {
+      const r = generateSchedules(text, coursesById);
+      setResult(r);
+      setBusy(false);
+    }, 30);
+  }
+  return (
+    <div>
+      <div className="sched-help">
+        Enter one course code per line. For each course the planner enumerates legal bundles
+        (one parallel class per component, honouring Lecture/Tutorial pairing), then backtracks
+        with conflict pruning. Up to {MAX_SOLUTIONS} conflict-free timetables are returned.
+      </div>
+      <textarea className="sched-input" ref={inputRef} value={text} onChange={(e) => setText(e.target.value)} spellCheck={false}></textarea>
+      <div className="sched-actions">
+        <button className="sched-btn" onClick={generate} disabled={busy}>{busy ? 'Generating…' : 'Generate Schedule'}</button>
+        <span className="sched-note">e.g. AIAA2205 · AIAA3102 · DSAA2042</span>
+      </div>
+      {result ? (
+        <div>
+          {result.warnings.length ? (
+            <div className="warn">{result.warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}</div>
+          ) : null}
+          {!result.solutions.length && !result.truncated ? (
+            <div className="warn bad">No conflict-free schedule found for these courses.</div>
+          ) : null}
+          {result.truncated ? <div className="warn">Search space exceeded — showing partial results.</div> : null}
+          {result.solutions.map((sol, i) => (
+            <div className="solution" key={i}>
+              <h4>
+                方案 {i + 1}
+                <button className="sbtn sol-apply" onClick={() => onApply(sol)}>Apply to timetable</button>
+              </h4>
+              {sol.map(en => (
+                <div className="sol-row" key={en.section}>
+                  <span className="sol-code">{en.course}</span>
+                  <span className="sol-sec">{en.label}</span>
+                  <span className="sol-time">{summaryOf(en.meetings)}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ================= dependency graph tab ================= */
+function DepsTab({ initialCode, courses, coursesById, catalogMap, names, onJump }){
+  const [input, setInput] = React.useState(initialCode || 'AIAA2205');
+  const [code, setCode] = React.useState(normCode(input || 'AIAA2205'));
+  const offered = new Set(courses.map(c => c.code));
+  const course = coursesById[code] || (catalogMap[code] ? { code: code, name: catalogMap[code].crseTitle || '', prereq: cleanField(catalogMap[code].crsePrerequisite), coreq: cleanField(catalogMap[code].crseCorequisite) } : null);
+  const parse = React.useMemo(() => course ? parsePrereq(course.prereq) : null, [course]);
+  function go(c){ setCode(normCode(c)); setInput(c); }
+  return (
+    <div>
+      <div className="deps-controls">
+        <input className="deps-input" list="deps-codes" value={input} spellCheck={false}
+          placeholder="Course code, e.g. DSAA3073"
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') go(input); }} />
+        <datalist id="deps-codes">
+          {courses.map(c => <option key={c.code} value={c.code} />)}
+        </datalist>
+        <button className="sbtn add" onClick={() => go(input)}>Load</button>
+      </div>
+      {!course ? (
+        <div className="warn bad">Unknown course code "{code}" — not found in courses.json or data.json.</div>
+      ) : (
+        <div>
+          <div className="deps-card">
+            <div className="dc-title">{course.code}{course.name ? ' — ' + course.name : ''}</div>
+            {offered.has(code) ? null : <div className="dc-sub">Catalog record only (not offered in the current term).</div>}
+            {parse && parse.raw ? <div className="deps-raw">{parse.raw}</div> : null}
+            {parse && parse.ok ? <div className="deps-summary">{astString(parse.node)}</div> : null}
+            {parse && parse.approximate ? <div className="deps-ignored">⚠ Parsed approximately — the original text does not follow a strict boolean structure.</div> : null}
+            {parse && parse.ignored.length ? <div className="deps-ignored">Non-course text ignored: {parse.ignored.join(' · ')}</div> : null}
+            {course.coreq ? <div className="deps-card" style={{ marginTop: 8 }}><div className="dc-title">Corequisite</div><div className="deps-raw">{course.coreq}</div></div> : null}
+          </div>
+          {!parse || !parse.ok ? (
+            <div className="dep-canvas"><div className="dep-note">
+              {course.prereq
+                ? 'This prerequisite is described in prose without parseable course codes.'
+                : 'No prerequisite listed. Try a course with a prerequisite, e.g. DSAA3073 or AIAA2205.'}
+            </div></div>
+          ) : (
+            <DepGraph key={'g' + code} courseCode={code} courseName={course.name} ast={parse.node} names={names} onJump={onJump} />
+          )}
+          <div className="deps-ignored" style={{ marginTop: 8 }}>Tip: click any course node to jump to its own dependency graph. Drag nodes / scroll to zoom.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ================= app shell ================= */
+function Toasts({ items }){
+  return (
+    <div className="toasts">
+      {items.map(t => <div className="toast" key={t.id}>{t.msg}</div>)}
+    </div>
+  );
+}
+function App(){
+  const [status, setStatus] = React.useState('loading');
+  const [courses, setCourses] = React.useState([]);
+  const [catalogMap, setCatalogMap] = React.useState({});
+  const [query, setQuery] = React.useState('');
+  const [filters, setFilters] = React.useState(EMPTY_FILTERS);
+  const [selected, setSelected] = React.useState(null);
+  const [schedule, setSchedule] = React.useState([]);
+  const [tab, setTab] = React.useState('sched');
+  const [deps, setDeps] = React.useState({ key: 0, code: '' });
+  const [drag, setDrag] = React.useState(null);
+  const [hover, setHover] = React.useState(null);
+  const [toasts, setToasts] = React.useState([]);
+  const [schedFocusTick, setSchedFocusTick] = React.useState(0);
+  const [leftOpen, setLeftOpen] = React.useState(true);
+  const [rightOpen, setRightOpen] = React.useState(true);
+  const gridRef = React.useRef(null);
+  const loadedRef = React.useRef(false);
+
+  const coursesById = React.useMemo(() => { const m = {}; courses.forEach(c => m[c.code] = c); return m; }, [courses]);
+  const names = React.useMemo(() => {
+    const m = {};
+    courses.forEach(c => m[c.code] = c.name);
+    Object.keys(catalogMap).forEach(k => { if (!m[k]) m[k] = catalogMap[k].crseTitle || ''; });
+    return m;
+  }, [courses, catalogMap]);
+  const selectedCourse = selected && coursesById[selected] ? coursesById[selected] : null;
+  const scheduledIds = React.useMemo(() => new Set(schedule.map(en => en.section)), [schedule]);
+  const conflictSections = React.useMemo(() => {
+    const s = new Set();
+    schedule.forEach((en, i) => { if (findConflicts(en.meetings, schedule.filter((e, j) => j !== i)).length) s.add(en.section); });
+    return s;
+  }, [schedule]);
+
+  function toast(msg){
+    const id = uid();
+    setToasts(t => t.concat([{ id: id, msg: msg }]));
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 2600);
+  }
+
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (window.location.protocol === 'file:'){ if (alive) setStatus('manual'); return; }
+      try{
+        const [cr, dt] = await Promise.all([
+          fetch('courses.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+          fetch('data.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        ]);
+        if (!alive) return;
+        const cm = buildCatalog(dt);
+        const cs = normalizeCourses(cr, cm);
+        if (!cs.length) throw new Error('no courses parsed');
+        setCatalogMap(cm);
+        setCourses(cs);
+        setStatus('ready');
+      }catch(err){
+        if (alive) setStatus('manual');
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  React.useEffect(() => {
+    if (status !== 'ready' || loadedRef.current) return;
+    loadedRef.current = true;
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const arr = Array.isArray(parsed.schedule) ? parsed.schedule : [];
+      const ids = new Set();
+      courses.forEach(c => c.sections.forEach(s => ids.add(s.id)));
+      const byId = {};
+      courses.forEach(c => c.sections.forEach(sec => { byId[sec.id] = { course: c, section: sec }; }));
+      const valid = arr.filter(en => en && en.section && ids.has(en.section)).map(en => {
+        const hit = byId[en.section];
+        if (hit) return makeEntry(hit.course.code, hit.section);
+        return { course: en.course, section: en.section, label: en.label || '', meetings: Array.isArray(en.meetings) ? en.meetings : [], component: en.component || '' };
+      });
+      setSchedule(valid);
+    }catch(e){ /* ignore corrupt saves */ }
+  }, [status, courses]);
+
+  React.useEffect(() => {
+    try{ localStorage.setItem(LS_KEY, JSON.stringify({ schedule: schedule })); }catch(e){ /* storage full/blocked */ }
+  }, [schedule]);
+
+  React.useEffect(() => {
+    const clear = () => { setDrag(null); setHover(null); };
+    window.addEventListener('dragend', clear);
+    return () => window.removeEventListener('dragend', clear);
+  }, []);
+
+  function addSection(course, section){
+    const extras = companionSections(course, section).map(x => x.label);
+    setSchedule(prev => upsertSectionChoice(prev, course, section));
+    toast('Added ' + course.code + ' ' + section.label + (extras.length ? ' + ' + extras.join(', ') : ''));
+  }
+  function removeSection(sectionId){
+    setSchedule(prev => prev.filter(en => en.section !== sectionId));
+  }
+  function startPoolDrag(e, course, section){
+    e.dataTransfer.setData('text/plain', section.id);
+    e.dataTransfer.effectAllowed = 'copy';
+    const extras = companionSections(course, section);
+    const meetings = section.meetings.concat(...extras.map(x => x.meetings));
+    const label = [section.label].concat(extras.map(x => x.label)).join('+');
+    setDrag({ course: course.code, section: section.id, label: label, meetings: meetings, raw: section });
+    setHover(null);
+  }
+  function handleDragOver(e){
+    if (!drag) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+    const el = gridRef.current;
+    if (!el || !pointerOverCalendar(e, el.getBoundingClientRect())){
+      setHover(null);
+      return;
+    }
+    const others = schedule.filter(en => en.course !== drag.course || (drag.raw && en.component !== drag.raw.component));
+    const conflicts = findConflicts(drag.meetings, others);
+    if (schedule.some(en => en.section === drag.section)) conflicts.push({ type: 'duplicate' });
+    setHover({ meetings: drag.meetings, conflicts: conflicts });
+  }
+  function handleDragLeave(e){
+    const to = e.relatedTarget;
+    if (!to || (gridRef.current && !gridRef.current.contains(to))) setHover(null);
+  }
+  function handleDrop(e){
+    e.preventDefault();
+    if (!drag || !hover) return;
+    const course = coursesById[drag.course];
+    if (course && drag.raw){
+      setSchedule(prev => upsertSectionChoice(prev, course, drag.raw));
+      toast('Added ' + drag.course + ' ' + drag.label);
+    }
+    setDrag(null);
+    setHover(null);
+  }
+  function applySolution(sol){
+    setSchedule(sol.map(en => ({ course: en.course, section: en.section, label: en.label, meetings: en.meetings })));
+    toast('Applied generated timetable');
+  }
+  function openDeps(code){
+    setDeps(d => ({ key: d.key + 1, code: code || '' }));
+    setTab('deps');
+    setRightOpen(true);
+  }
+  function jumpTo(code){
+    const c = normCode(code);
+    setDeps(d => ({ key: d.key + 1, code: c }));
+    setTab('deps');
+    setRightOpen(true);
+    if (coursesById[c]){ setQuery(c); setSelected(c); setLeftOpen(true); }
+  }
+  function clearSchedule(){
+    if (!schedule.length) return;
+    if (window.confirm('Remove all ' + schedule.length + ' section(s) from the timetable?')){
+      setSchedule([]);
+      toast('Schedule cleared');
+    }
+  }
+
+  if (status === 'loading') return <LoadScreen />;
+  if (status === 'manual') return <ManualLoad onData={(d) => { setCourses(d.courses); setCatalogMap(d.catalogMap); setStatus('ready'); }} />;
+
+  const results = applyFilters(searchCourses(courses, query), filters, schedule);
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="brand">HKUST SIS Course Planner<small>single-file React app · drag sections onto the timetable</small></div>
+        <div className="header-status">
+          <span className="status-pill ok">courses.json · {courses.length}</span>
+          <span className="status-pill ok">catalog · {Object.keys(catalogMap).length}</span>
+        </div>
+        <div className="spacer"></div>
+        <button className="hbtn primary" onClick={() => { setTab('sched'); setRightOpen(true); setSchedFocusTick(t => t + 1); }}>Generate Schedule</button>
+        <button className="hbtn" onClick={() => openDeps(selected || '')}>Dependencies</button>
+        <button className="hbtn danger" onClick={clearSchedule}>Clear timetable</button>
+      </header>
+      <main className={'app-main' + (leftOpen ? '' : ' left-collapsed') + (rightOpen ? '' : ' right-collapsed')}>
+        <aside className={'left' + (leftOpen ? '' : ' collapsed')}>
+          {leftOpen ? (
+          <React.Fragment>
+          <div className="pane-head">
+            <span className="pane-title">Search</span>
+            <div className="spacer"></div>
+            <button className="pane-toggle" title="Collapse search" onClick={() => setLeftOpen(false)}>‹</button>
+          </div>
+          <div className="search-box">
+            <input value={query} placeholder="Search code / name / description…  e.g. AI, AIAA2205, Introduction"
+              onChange={(e) => setQuery(e.target.value)} />
+            {query ? <button className="search-clear" onClick={() => setQuery('')}>✕</button> : null}
+          </div>
+          <FilterBar courses={courses} filters={filters} setFilters={setFilters} />
+          <div className="left-scroll">
+            {selectedCourse ? (
+              <CourseDetail course={selectedCourse} scheduledIds={scheduledIds} conflictSections={conflictSections}
+                onAdd={addSection} onRemove={removeSection} onOpenDeps={openDeps}
+                onBack={() => setSelected(null)} onDragStartSec={startPoolDrag}
+                filters={filters} schedule={schedule} />
+            ) : (
+              <div>
+                <div className="list-hint">{results.length} course{results.length === 1 ? '' : 's'}{(query || filtersActive(filters)) ? ' matched' : ''}{query ? ' · "' + query + '"' : ''} — click to inspect</div>
+                {results.map(c => <CourseCard key={c.code} c={c} onClick={() => setSelected(c.code)} />)}
+                {!results.length ? <div className="no-sections">No courses match the current search / filters.</div> : null}
+              </div>
+            )}
+          </div>
+          </React.Fragment>
+          ) : (
+            <button className="pane-rail" title="Expand search" onClick={() => setLeftOpen(true)}>Search</button>
+          )}
+        </aside>
+        <section className="center">
+          <Timetable schedule={schedule} coursesById={coursesById} drag={drag} hover={hover} gridRef={gridRef}
+            onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
+            onRemoveEntry={removeSection} />
+        </section>
+        <aside className={'right' + (rightOpen ? '' : ' collapsed')}>
+          {rightOpen ? (
+          <React.Fragment>
+          <div className="tabs">
+            <button className={'tab' + (tab === 'sched' ? ' active' : '')} onClick={() => setTab('sched')}>Auto Scheduler</button>
+            <button className={'tab' + (tab === 'deps' ? ' active' : '')} onClick={() => setTab('deps')}>Dependencies</button>
+            <div className="spacer"></div>
+            <button className="pane-toggle" title="Collapse planner" onClick={() => setRightOpen(false)}>›</button>
+          </div>
+          <div className="tab-body">
+            {tab === 'sched'
+              ? <SchedulerTab coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} />
+              : <DepsTab key={'deps' + deps.key} initialCode={deps.code} courses={courses} coursesById={coursesById}
+                  catalogMap={catalogMap} names={names} onJump={jumpTo} />}
+          </div>
+          </React.Fragment>
+          ) : (
+            <button className="pane-rail" title="Expand planner" onClick={() => setRightOpen(true)}>Planner</button>
+          )}
+        </aside>
+      </main>
+      <Toasts items={toasts} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
