@@ -16,8 +16,8 @@ html,body{height:100%;margin:0}
 body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
 button{font:inherit;cursor:pointer}
 input,textarea,select{font:inherit}
-.app{display:grid;grid-template-rows:56px 1fr;height:100vh;min-width:860px}
-.app-header{display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--card);border-bottom:1px solid var(--line);z-index:30;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.app{display:grid;grid-template-rows:auto 1fr;height:100vh;min-width:860px}
+.app-header{display:flex;align-items:center;gap:10px;padding:8px 18px;min-height:56px;flex-wrap:wrap;background:var(--card);border-bottom:1px solid var(--line);z-index:30;box-shadow:0 1px 2px rgba(16,24,40,.05)}
 .brand{font-size:16px;font-weight:800;letter-spacing:.2px;line-height:1.2}
 .brand small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.4px}
 .header-status{display:flex;gap:8px;margin-left:8px}
@@ -70,6 +70,7 @@ input,textarea,select{font:inherit}
 .left-scroll{flex:1;overflow-y:auto;padding:4px 12px 16px}
 .list-hint{font-size:11.5px;color:var(--muted);padding:6px 4px 8px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
 .course-card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:8px;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+.course-card[draggable=true]{cursor:grab}
 .course-card:hover{border-color:#c7d3e8;box-shadow:0 2px 6px rgba(16,24,40,.06)}
 .cc-top{display:flex;align-items:center;gap:8px}
 .cc-code{font-weight:800;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -142,7 +143,7 @@ input,textarea,select{font:inherit}
 .cal-legend{margin-left:auto;display:flex;gap:10px;font-size:11px;color:var(--muted)}
 .lg{display:inline-flex;align-items:center;gap:5px}
 .lg i{width:12px;height:12px;border-radius:3px;display:inline-block}
-.cal{flex:1;min-height:0;display:grid;grid-template-columns:70px repeat(5,1fr);grid-template-rows:40px repeat(13,56px);overflow:auto;position:relative;background:#fff}
+.cal{flex:1;min-height:0;display:grid;grid-template-columns:70px repeat(5,1fr);grid-template-rows:40px repeat(14,56px);overflow:auto;position:relative;background:#fff}
 .cal-corner{grid-column:1;grid-row:1;border-bottom:1px solid var(--line);border-right:1px solid var(--line);background:#f6f8fb}
 .cal-dayhead{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#46536e;background:#f6f8fb;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
 .cal-time{grid-column:1;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 8px 0 0;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;border-right:1px solid var(--line)}
@@ -150,7 +151,20 @@ input,textarea,select{font:inherit}
 .cal-col{z-index:0;pointer-events:none}
 .cal-col-hover{background:rgba(36,86,230,.07)}
 .cal-block{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border-left:4px solid;padding:3px 7px;font-size:11px;z-index:2;box-shadow:0 1px 2px rgba(16,24,40,.1);overflow:hidden;cursor:default}
-.cal-block:hover{box-shadow:0 3px 8px rgba(16,24,40,.16)}
+.cal-block:hover{box-shadow:0 3px 8px rgba(16,24,40,.16);z-index:4}
+.cal-block.movable{cursor:grab}
+.cal-block.movable:active{cursor:grabbing}
+.cal-block.dim{opacity:.28}
+.xdrag{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:#46536e;user-select:none;white-space:nowrap}
+.xdrag input{accent-color:var(--accent)}
+.cal-ghost{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border:2px dashed;z-index:3;pointer-events:none;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 4px;overflow:hidden}
+.cal-ghost.on{border-width:2.5px;box-shadow:0 0 0 1px currentColor;font-size:11px}
+.cal-pop{position:fixed;z-index:90;min-width:240px;max-width:300px;background:#182036;color:#fff;border-radius:12px;padding:11px 12px;box-shadow:0 12px 30px rgba(16,24,40,.3);font-size:12px;line-height:1.45;pointer-events:none}
+.cal-pop .cp-code{font-weight:800;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.cal-pop .cp-name{color:#c9d4ea;margin:2px 0 7px}
+.cal-pop .cp-row{display:flex;gap:8px;margin-top:2px;color:#dbe3f2}
+.cal-pop .cp-k{color:#93a0bb;min-width:64px;flex:0 0 auto}
+.cal-pop .cp-bad{color:#fecaca;margin-top:6px}
 .cal-block-code{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:14px}
 .cal-block-sec{font-weight:600;opacity:.85}
 .cal-block-room{font-size:10px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -168,8 +182,14 @@ input,textarea,select{font:inherit}
 .tab.active{background:var(--accent2);color:var(--accent)}
 .tab-body{flex:1;overflow-y:auto;padding:14px;min-height:0}
 .sched-help{font-size:12px;color:var(--muted);margin-bottom:8px}
-.mode-switch{display:flex;align-items:center;gap:8px;margin:0 0 10px}
+.mode-switch{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}
 .mode-switch .mode-label{font-size:11.5px;font-weight:700;color:#5a6580}
+.sol-metrics{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 8px}
+.metric{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#46536e;background:#eef2f7;border-radius:999px;padding:2px 8px}
+.metric.good{background:#e7f8f0;color:#0c7a4d}
+.metric.bad{background:#fdeaea;color:#b91c1c}
+.sol-days{font-size:11px;color:var(--muted);margin-bottom:6px}
+.save-group{display:flex;gap:6px;align-items:center}
 .switch{position:relative;display:inline-flex;background:#eef2f7;border:1px solid var(--line);border-radius:999px;padding:2px}
 .switch button{border:0;background:transparent;border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:700;color:#5a6580}
 .switch button.on{background:#fff;color:#1d4ed8;box-shadow:0 1px 2px rgba(16,24,40,.12)}
@@ -267,6 +287,52 @@ const DAY_NAMES = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const LS_KEY = 'hkust-course-planner-v1';
 const MAX_SOLUTIONS = 6;
+const COURSE_ONLY_COLLECT = 120;
+const TRANSFER_GAP = 10 / 60;
+
+function defaultPlanner(){
+  return { mode: 'time', rank: 'even', items: [{ id: uid(), code: '', times: [] }] };
+}
+function sanitizePlanner(raw){
+  const p = raw || {};
+  const items = (Array.isArray(p.items) ? p.items : []).map(it => ({
+    id: uid(),
+    code: normCode((it && it.code) || ''),
+    times: ((it && it.times) || []).filter(t => t && t.day >= 1 && t.day <= 5 && isFinite(Number(t.time)))
+      .map(t => ({ day: Number(t.day), time: Number(t.time), labels: t.labels || null }))
+  }));
+  if (!items.length) items.push({ id: uid(), code: '', times: [] });
+  return {
+    mode: (p.mode === 'course' || p.mode === 'only') ? p.mode : 'time',
+    rank: p.rank === 'distance' ? 'distance' : 'even',
+    items: items
+  };
+}
+function loadPlannerState(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    return sanitizePlanner(parsed.planner);
+  }catch(e){
+    return defaultPlanner();
+  }
+}
+function plannerForSave(planner){
+  return {
+    mode: planner.mode,
+    rank: planner.rank,
+    items: (planner.items || []).map(it => ({ code: it.code || '', times: it.times || [] }))
+  };
+}
+function hydrateSchedule(arr, courseList){
+  const ids = new Set();
+  const byId = {};
+  (courseList || []).forEach(c => c.sections.forEach(sec => { ids.add(sec.id); byId[sec.id] = { course: c, section: sec }; }));
+  return (Array.isArray(arr) ? arr : []).filter(en => en && en.section && ids.has(en.section)).map(en => {
+    const hit = byId[en.section];
+    if (hit) return makeEntry(hit.course.code, hit.section);
+    return { course: en.course, section: en.section, label: en.label || '', meetings: Array.isArray(en.meetings) ? en.meetings : [], component: en.component || '' };
+  });
+}
 const CODE_RE = /[A-Za-z]{2,5}\s?\d{3,4}[A-Za-z]?/g;
 
 /* ================= small helpers ================= */
@@ -289,6 +355,16 @@ function hashHue(s){ let h = 0; for (let i = 0; i < s.length; i++){ h = (h * 31 
 function courseColor(code){
   const h = hashHue(code);
   return { bg: 'hsla(' + h + ',72%,92%,.92)', border: 'hsl(' + h + ',55%,45%)', text: 'hsl(' + h + ',48%,22%)' };
+}
+function sectionTint(index){
+  const h = Math.round((Number(index) * 137.508) % 360);
+  return {
+    h: h,
+    bg: 'hsla(' + h + ',78%,52%,.20)',
+    bgOn: 'hsla(' + h + ',82%,48%,.38)',
+    border: 'hsl(' + h + ',72%,40%)',
+    text: 'hsl(' + h + ',72%,26%)'
+  };
 }
 function truncate(s, n){ s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 function summaryOf(meetings){
@@ -672,11 +748,19 @@ function conflictCount(conflicts){
 }
 
 /* ================= drag targeting (times stay official) ================= */
-function pointerOverCalendar(e, rect){
-  if (!rect || rect.width <= 0) return false;
-  const x = e.clientX - rect.left - TIME_COL;
-  const y = e.clientY - rect.top - HEADER_H;
-  return x >= 0 && y >= 0 && e.clientX <= rect.right && e.clientY <= rect.bottom;
+function pointerOverCalendar(e, el){
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  return e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+}
+function calendarMetrics(el){
+  if (!el) return null;
+  const days = Array.prototype.map.call(el.querySelectorAll('.cal-dayhead'), node => node.getBoundingClientRect());
+  const firstHour = el.querySelector('.cal-time');
+  if (!days.length || !firstHour) return null;
+  const hourBox = firstHour.getBoundingClientRect();
+  const rowH = hourBox.height || HOUR_H;
+  return { days: days, rowH: rowH, originTop: hourBox.top };
 }
 
 /* ================= auto scheduler (backtracking + pruning) ================= */
@@ -716,12 +800,138 @@ function normalizeSchedRequests(input){
   }
   return codes;
 }
-function generateSchedules(input, coursesById){
+function buildingOf(room){
+  const s = String(room || '').trim();
+  if (!s || /^no room required$/i.test(s) || /^tba$/i.test(s) || /online/i.test(s)) return '';
+  let m = s.match(/,\s*([EWSN]\d)\b/i);
+  if (m) return m[1].toUpperCase();
+  m = s.match(/\(([EWSN]\d)\s*[-–]/i);
+  if (m) return m[1].toUpperCase();
+  m = s.match(/\b([EWSN]\d)\b/i);
+  if (m) return m[1].toUpperCase();
+  m = s.match(/lecture hall\s*([A-Z])/i);
+  if (m) return 'LH-' + m[1].toUpperCase();
+  return s;
+}
+function scoreTimetable(entries){
+  const hours = [0, 0, 0, 0, 0];
+  const byDay = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+  for (const en of (entries || [])){
+    for (const mt of (en.meetings || [])){
+      if (mt.day < 1 || mt.day > 5) continue;
+      hours[mt.day - 1] += Math.max(0, mt.end - mt.start);
+      byDay[mt.day].push({ start: mt.start, end: mt.end, building: buildingOf(mt.room), course: en.course, label: en.label });
+    }
+  }
+  const mean = hours.reduce((a, b) => a + b, 0) / 5;
+  const variance = hours.reduce((s, h) => s + (h - mean) * (h - mean), 0) / 5;
+  let pairs = 0, same = 0, far = 0, unknown = 0;
+  const farPairs = [];
+  for (const day of [1, 2, 3, 4, 5]){
+    const arr = byDay[day].slice().sort((a, b) => a.start - b.start || a.end - b.end);
+    for (let i = 0; i < arr.length; i++){
+      for (let j = i + 1; j < arr.length; j++){
+        const a = arr[i], b = arr[j];
+        const gap = b.start - a.end;
+        if (gap < -1e-9) continue;
+        if (gap > TRANSFER_GAP + 1e-9) break;
+        pairs++;
+        if (!a.building || !b.building){ unknown++; continue; }
+        if (a.building === b.building) same++;
+        else {
+          far++;
+          farPairs.push(a.course + ' ' + a.label + ' → ' + b.course + ' ' + b.label);
+        }
+      }
+    }
+  }
+  return {
+    entries: entries,
+    even: { hours: hours, variance: variance, std: Math.sqrt(variance) },
+    dist: { pairs: pairs, same: same, far: far, unknown: unknown, farPairs: farPairs }
+  };
+}
+function sortScored(list, rankBy){
+  list.sort((a, b) => {
+    if (rankBy === 'distance'){
+      if (a.dist.far !== b.dist.far) return a.dist.far - b.dist.far;
+      if (a.even.variance !== b.even.variance) return a.even.variance - b.even.variance;
+    } else {
+      if (a.even.variance !== b.even.variance) return a.even.variance - b.even.variance;
+      if (a.dist.far !== b.dist.far) return a.dist.far - b.dist.far;
+    }
+    if (a.dist.same !== b.dist.same) return b.dist.same - a.dist.same;
+    return a.even.std - b.even.std;
+  });
+  return list;
+}
+function cloneEntry(e){
+  return { course: e.course, section: e.section, label: e.label, meetings: (e.meetings || []).map(m => Object.assign({}, m)), component: e.component };
+}
+function pointerCell(e, el){
+  const metrics = calendarMetrics(el);
+  if (!metrics) return null;
+  let day = 0;
+  for (let i = 0; i < metrics.days.length; i++){
+    const box = metrics.days[i];
+    if (e.clientX >= box.left && e.clientX < box.right){ day = i + 1; break; }
+  }
+  if (!day) return null;
+  const time = START_HOUR + (e.clientY - metrics.originTop) / metrics.rowH;
+  if (time < START_HOUR || time > END_HOUR + 1) return null;
+  return { day: day, time: time };
+}
+function meetingContains(m, day, time){
+  return m.day === day && m.start <= time && time < m.end;
+}
+function courseDragTargets(course, schedule){
+  const others = (schedule || []).filter(en => en.course !== course.code);
+  return courseBundles(course).map((bundle, i) => {
+    const meetings = [];
+    bundle.forEach(entry => (entry.meetings || []).forEach(m => meetings.push(Object.assign({ label: entry.label, component: entry.component }, m))));
+    const conflicts = [];
+    bundle.forEach(entry => findConflicts(entry.meetings, others).forEach(c => conflicts.push(c)));
+    return {
+      bundle: bundle,
+      primary: bundle[0],
+      label: bundle.map(e => e.label).join('+'),
+      meetings: meetings,
+      conflicts: conflicts,
+      tint: sectionTint(i)
+    };
+  });
+}
+function pickTarget(targets, e, el){
+  const cell = pointerCell(e, el);
+  if (!cell) return null;
+  const hits = (targets || []).filter(t => t.meetings.some(m => meetingContains(m, cell.day, cell.time)));
+  if (!hits.length) return null;
+  hits.sort((a, b) => {
+    const af = a.conflicts.length ? 1 : 0, bf = b.conflicts.length ? 1 : 0;
+    if (af !== bf) return af - bf;
+    return a.meetings.length - b.meetings.length;
+  });
+  return hits[0];
+}
+function generateSchedules(input, coursesById, opts){
+  opts = opts || {};
+  const collectLimit = Math.max(1, opts.collectLimit || MAX_SOLUTIONS);
+  const showLimit = Math.max(1, opts.showLimit || MAX_SOLUTIONS);
+  const rankBy = opts.rankBy === 'distance' ? 'distance' : 'even';
+  const locked = (opts.locked || []).map(cloneEntry);
+  const lockedCodes = {};
+  locked.forEach(e => { if (e.course) lockedCodes[e.course] = true; });
   const requests = normalizeSchedRequests(input);
   const warnings = [];
   const pool = [];
+  let kept = 0;
   for (const req of requests){
     const code = req.code;
+    if (lockedCodes[code]){
+      kept++;
+      warnings.push(code + ': already on the timetable — kept as-is');
+      continue;
+    }
     const c = coursesById[code];
     if (!c){ warnings.push(code + ': not offered this term (no class sections)'); continue; }
     let bundles = courseBundles(c);
@@ -730,30 +940,35 @@ function generateSchedules(input, coursesById){
       bundles = bundles.filter(b => bundleCoversTimes(b, req.times));
       const label = req.times.map(t => DAY_NAMES[t.day] + ' ' + fmtDec(t.time)).join(' + ');
       if (!bundles.length){
-        warnings.push(code + ': no parallel class covers ' + label + ' (' + before + ' bundle(s) before time filter)');
+        warnings.push(code + ': no section covers ' + label + ' (' + before + ' bundle(s) before time filter)');
         continue;
       }
-      warnings.push(code + ': time filter ' + label + ' → ' + bundles.length + '/' + before + ' parallel bundle(s)');
-    } else {
-      const nPar = parallelClassCount(c);
-      if (nPar > 1) warnings.push(code + ': ' + bundles.length + ' parallel bundle(s)');
+      warnings.push(code + ': time filter ' + label + ' → ' + bundles.length + '/' + before + ' section bundle(s)');
     }
-    if (!bundles.length){ warnings.push(code + ': no valid section combination (check parallel classes / components)'); continue; }
+    bundles = bundles.filter(bundle => !bundle.some(entry => findConflicts(entry.meetings, locked).length));
+    if (!bundles.length){
+      warnings.push(code + ': every section bundle conflicts with the current timetable');
+      continue;
+    }
+    const nPar = parallelClassCount(c);
+    if (nPar > 1) warnings.push(code + ': ' + bundles.length + ' feasible section bundle(s)');
     pool.push({ code: code, name: c.name, bundles: bundles });
   }
-  if (!pool.length) return { solutions: [], warnings: warnings, truncated: false };
+  if (!pool.length) return { solutions: [], warnings: warnings, truncated: false, rankBy: rankBy, kept: kept };
   pool.sort((a, b) => a.bundles.length - b.bundles.length);
-  const solutions = [], chosen = [];
+  const solutions = [];
+  const chosen = locked.slice();
+  const baseLen = locked.length;
   let nodes = 0;
   const MAX_NODES = 400000;
   let truncated = false;
-  function cloneChosen(){
-    return chosen.map(e => ({ course: e.course, section: e.section, label: e.label, meetings: e.meetings.map(m => Object.assign({}, m)), component: e.component }));
-  }
   function bt(i){
     nodes++;
     if (nodes > MAX_NODES){ truncated = true; return; }
-    if (i === pool.length){ solutions.push(cloneChosen()); return; }
+    if (i === pool.length){
+      solutions.push({ added: chosen.slice(baseLen).map(cloneEntry), full: chosen.map(cloneEntry) });
+      return;
+    }
     for (const bundle of pool[i].bundles){
       let ok = true;
       for (const entry of bundle){
@@ -764,11 +979,17 @@ function generateSchedules(input, coursesById){
       for (const entry of bundle) chosen.push(entry);
       bt(i + 1);
       chosen.length -= n;
-      if (solutions.length >= MAX_SOLUTIONS || truncated) return;
+      if (solutions.length >= collectLimit || truncated) return;
     }
   }
   bt(0);
-  return { solutions: solutions, warnings: warnings, truncated: truncated };
+  const scored = sortScored(solutions.map(s => {
+    const sc = scoreTimetable(s.full);
+    sc.entries = s.added;
+    sc.full = s.full;
+    return sc;
+  }), rankBy);
+  return { solutions: scored.slice(0, showLimit), warnings: warnings, truncated: truncated, rankBy: rankBy, found: solutions.length, kept: kept };
 }
 
 /* ================= graph layout for dependency AST ================= */
@@ -1143,7 +1364,7 @@ function FilterBar({ courses, filters, setFilters }){
         ))}
         <button className={'fchip' + (filters.noConflict ? ' on' : '')} onClick={() => toggleFlag('noConflict')}>Fits timetable</button>
         <button className={'fchip' + (filters.available ? ' on' : '')} onClick={() => toggleFlag('available')}>Has seats</button>
-        <button className={'fchip' + (filters.hasParallel ? ' on' : '')} onClick={() => toggleFlag('hasParallel')}>平行班</button>
+        <button className={'fchip' + (filters.hasParallel ? ' on' : '')} onClick={() => toggleFlag('hasParallel')}>Sections</button>
         <button className={'fchip' + (filters.hasTut ? ' on' : '')} onClick={() => toggleFlag('hasTut')}>Tutorial</button>
         <button className={'fchip' + (filters.hasLab ? ' on' : '')} onClick={() => toggleFlag('hasLab')}>Lab</button>
         <button className={'fchip' + (filters.hasPrereq ? ' on' : '')} onClick={() => toggleFlag('hasPrereq')}>Has prereq</button>
@@ -1155,10 +1376,13 @@ function FilterBar({ courses, filters, setFilters }){
     </div>
   );
 }
-function CourseCard({ c, onClick }){
+function CourseCard({ c, onClick, crossDrag, onDragCourse }){
   const nPar = parallelClassCount(c);
+  const canDrag = !!(crossDrag && onDragCourse && (c.sections || []).some(sec => sec.meetings && sec.meetings.length));
   return (
-    <div className="course-card" onClick={onClick}>
+    <div className="course-card" onClick={onClick}
+      draggable={canDrag}
+      onDragStart={(e) => { if (canDrag){ e.stopPropagation(); onDragCourse(e, c); } }}>
       <div className="cc-top">
         <span className="cc-code">{c.code}</span>
         <span className="cc-career">{careerLabel(c.career)}</span>
@@ -1167,7 +1391,7 @@ function CourseCard({ c, onClick }){
       <div className="cc-name">{c.name}</div>
       <div className="cc-secs">
         {sectionSummary(c) || 'No sections'}
-        {nPar > 1 ? <span className="cc-par">{nPar} 平行班</span> : null}
+        {nPar > 1 ? <span className="cc-par">{nPar} sections</span> : null}
       </div>
       <div className="cc-meta">{c.sections.length} section{c.sections.length === 1 ? '' : 's'}{c.isMulti ? ' · multi-component' : ''}{c.prereq ? ' · has prerequisite' : ''}</div>
     </div>
@@ -1276,7 +1500,7 @@ function CourseDetail({ course, scheduledIds, conflictSections, onAdd, onRemove,
               <span className="comp-title">{g.name}</span>
               <span className="comp-note">
                 {g.sections.length > 1
-                  ? (sectionFilterOn ? g.visible.length + '/' + g.sections.length + ' 平行班 · ' : g.sections.length + ' 平行班 · pick one  · ') + g.visible.map(x => x.label).join(' / ')
+                  ? (sectionFilterOn ? g.visible.length + '/' + g.sections.length + ' sections · ' : g.sections.length + ' sections · pick one · ') + g.visible.map(x => x.label).join(' / ')
                   : (g.visible[0] ? g.visible[0].label : (g.sections[0] ? g.sections[0].label : ''))}
               </span>
             </div>
@@ -1295,24 +1519,57 @@ function CourseDetail({ course, scheduledIds, conflictSections, onAdd, onRemove,
 }
 
 /* ================= timetable ================= */
-function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry }){
+function CalBlockTip({ tip }){
+  if (!tip) return null;
+  const en = tip.en, m = tip.m, course = tip.course, conf = tip.conf || [];
+  const teachers = (m.instructors && m.instructors.length)
+    ? m.instructors.map(i => i.name).filter(Boolean).join('; ')
+    : (m.teacher || '');
+  return (
+    <div className="cal-pop" style={{ left: tip.left, top: tip.top }}>
+      <div className="cp-code">{en.course} {en.label}</div>
+      <div className="cp-name">{course && course.name ? course.name : (en.component || 'Section')}</div>
+      {course ? <div className="cp-row"><span className="cp-k">Credits</span><span>{course.credits}</span></div> : null}
+      <div className="cp-row"><span className="cp-k">When</span><span>{DAY_NAMES[m.day]} {fmtRange(m)}</span></div>
+      <div className="cp-row"><span className="cp-k">Room</span><span>{m.room || 'TBA'}</span></div>
+      {teachers ? <div className="cp-row"><span className="cp-k">Instructor</span><span>{teachers}</span></div> : null}
+      {conf.length ? <div className="cp-bad">Conflicts: {conf.map(c => c.type + ' with ' + c.other).join('; ')}</div> : null}
+    </div>
+  );
+}
+function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry, crossDrag, onToggleCrossDrag, onDragBlock }){
   const rows = [];
   for (let h = START_HOUR; h <= END_HOUR; h++) rows.push(h);
+  const [tip, setTip] = React.useState(null);
   const creditSum = React.useMemo(() => scheduleCreditSummary(schedule, coursesById), [schedule, coursesById]);
   const conflictMap = React.useMemo(() => {
     const m = new Map();
     schedule.forEach((en, i) => m.set(en.section, findConflicts(en.meetings, schedule.filter((e, j) => j !== i))));
     return m;
   }, [schedule]);
-  let hint = 'Drag a section onto the grid — it stays at its official class time';
+  let hint = crossDrag
+    ? 'Cross-section drag on — drop onto any official section time of the course'
+    : 'Drag a section onto the grid — it stays at its official class time';
   let hintBad = false;
   if (drag){
-    if (hover){
-      if (hover.conflicts.some(c => c.type === 'duplicate')) { hint = 'Already in the timetable'; hintBad = true; }
-      else if (hover.conflicts.length){ hint = hover.conflicts.length + ' conflict(s) — releasing will still add it'; hintBad = true; }
+    if (hover && hover.active){
+      if (hover.conflicts && hover.conflicts.length){ hint = hover.active.label + ' · ' + hover.conflicts.length + ' conflict(s) — release still switches to this section'; hintBad = true; }
+      else hint = hover.active.label + ' · no conflicts — release to use this section';
+    } else if (hover && hover.meetings){
+      if (hover.conflicts && hover.conflicts.some(c => c.type === 'duplicate')) { hint = 'Already in the timetable'; hintBad = true; }
+      else if (hover.conflicts && hover.conflicts.length){ hint = hover.conflicts.length + ' conflict(s) — releasing will still add it'; hintBad = true; }
       else hint = 'Official time · no conflicts — release to add';
-    } else hint = 'Move over the grid to preview official meeting times…';
+    } else hint = drag.mode === 'cross' ? 'Hover an outlined section time to switch' : 'Move over the grid to preview official meeting times…';
   }
+  function showTip(e, en, m, conf){
+    if (drag) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const width = 280;
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
+    const top = (r.bottom + 8 + 170 > window.innerHeight) ? Math.max(8, r.top - 178) : r.bottom + 8;
+    setTip({ left: left, top: top, en: en, m: m, course: coursesById[en.course], conf: conf });
+  }
+  const ghosts = drag && drag.mode === 'cross' ? (drag.targets || []) : [];
   return (
     <div className="cal-wrap">
       <div className="cal-head">
@@ -1321,10 +1578,14 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
           {formatCredits(creditSum.total)} cr
           <small>{creditSum.courses} course{creditSum.courses === 1 ? '' : 's'}</small>
         </div>
+        <label className="xdrag" title="Drag a course from search or the grid onto any of its official section times">
+          <input type="checkbox" checked={!!crossDrag} onChange={(e) => onToggleCrossDrag(e.target.checked)} />
+          Enable cross-section dragging
+        </label>
         <div className={'cal-hint' + (hintBad ? ' bad' : '')}>{hint}</div>
         <div className="cal-legend">
-          <span className="lg"><i style={{ background: 'rgba(36,86,230,.25)', border: '2px dashed #2456e6' }}></i>preview</span>
-          <span className="lg"><i style={{ background: '#fff', boxShadow: '0 0 0 1.5px #e02424' }}></i>conflict</span>
+          <span className="lg"><i style={{ background: 'hsla(210,78%,52%,.25)', border: '2px dashed hsl(210,72%,40%)' }}></i>section colors</span>
+          <span className="lg"><i style={{ background: 'repeating-linear-gradient(135deg, hsla(210,78%,52%,.2) 0 6px, hsla(0,82%,52%,.2) 6px 12px)', border: '2px dashed #e02424' }}></i>conflict</span>
         </div>
       </div>
       <div className="cal" ref={gridRef} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
@@ -1342,11 +1603,15 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
         {schedule.map(en => en.meetings.map(m => {
           const col = courseColor(en.course);
           const conf = conflictMap.get(en.section) || [];
+          const dim = !!(drag && drag.course === en.course);
           return (
             <div key={en.section + '-' + m.day + '-' + m.start}
-              className={'cal-block' + (conf.length ? ' cal-block-conf' : '')}
-              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, background: col.bg, borderLeftColor: col.border }}
-              title={(en.course + ' ' + en.label) + '\n' + DAY_NAMES[m.day] + ' ' + fmtRange(m) + (m.room ? '\n' + m.room : '') + (m.teacher ? '\n' + m.teacher : '') + (conf.length ? '\n⚠ conflicts: ' + conf.map(c => c.type + ' w/ ' + c.other).join('; ') : '')}>
+              className={'cal-block' + (conf.length ? ' cal-block-conf' : '') + (crossDrag ? ' movable' : '') + (dim ? ' dim' : '')}
+              draggable={!!crossDrag}
+              onDragStart={(e) => { setTip(null); if (onDragBlock) onDragBlock(e, en); }}
+              onMouseEnter={(e) => showTip(e, en, m, conf)}
+              onMouseLeave={() => setTip(null)}
+              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, background: col.bg, borderLeftColor: col.border }}>
               <div className="cal-block-code" style={{ color: col.text }}>{en.course} <span className="cal-block-sec">{en.label}</span></div>
               <div className="cal-block-room">{m.room || 'TBA'}</div>
               {conf.length ? <div className="cal-block-warn">⚠</div> : null}
@@ -1354,7 +1619,22 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
             </div>
           );
         }))}
-        {drag && hover && hover.meetings ? hover.meetings.map((m, i) => {
+        {ghosts.map((t, ti) => t.meetings.map((m, mi) => {
+          const active = !!(hover && hover.active && hover.active.label === t.label);
+          const bad = t.conflicts.length > 0;
+          const tint = t.tint || sectionTint(ti);
+          const fill = bad
+            ? 'repeating-linear-gradient(135deg, ' + tint.bg + ' 0 7px, hsla(0,82%,52%,.20) 7px 14px)'
+            : (active ? tint.bgOn : tint.bg);
+          return (
+            <div key={'g' + ti + '-' + mi}
+              className={'cal-ghost' + (active ? ' on' : '')}
+              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, background: fill, borderColor: bad ? '#e02424' : tint.border, color: tint.text }}>
+              {t.label}{bad ? ' ⚠' : ''}
+            </div>
+          );
+        }))}
+        {drag && drag.mode !== 'cross' && hover && hover.meetings ? hover.meetings.map((m, i) => {
           const bad = hover.conflicts.length > 0;
           return (
             <div key={'prev' + i} className={'cal-preview' + (bad ? ' cal-preview-bad' : '')}
@@ -1365,6 +1645,7 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
         }) : null}
         {!schedule.length && !drag ? <div className="cal-empty">Drag course sections here to build your schedule</div> : null}
       </div>
+      {!drag ? <CalBlockTip tip={tip} /> : null}
     </div>
   );
 }
@@ -1426,7 +1707,7 @@ function CourseCombo({ value, courses, used, onChange, inputRef }){
               onMouseDown={(e) => { e.preventDefault(); onChange(c.code); setOpen(false); setQ(''); }}>
               <b>{c.code}</b>
               <span>{c.name}</span>
-              {parallelClassCount(c) > 1 ? <em>{parallelClassCount(c)} 平行班</em> : null}
+              {parallelClassCount(c) > 1 ? <em>{parallelClassCount(c)} sections</em> : null}
             </button>
           ))}
           {!list.length ? <div className="combo-empty">No matching courses</div> : null}
@@ -1471,6 +1752,11 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
         <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [] }))} inputRef={inputRef} />
         <button className="sbtn rm" onClick={onRemove}>Remove</button>
       </div>
+      {mode === 'only' ? (
+        <div className="sched-row-times">
+          {course && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} sections · all searched</span> : null}
+        </div>
+      ) : (
       <div className="sched-row-times">
         {mode === 'course' ? (
           <div className="sched-time-add">
@@ -1499,31 +1785,57 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
           </span>
         ))}
         {remain ? <span className="sched-note">{remain} bundles cover the selected time(s)</span> : null}
-        {course && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} 平行班</span> : null}
+        {course && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} sections</span> : null}
       </div>
+      )}
     </div>
   );
 }
-function SchedulerTab({ courses, coursesById, onApply, focusTick }){
-  const [mode, setMode] = React.useState('time');
-  const [items, setItems] = React.useState([
-    { id: uid(), code: '', times: [] }
-  ]);
+function fmtHours(n){
+  const x = Math.round(Number(n) * 10) / 10;
+  return (x % 1 === 0 ? String(x.toFixed(0)) : String(x)) + 'h';
+}
+function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPlannerChange, lockedSchedule }){
+  const mode = planner.mode;
+  const items = planner.items;
+  const rank = planner.rank || 'even';
   const [result, setResult] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
   const firstRef = React.useRef(null);
   React.useEffect(() => { if (focusTick && firstRef.current) firstRef.current.focus(); }, [focusTick]);
   const used = {};
   items.forEach(it => { if (it.code) used[it.code] = true; });
+  function setMode(next){ onPlannerChange(Object.assign({}, planner, { mode: next })); }
+  function setRank(next){
+    onPlannerChange(Object.assign({}, planner, { rank: next }));
+    setResult(prev => prev ? Object.assign({}, prev, { solutions: sortScored(prev.solutions.slice(), next), rankBy: next }) : prev);
+  }
+  function setItems(updater){
+    onPlannerChange(prev => {
+      const cur = prev.items;
+      const next = typeof updater === 'function' ? updater(cur) : updater;
+      return Object.assign({}, prev, { items: next });
+    });
+  }
   function generate(){
     setBusy(true);
     setResult(null);
     setTimeout(() => {
-      const r = generateSchedules(items.filter(it => it.code), coursesById);
+      const reqs = items.filter(it => it.code).map(it => ({ code: it.code, times: mode === 'only' ? [] : (it.times || []) }));
+      const opts = mode === 'only'
+        ? { collectLimit: COURSE_ONLY_COLLECT, showLimit: 8, rankBy: rank }
+        : { collectLimit: MAX_SOLUTIONS, showLimit: MAX_SOLUTIONS, rankBy: rank };
+      const r = generateSchedules(reqs, coursesById, Object.assign({ locked: lockedSchedule || [] }, opts));
       setResult(r);
       setBusy(false);
     }, 30);
   }
+  const hint = mode === 'only'
+    ? 'Only pick courses. All sections are searched, then ranked.'
+    : (mode === 'course' ? 'Pick a time from this course’s own class times' : 'Pick any clock time, keep sections that cover it');
+  const help = mode === 'only'
+    ? 'Course Only ignores time pins. New sections are added onto the current timetable, avoiding existing conflicts, then ranked by daily-hour evenness and 10-minute same-building transfers. Lecture/Tutorial same-index pairing is honoured.'
+    : 'Add courses from the searchable list. Generated plans are added onto the current timetable (existing classes stay). Time pins keep only sections whose meetings cover that day and time. Lecture/Tutorial same-index pairing is honoured.';
   return (
     <div>
       <div className="mode-switch">
@@ -1531,13 +1843,21 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick }){
         <div className="switch">
           <button type="button" className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>Time first</button>
           <button type="button" className={mode === 'course' ? 'on' : ''} onClick={() => setMode('course')}>Course first</button>
+          <button type="button" className={mode === 'only' ? 'on' : ''} onClick={() => setMode('only')}>Course only</button>
         </div>
-        <span className="switch-hint">{mode === 'course' ? 'Pick a time from this course’s own class times' : 'Pick any clock time, keep parallel classes that cover it'}</span>
+        <span className="switch-hint">{hint}</span>
       </div>
-      <div className="sched-help">
-        Add courses from the searchable list. Time pins keep only parallel classes whose meetings cover that day and time.
-        Lecture/Tutorial same-index pairing is honoured. Up to {MAX_SOLUTIONS} conflict-free timetables are returned.
-      </div>
+      {mode === 'only' ? (
+        <div className="mode-switch">
+          <span className="mode-label">Rank by</span>
+          <div className="switch">
+            <button type="button" className={rank === 'even' ? 'on' : ''} onClick={() => setRank('even')}>Evenness first</button>
+            <button type="button" className={rank === 'distance' ? 'on' : ''} onClick={() => setRank('distance')}>Distance first</button>
+          </div>
+          <span className="switch-hint">{rank === 'distance' ? 'Penalize 10-minute transfers across buildings first' : 'Spread daily hours first, then prefer same-building transfers'}</span>
+        </div>
+      ) : null}
+      <div className="sched-help">{help}</div>
       <div className="sched-rows">
         {items.map((it, i) => (
           <SchedCourseRow key={it.id} item={it} courses={courses} used={used} mode={mode}
@@ -1557,16 +1877,34 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick }){
             <div className="warn">{result.warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}</div>
           ) : null}
           {!result.solutions.length && !result.truncated ? (
-            <div className="warn bad">No conflict-free schedule found for these courses.</div>
+            <div className="warn bad">{result.kept && !items.filter(it => it.code).some(it => !(lockedSchedule || []).some(en => en.course === it.code)) ? 'Nothing new to add — every listed course is already on the timetable.' : 'No conflict-free addition found against the current timetable.'}</div>
           ) : null}
           {result.truncated ? <div className="warn">Search space exceeded — showing partial results.</div> : null}
+          {result.found && result.found > result.solutions.length ? (
+            <div className="sched-note" style={{ marginTop: 8 }}>Ranked top {result.solutions.length} of {result.found} conflict-free timetable{result.found === 1 ? '' : 's'}.</div>
+          ) : null}
           {result.solutions.map((sol, i) => (
             <div className="solution" key={i}>
               <h4>
-                方案 {i + 1}
-                <button className="sbtn sol-apply" onClick={() => onApply(sol)}>Apply to timetable</button>
+                Plan {i + 1}
+                <button className="sbtn sol-apply" onClick={() => onApply(sol)}>Add to timetable</button>
               </h4>
-              {sol.map(en => (
+              {sol.even ? (
+                <div className="sol-metrics">
+                  <span className="metric">Evenness σ {fmtHours(sol.even.std)}</span>
+                  <span className={'metric' + (sol.dist && sol.dist.far ? ' bad' : ' good')}>Cross-building {sol.dist ? sol.dist.far : 0}</span>
+                  <span className="metric good">Same building {sol.dist ? sol.dist.same : 0}</span>
+                  {sol.dist && sol.dist.pairs ? <span className="metric">10-min transfers {sol.dist.pairs}</span> : null}
+                </div>
+              ) : null}
+              {sol.even ? (
+                <div className="sol-days">Daily hours (full timetable): {['Mon','Tue','Wed','Thu','Fri'].map((d, di) => d + ' ' + fmtHours(sol.even.hours[di])).join(' · ')}</div>
+              ) : null}
+              <div className="sol-days">Adds the classes below onto the current timetable. Existing classes stay.</div>
+              {lockedSchedule && lockedSchedule.length ? (
+                <div className="sol-days">Kept: {lockedSchedule.map(en => en.course + ' ' + en.label).join(' · ')}</div>
+              ) : null}
+              {(Array.isArray(sol.entries) ? sol.entries : sol).map(en => (
                 <div className="sol-row" key={en.section}>
                   <span className="sol-code">{en.course}</span>
                   <span className="sol-sec">{en.label}</span>
@@ -1659,6 +1997,9 @@ function App(){
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
   const [dataLabels, setDataLabels] = React.useState({ courses: 'courses.json', catalog: 'data.json' });
+  const [planner, setPlanner] = React.useState(() => loadPlannerState());
+  const [crossDrag, setCrossDrag] = React.useState(false);
+  const [hydrated, setHydrated] = React.useState(false);
   const gridRef = React.useRef(null);
   const loadedRef = React.useRef(false);
   const rawCoursesRef = React.useRef(null);
@@ -1751,6 +2092,58 @@ function App(){
     return () => { alive = false; };
   }, []);
 
+  function currentSnapshot(){
+    return {
+      schedule: schedule.map(en => ({ course: en.course, section: en.section, label: en.label })),
+      planner: plannerForSave(planner),
+      crossDrag: !!crossDrag,
+      savedAt: new Date().toISOString()
+    };
+  }
+  function writeLocal(extra){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(Object.assign(currentSnapshot(), extra || {}))); }catch(e){ /* storage full/blocked */ }
+  }
+  function saveLocal(){
+    writeLocal();
+    toast('Saved locally in this browser');
+  }
+  function exportSave(){
+    const blob = new Blob([JSON.stringify(currentSnapshot(), null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'hkust-planner-save.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Exported planner save file');
+  }
+  function applySnapshot(parsed, label){
+    if (!parsed || typeof parsed !== 'object') throw new Error('not a planner save');
+    const nextPlanner = parsed.planner ? sanitizePlanner(parsed.planner) : planner;
+    const nextSchedule = Array.isArray(parsed.schedule) ? hydrateSchedule(parsed.schedule, courses) : schedule;
+    if (parsed.planner) setPlanner(nextPlanner);
+    if (Array.isArray(parsed.schedule)) setSchedule(nextSchedule);
+    if (typeof parsed.crossDrag === 'boolean') setCrossDrag(parsed.crossDrag);
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        schedule: nextSchedule.map(en => ({ course: en.course, section: en.section, label: en.label })),
+        planner: plannerForSave(nextPlanner),
+        savedAt: new Date().toISOString()
+      }));
+    }catch(e){ /* storage full/blocked */ }
+    toast('Loaded ' + (label || 'saved plan'));
+  }
+  async function onPickSave(e){
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    try{
+      const data = await readJsonFile(f);
+      applySnapshot(data, f.name);
+    }catch(ex){
+      toast('Could not import save: ' + ex.message);
+    }
+  }
+
   React.useEffect(() => {
     if (status !== 'ready' || loadedRef.current) return;
     loadedRef.current = true;
@@ -1758,23 +2151,17 @@ function App(){
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return;
       const parsed = JSON.parse(raw);
-      const arr = Array.isArray(parsed.schedule) ? parsed.schedule : [];
-      const ids = new Set();
-      courses.forEach(c => c.sections.forEach(s => ids.add(s.id)));
-      const byId = {};
-      courses.forEach(c => c.sections.forEach(sec => { byId[sec.id] = { course: c, section: sec }; }));
-      const valid = arr.filter(en => en && en.section && ids.has(en.section)).map(en => {
-        const hit = byId[en.section];
-        if (hit) return makeEntry(hit.course.code, hit.section);
-        return { course: en.course, section: en.section, label: en.label || '', meetings: Array.isArray(en.meetings) ? en.meetings : [], component: en.component || '' };
-      });
-      setSchedule(valid);
+      if (parsed.planner) setPlanner(sanitizePlanner(parsed.planner));
+      if (typeof parsed.crossDrag === 'boolean') setCrossDrag(parsed.crossDrag);
+      setSchedule(hydrateSchedule(parsed.schedule, courses));
     }catch(e){ /* ignore corrupt saves */ }
+    setHydrated(true);
   }, [status, courses]);
 
   React.useEffect(() => {
-    try{ localStorage.setItem(LS_KEY, JSON.stringify({ schedule: schedule })); }catch(e){ /* storage full/blocked */ }
-  }, [schedule]);
+    if (status !== 'ready' || !hydrated) return;
+    writeLocal();
+  }, [schedule, planner, status, hydrated]);
 
   React.useEffect(() => {
     const clear = () => { setDrag(null); setHover(null); };
@@ -1790,22 +2177,51 @@ function App(){
   function removeSection(sectionId){
     setSchedule(prev => prev.filter(en => en.section !== sectionId));
   }
+  function beginCrossDrag(e, course, origin){
+    e.dataTransfer.setData('text/plain', course.code);
+    e.dataTransfer.effectAllowed = 'copy';
+    const targets = courseDragTargets(course, schedule);
+    const originLabel = origin && origin.label ? origin.label : course.code;
+    setDrag({ mode: 'cross', course: course.code, section: origin && origin.id, label: originLabel, targets: targets, raw: origin || null });
+    setHover({ meetings: [], conflicts: [], active: null });
+  }
   function startPoolDrag(e, course, section){
+    if (crossDrag){
+      beginCrossDrag(e, course, section);
+      return;
+    }
     e.dataTransfer.setData('text/plain', section.id);
     e.dataTransfer.effectAllowed = 'copy';
     const extras = companionSections(course, section);
     const meetings = section.meetings.concat(...extras.map(x => x.meetings));
     const label = [section.label].concat(extras.map(x => x.label)).join('+');
-    setDrag({ course: course.code, section: section.id, label: label, meetings: meetings, raw: section });
+    setDrag({ mode: 'section', course: course.code, section: section.id, label: label, meetings: meetings, raw: section });
     setHover(null);
+  }
+  function startCourseDrag(e, course){
+    if (!crossDrag) return;
+    const first = (course.sections || []).find(sec => sec.meetings && sec.meetings.length);
+    beginCrossDrag(e, course, first || null);
+  }
+  function startBlockDrag(e, en){
+    if (!crossDrag) return;
+    const course = coursesById[en.course];
+    if (!course) return;
+    const section = course.sections.find(sec => sec.id === en.section) || { id: en.section, label: en.label, meetings: en.meetings };
+    beginCrossDrag(e, course, section);
   }
   function handleDragOver(e){
     if (!drag) return;
     e.preventDefault();
     if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
     const el = gridRef.current;
-    if (!el || !pointerOverCalendar(e, el.getBoundingClientRect())){
+    if (!el || !pointerOverCalendar(e, el)){
       setHover(null);
+      return;
+    }
+    if (drag.mode === 'cross'){
+      const active = pickTarget(drag.targets, e, el);
+      setHover({ meetings: active ? active.meetings : [], conflicts: active ? active.conflicts : [], active: active });
       return;
     }
     const others = schedule.filter(en => en.course !== drag.course || (drag.raw && en.component !== drag.raw.component));
@@ -1819,8 +2235,24 @@ function App(){
   }
   function handleDrop(e){
     e.preventDefault();
-    if (!drag || !hover) return;
+    if (!drag || !hover) { setDrag(null); setHover(null); return; }
     const course = coursesById[drag.course];
+    if (drag.mode === 'cross'){
+      if (course && hover.active && hover.active.bundle){
+        setSchedule(prev => {
+          let next = prev.filter(en => en.course !== course.code);
+          hover.active.bundle.forEach(entry => {
+            const sec = course.sections.find(sec => sec.id === entry.section);
+            if (sec && sec.meetings && sec.meetings.length) next.push(makeEntry(course.code, sec));
+          });
+          return next;
+        });
+        toast((schedule.some(en => en.course === course.code) ? 'Moved ' : 'Added ') + course.code + ' ' + hover.active.label);
+      }
+      setDrag(null);
+      setHover(null);
+      return;
+    }
     if (course && drag.raw){
       setSchedule(prev => upsertSectionChoice(prev, course, drag.raw));
       toast('Added ' + drag.course + ' ' + drag.label);
@@ -1829,8 +2261,26 @@ function App(){
     setHover(null);
   }
   function applySolution(sol){
-    setSchedule(sol.map(en => ({ course: en.course, section: en.section, label: en.label, meetings: en.meetings })));
-    toast('Applied generated timetable');
+    const raw = Array.isArray(sol && sol.entries) ? sol.entries : (Array.isArray(sol) ? sol : []);
+    const existing = {};
+    schedule.forEach(en => { existing[en.course] = true; });
+    const extra = [];
+    const seen = {};
+    for (const en of raw){
+      if (!en || !en.section || existing[en.course]) continue;
+      if (seen[en.section]) continue;
+      const course = coursesById[en.course];
+      const section = course && course.sections.find(sec => sec.id === en.section);
+      if (course && section) extra.push(makeEntry(course.code, section));
+      else extra.push({ course: en.course, section: en.section, label: en.label || '', meetings: Array.isArray(en.meetings) ? en.meetings : [], component: en.component || '' });
+      seen[en.section] = true;
+    }
+    if (!extra.length){
+      toast('Nothing new to add — existing classes were kept');
+      return;
+    }
+    setSchedule(prev => prev.concat(extra));
+    toast('Added ' + extra.length + ' class' + (extra.length === 1 ? '' : 'es') + ' to the timetable');
   }
   function openDeps(code){
     setDeps(d => ({ key: d.key + 1, code: code || '' }));
@@ -1879,6 +2329,14 @@ function App(){
           Load catalog
           <input className="hfile" type="file" accept=".json,application/json" onChange={(e) => onPickCustom('catalog', e)} />
         </label>
+        <div className="save-group">
+          <button className="hbtn" title="Save timetable and auto-schedule list in this browser" onClick={saveLocal}>Save</button>
+          <button className="hbtn" title="Download a JSON backup" onClick={exportSave}>Export</button>
+          <label className="hbtn file" title="Import a previously exported save file">
+            Import
+            <input className="hfile" type="file" accept=".json,application/json" onChange={onPickSave} />
+          </label>
+        </div>
         <div className="spacer"></div>
         <button className="hbtn primary" onClick={() => { setTab('sched'); setRightOpen(true); setSchedFocusTick(t => t + 1); }}>Generate Schedule</button>
         <button className="hbtn" onClick={() => openDeps(selected || '')}>Dependencies</button>
@@ -1908,7 +2366,7 @@ function App(){
             ) : (
               <div>
                 <div className="list-hint">{results.length} course{results.length === 1 ? '' : 's'}{(query || filtersActive(filters)) ? ' matched' : ''}{query ? ' · "' + query + '"' : ''} — click to inspect</div>
-                {results.map(c => <CourseCard key={c.code} c={c} onClick={() => setSelected(c.code)} />)}
+                {results.map(c => <CourseCard key={c.code} c={c} onClick={() => setSelected(c.code)} crossDrag={crossDrag} onDragCourse={startCourseDrag} />)}
                 {!results.length ? <div className="no-sections">No courses match the current search / filters.</div> : null}
               </div>
             )}
@@ -1921,7 +2379,8 @@ function App(){
         <section className="center">
           <Timetable schedule={schedule} coursesById={coursesById} drag={drag} hover={hover} gridRef={gridRef}
             onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
-            onRemoveEntry={removeSection} />
+            onRemoveEntry={removeSection} crossDrag={crossDrag} onToggleCrossDrag={setCrossDrag}
+            onDragBlock={startBlockDrag} />
         </section>
         <aside className={'right' + (rightOpen ? '' : ' collapsed')}>
           {rightOpen ? (
@@ -1934,7 +2393,7 @@ function App(){
           </div>
           <div className="tab-body">
             {tab === 'sched'
-              ? <SchedulerTab courses={courses} coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} />
+              ? <SchedulerTab courses={courses} coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} planner={planner} onPlannerChange={setPlanner} lockedSchedule={schedule} />
               : <DepsTab key={'deps' + deps.key} initialCode={deps.code} courses={courses} coursesById={coursesById}
                   catalogMap={catalogMap} names={names} onJump={jumpTo} />}
           </div>
