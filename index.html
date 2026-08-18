@@ -157,8 +157,26 @@ input,textarea,select{font:inherit}
 .tab.active{background:var(--accent2);color:var(--accent)}
 .tab-body{flex:1;overflow-y:auto;padding:14px;min-height:0}
 .sched-help{font-size:12px;color:var(--muted);margin-bottom:8px}
-.sched-input{width:100%;min-height:96px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;outline:none;background:#fbfcfe}
-.sched-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12);background:#fff}
+.sched-rows{display:flex;flex-direction:column;gap:8px}
+.sched-row{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fbfcfe}
+.sched-row-top{display:flex;gap:6px;align-items:center}
+.sched-row-times{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px}
+.sched-time-add{display:flex;gap:5px;align-items:center}
+.sched-time-add select{height:28px;border:1px solid var(--line);border-radius:7px;padding:0 6px;background:#fff;font-size:11.5px}
+.combo{position:relative;flex:1;min-width:0}
+.combo input{width:100%;height:32px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:#fff;font-size:12.5px;outline:none}
+.combo input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12)}
+.combo-list{position:absolute;left:0;right:0;top:34px;z-index:20;max-height:220px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(16,24,40,.12)}
+.combo-item{display:flex;gap:6px;align-items:baseline;width:100%;text-align:left;border:0;background:#fff;padding:7px 10px;font-size:12px}
+.combo-item:hover,.combo-item.on{background:#eef4ff}
+.combo-item b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.combo-item span{color:#5a6580;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.combo-item em{margin-left:auto;font-style:normal;font-size:10.5px;color:#9a5b13;white-space:nowrap}
+.combo-empty{padding:10px;font-size:12px;color:var(--muted)}
+.tchip{display:inline-flex;align-items:center;gap:4px;background:#eef4ff;color:#1d4ed8;border-radius:999px;padding:2px 7px;font-size:11px;font-weight:700}
+.tchip button{border:0;background:transparent;color:#1d4ed8;padding:0 0 0 2px;font-size:12px;line-height:1}
+.sched-add{width:100%;margin-top:2px;border:1px dashed #c9d3e3;background:#fff;border-radius:9px;padding:7px;font-weight:700;font-size:12.5px;color:#46536e}
+.sched-add:hover{border-color:var(--accent);color:var(--accent);background:#f8fafd}
 .sched-actions{display:flex;gap:8px;align-items:center;margin:10px 0}
 .sched-btn{background:var(--accent);border:1px solid var(--accent);color:#fff;font-weight:700;font-size:13px;padding:8px 16px;border-radius:9px}
 .sched-btn:hover{background:#1d4ed8}
@@ -637,23 +655,65 @@ function pointerOverCalendar(e, rect){
 }
 
 /* ================= auto scheduler (backtracking + pruning) ================= */
-function generateSchedules(inputText, coursesById){
-  const codes = [];
-  const seen = new Set();
-  const m = String(inputText || '').matchAll(CODE_RE);
+function meetingCoversTime(m, day, time){
+  return m.day === day && m.start <= time && time <= m.end;
+}
+function bundleCoversTimes(bundle, times){
+  if (!times || !times.length) return true;
+  const meetings = [];
+  for (const e of bundle) for (const mt of (e.meetings || [])) meetings.push(mt);
+  for (const t of times){
+    if (!meetings.some(m => meetingCoversTime(m, t.day, t.time))) return false;
+  }
+  return true;
+}
+function normalizeSchedRequests(input){
+  if (Array.isArray(input)){
+    const out = [], seen = {};
+    for (const r of input){
+      const code = normCode(r && (r.code || r));
+      if (!code || seen[code]) continue;
+      seen[code] = true;
+      const times = [];
+      for (const t of ((r && r.times) || [])){
+        const day = Number(t.day), time = Number(t.time);
+        if (day >= 1 && day <= 5 && isFinite(time)) times.push({ day: day, time: time });
+      }
+      out.push({ code: code, times: times });
+    }
+    return out;
+  }
+  const codes = [], seen = {};
+  const m = String(input || '').matchAll(CODE_RE);
   for (const hit of m){
     const c = normCode(hit[0]);
-    if (c && !seen.has(c)){ seen.add(c); codes.push(c); }
+    if (c && !seen[c]){ seen[c] = true; codes.push({ code: c, times: [] }); }
   }
+  return codes;
+}
+function generateSchedules(input, coursesById){
+  const requests = normalizeSchedRequests(input);
   const warnings = [];
   const pool = [];
-  for (const code of codes){
+  for (const req of requests){
+    const code = req.code;
     const c = coursesById[code];
     if (!c){ warnings.push(code + ': not offered this term (no class sections)'); continue; }
-    const bundles = courseBundles(c);
+    let bundles = courseBundles(c);
+    const before = bundles.length;
+    if (req.times && req.times.length){
+      bundles = bundles.filter(b => bundleCoversTimes(b, req.times));
+      const label = req.times.map(t => DAY_NAMES[t.day] + ' ' + fmtDec(t.time)).join(' + ');
+      if (!bundles.length){
+        warnings.push(code + ': no parallel class covers ' + label + ' (' + before + ' bundle(s) before time filter)');
+        continue;
+      }
+      warnings.push(code + ': time filter ' + label + ' → ' + bundles.length + '/' + before + ' parallel bundle(s)');
+    } else {
+      const nPar = parallelClassCount(c);
+      if (nPar > 1) warnings.push(code + ': ' + bundles.length + ' parallel bundle(s)');
+    }
     if (!bundles.length){ warnings.push(code + ': no valid section combination (check parallel classes / components)'); continue; }
-    const nPar = groupSections(c.sections).filter(g => g.sections.length > 1).length;
-    if (nPar) warnings.push(code + ': ' + nPar + ' component(s) have parallel classes — scheduler tries each alternative');
     pool.push({ code: code, name: c.name, bundles: bundles });
   }
   if (!pool.length) return { solutions: [], warnings: warnings, truncated: false };
@@ -1247,17 +1307,114 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
 }
 
 /* ================= auto scheduler tab ================= */
-function SchedulerTab({ coursesById, onApply, focusTick }){
-  const [text, setText] = React.useState('AIAA2205\nAIAA3102\nDSAA2042');
+function hourOptions(){
+  const out = [];
+  for (let h = START_HOUR; h <= END_HOUR; h++){
+    out.push(h);
+    if (h < END_HOUR) out.push(h + 0.5);
+  }
+  return out;
+}
+function CourseCombo({ value, courses, used, onChange, inputRef }){
+  const [q, setQ] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const boxRef = React.useRef(null);
+  const selected = courses.find(c => c.code === value) || null;
+  React.useEffect(() => {
+    const h = (e) => { if (boxRef.current && !boxRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+  const list = React.useMemo(() => {
+    const avail = courses.filter(c => !used[c.code] || c.code === value);
+    return searchCourses(avail, q).slice(0, 20);
+  }, [courses, used, value, q]);
+  return (
+    <div className="combo" ref={boxRef}>
+      <input ref={inputRef} value={open ? q : (selected ? selected.code + '  ' + selected.name : q)}
+        placeholder="Search course code / name"
+        spellCheck={false}
+        onFocus={() => { setOpen(true); setQ(selected ? selected.code : q); }}
+        onChange={(e) => { setQ(e.target.value); setOpen(true); if (!e.target.value) onChange(''); }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && list[0]){ onChange(list[0].code); setOpen(false); setQ(''); e.preventDefault(); }
+          if (e.key === 'Escape') setOpen(false);
+        }} />
+      {open ? (
+        <div className="combo-list">
+          {list.map(c => (
+            <button type="button" key={c.code} className={'combo-item' + (c.code === value ? ' on' : '')}
+              onMouseDown={(e) => { e.preventDefault(); onChange(c.code); setOpen(false); setQ(''); }}>
+              <b>{c.code}</b>
+              <span>{c.name}</span>
+              {parallelClassCount(c) > 1 ? <em>{parallelClassCount(c)} 平行班</em> : null}
+            </button>
+          ))}
+          {!list.length ? <div className="combo-empty">No matching courses</div> : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+function SchedCourseRow({ item, courses, used, onChange, onRemove, inputRef }){
+  const [day, setDay] = React.useState(1);
+  const [time, setTime] = React.useState(9);
+  const course = courses.find(c => c.code === item.code) || null;
+  const times = item.times || [];
+  function addTime(){
+    if (times.some(t => t.day === day && t.time === time)) return;
+    onChange(Object.assign({}, item, { times: times.concat([{ day: day, time: time }]) }));
+  }
+  function removeTime(idx){
+    onChange(Object.assign({}, item, { times: times.filter((_, i) => i !== idx) }));
+  }
+  let remain = null;
+  if (course && times.length){
+    const all = courseBundles(course);
+    remain = all.filter(b => bundleCoversTimes(b, times)).length + '/' + all.length;
+  }
+  return (
+    <div className="sched-row">
+      <div className="sched-row-top">
+        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code }))} inputRef={inputRef} />
+        <button className="sbtn rm" onClick={onRemove}>Remove</button>
+      </div>
+      <div className="sched-row-times">
+        <div className="sched-time-add">
+          <select value={day} onChange={(e) => setDay(Number(e.target.value))}>
+            {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(p => <option key={p[0]} value={p[0]}>{p[1]}</option>)}
+          </select>
+          <select value={time} onChange={(e) => setTime(Number(e.target.value))}>
+            {hourOptions().map(h => <option key={h} value={h}>{fmtDec(h)}</option>)}
+          </select>
+          <button className="sbtn" onClick={addTime} disabled={!item.code}>Add time</button>
+        </div>
+        {times.map((tm, i) => (
+          <span className="tchip" key={i}>{DAY_NAMES[tm.day]} {fmtDec(tm.time)}<button type="button" onClick={() => removeTime(i)}>×</button></span>
+        ))}
+        {remain ? <span className="sched-note">{remain} bundles cover the selected time(s)</span> : null}
+        {course && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} 平行班 · optional time pin</span> : null}
+      </div>
+    </div>
+  );
+}
+function SchedulerTab({ courses, coursesById, onApply, focusTick }){
+  const [items, setItems] = React.useState([
+    { id: uid(), code: 'AIAA2205', times: [] },
+    { id: uid(), code: 'AIAA3102', times: [] },
+    { id: uid(), code: 'DSAA2042', times: [] }
+  ]);
   const [result, setResult] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
-  const inputRef = React.useRef(null);
-  React.useEffect(() => { if (focusTick && inputRef.current) inputRef.current.focus(); }, [focusTick]);
+  const firstRef = React.useRef(null);
+  React.useEffect(() => { if (focusTick && firstRef.current) firstRef.current.focus(); }, [focusTick]);
+  const used = {};
+  items.forEach(it => { if (it.code) used[it.code] = true; });
   function generate(){
     setBusy(true);
     setResult(null);
     setTimeout(() => {
-      const r = generateSchedules(text, coursesById);
+      const r = generateSchedules(items.filter(it => it.code), coursesById);
       setResult(r);
       setBusy(false);
     }, 30);
@@ -1265,14 +1422,21 @@ function SchedulerTab({ coursesById, onApply, focusTick }){
   return (
     <div>
       <div className="sched-help">
-        Enter one course code per line. For each course the planner enumerates legal bundles
-        (one parallel class per component, honouring Lecture/Tutorial pairing), then backtracks
-        with conflict pruning. Up to {MAX_SOLUTIONS} conflict-free timetables are returned.
+        Add courses from the searchable list. Optional time pins keep only parallel classes whose meetings cover that day and time.
+        Lecture/Tutorial same-index pairing is honoured. Up to {MAX_SOLUTIONS} conflict-free timetables are returned.
       </div>
-      <textarea className="sched-input" ref={inputRef} value={text} onChange={(e) => setText(e.target.value)} spellCheck={false}></textarea>
+      <div className="sched-rows">
+        {items.map((it, i) => (
+          <SchedCourseRow key={it.id} item={it} courses={courses} used={used}
+            inputRef={i === 0 ? firstRef : null}
+            onChange={(next) => setItems(prev => prev.map(x => x.id === it.id ? next : x))}
+            onRemove={() => setItems(prev => prev.filter(x => x.id !== it.id))} />
+        ))}
+        <button className="sched-add" onClick={() => setItems(prev => prev.concat([{ id: uid(), code: '', times: [] }]))}>+ Add course</button>
+      </div>
       <div className="sched-actions">
-        <button className="sched-btn" onClick={generate} disabled={busy}>{busy ? 'Generating…' : 'Generate Schedule'}</button>
-        <span className="sched-note">e.g. AIAA2205 · AIAA3102 · DSAA2042</span>
+        <button className="sched-btn" onClick={generate} disabled={busy || !items.some(it => it.code)}>{busy ? 'Generating…' : 'Generate Schedule'}</button>
+        <span className="sched-note">{items.filter(it => it.code).length} course(s) selected</span>
       </div>
       {result ? (
         <div>
@@ -1592,7 +1756,7 @@ function App(){
           </div>
           <div className="tab-body">
             {tab === 'sched'
-              ? <SchedulerTab coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} />
+              ? <SchedulerTab courses={courses} coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} />
               : <DepsTab key={'deps' + deps.key} initialCode={deps.code} courses={courses} coursesById={coursesById}
                   catalogMap={catalogMap} names={names} onJump={jumpTo} />}
           </div>
