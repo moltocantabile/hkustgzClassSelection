@@ -219,6 +219,9 @@ input,textarea,select{font:inherit}
 .sched-btn{background:var(--accent);border:1px solid var(--accent);color:#fff;font-weight:700;font-size:13px;padding:8px 16px;border-radius:9px}
 .sched-btn:hover{background:#1d4ed8}
 .sched-btn:disabled{background:#aeb9d2;border-color:#aeb9d2;cursor:not-allowed}
+.sched-btn.ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+.sched-btn.ghost:hover{background:#f8fafd;border-color:#c7d3e8}
+.sched-btn.ghost:disabled{background:#f3f5f8;color:#9aa6bd;border-color:var(--line);cursor:not-allowed}
 .sched-note{font-size:11.5px;color:var(--muted)}
 .solution{margin-top:12px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fbfcfe}
 .solution h4{margin:0 0 6px;font-size:13px;display:flex;align-items:center;gap:8px}
@@ -1901,6 +1904,18 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
       return Object.assign({}, prev, { items: next });
     });
   }
+  function loadCurrent(){
+    const seen = {};
+    const next = [];
+    (lockedSchedule || []).forEach(en => {
+      if (!en || !en.course || seen[en.course]) return;
+      seen[en.course] = true;
+      next.push({ id: uid(), code: en.course, times: [] });
+    });
+    if (!next.length) next.push({ id: uid(), code: '', times: [] });
+    setItems(next);
+    setResult(null);
+  }
   function generate(){
     setBusy(true);
     setResult(null);
@@ -1953,6 +1968,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
       </div>
       <div className="sched-actions">
         <button className="sched-btn" onClick={generate} disabled={busy || !items.some(it => it.code)}>{busy ? 'Generating…' : 'Generate Schedule'}</button>
+        <button className="sched-btn ghost" type="button" onClick={loadCurrent} disabled={busy || !(lockedSchedule && lockedSchedule.length)} title="Fill the list with courses currently on the timetable">Load current</button>
         <span className="sched-note">{items.filter(it => it.code).length} course(s) selected</span>
       </div>
       {result ? (
