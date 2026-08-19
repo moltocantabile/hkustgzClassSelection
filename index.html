@@ -323,15 +323,17 @@ function defaultPlanner(){
 }
 function sanitizePlanner(raw){
   const p = raw || {};
+  const wasOnly = p.mode === 'only';
   const items = (Array.isArray(p.items) ? p.items : []).map(it => ({
     id: uid(),
     code: normCode((it && it.code) || ''),
+    all: wasOnly || !!(it && it.all),
     times: ((it && it.times) || []).filter(t => t && t.day >= 1 && t.day <= 5 && isFinite(Number(t.time)))
       .map(t => ({ day: Number(t.day), time: Number(t.time), labels: t.labels || null }))
   }));
-  if (!items.length) items.push({ id: uid(), code: '', times: [] });
+  if (!items.length) items.push({ id: uid(), code: '', times: [], all: false });
   return {
-    mode: (p.mode === 'course' || p.mode === 'only') ? p.mode : 'time',
+    mode: (p.mode === 'course' || wasOnly) ? 'course' : 'time',
     rank: p.rank === 'distance' ? 'distance' : 'even',
     items: items
   };
@@ -348,7 +350,7 @@ function plannerForSave(planner){
   return {
     mode: planner.mode,
     rank: planner.rank,
-    items: (planner.items || []).map(it => ({ code: it.code || '', times: it.times || [] }))
+    items: (planner.items || []).map(it => ({ code: it.code || '', times: it.times || [], all: !!it.all }))
   };
 }
 function hydrateSchedule(arr, courseList){
@@ -1810,12 +1812,16 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
   const course = courses.find(c => c.code === item.code) || null;
   const times = item.times || [];
   const slots = React.useMemo(() => courseTimeOptions(course), [course]);
-  React.useEffect(() => { setSlot(slots[0] ? slotKey(slots[0]) : ''); }, [item.code]);
+  React.useEffect(() => { setSlot('__all__'); }, [item.code]);
   function addTimeFromClock(){
     if (times.some(t => t.day === day && t.time === time)) return;
-    onChange(Object.assign({}, item, { times: times.concat([{ day: day, time: time }]) }));
+    onChange(Object.assign({}, item, { all: false, times: times.concat([{ day: day, time: time }]) }));
   }
   function addTimeFromCourse(){
+    if (slot === '__all__'){
+      onChange(Object.assign({}, item, { all: true, times: [] }));
+      return;
+    }
     const hit = slots.find(s => slotKey(s) === slot);
     if (!hit) return;
     const extra = [];
@@ -1823,36 +1829,33 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
       if (!times.concat(extra).some(t => t.day === tm.day && t.time === tm.time)) extra.push(tm);
     });
     if (!extra.length) return;
-    onChange(Object.assign({}, item, { times: times.concat(extra) }));
+    onChange(Object.assign({}, item, { all: false, times: times.concat(extra) }));
   }
   function removeTime(idx){
     onChange(Object.assign({}, item, { times: times.filter((_, i) => i !== idx) }));
   }
   let remain = null;
-  if (course && times.length){
+  if (course && item.all){
+    remain = courseBundles(course).length + ' section bundle(s)';
+  } else if (course && times.length){
     const all = courseBundles(course);
     remain = all.filter(b => bundleCoversTimes(b, times)).length + '/' + all.length;
   }
   return (
     <div className="sched-row">
       <div className="sched-row-top">
-        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [] }))} inputRef={inputRef} />
+        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [], all: false }))} inputRef={inputRef} />
         <button className="sbtn rm" onClick={onRemove}>Remove</button>
       </div>
-      {mode === 'only' ? (
-        <div className="sched-row-times">
-          {course && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} sections · all searched</span> : null}
-        </div>
-      ) : (
       <div className="sched-row-times">
         {mode === 'course' ? (
           <div className="sched-time-add">
-            <select className="sched-slot" value={slot} disabled={!course || !slots.length} onChange={(e) => setSlot(e.target.value)}>
+            <select className="sched-slot" value={slot} disabled={!course} onChange={(e) => setSlot(e.target.value)}>
               {!course ? <option value="">Select a course first</option> : null}
-              {course && !slots.length ? <option value="">No scheduled times</option> : null}
+              {course ? <option value="__all__">All sections</option> : null}
               {slots.map(s => <option key={slotKey(s)} value={slotKey(s)}>{s.label} {s.component ? '(' + s.component + ') ' : ''}· {s.summary}</option>)}
             </select>
-            <button className="sbtn" onClick={addTimeFromCourse} disabled={!course || !slot}>Add this class time</button>
+            <button className="sbtn" onClick={addTimeFromCourse} disabled={!course || !slot}>{slot === '__all__' ? 'Use all sections' : 'Add this class time'}</button>
           </div>
         ) : (
           <div className="sched-time-add">
@@ -1871,10 +1874,12 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
             <button type="button" onClick={() => removeTime(i)}>×</button>
           </span>
         ))}
-        {remain ? <span className="sched-note">{remain} bundles cover the selected time(s)</span> : null}
-        {course && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} sections</span> : null}
+        {remain ? <span className="sched-note">{item.all ? remain : remain + ' bundles cover the selected time(s)'}</span> : null}
+        {item.all ? (
+          <span className="tchip">All sections<button type="button" onClick={() => onChange(Object.assign({}, item, { all: false, times: [] }))}>×</button></span>
+        ) : null}
+        {course && !item.all && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} sections</span> : null}
       </div>
-      )}
     </div>
   );
 }
@@ -1910,9 +1915,9 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     (lockedSchedule || []).forEach(en => {
       if (!en || !en.course || seen[en.course]) return;
       seen[en.course] = true;
-      next.push({ id: uid(), code: en.course, times: [] });
+      next.push({ id: uid(), code: en.course, times: [], all: true });
     });
-    if (!next.length) next.push({ id: uid(), code: '', times: [] });
+    if (!next.length) next.push({ id: uid(), code: '', times: [], all: false });
     setItems(next);
     setResult(null);
   }
@@ -1920,8 +1925,9 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     setBusy(true);
     setResult(null);
     setTimeout(() => {
-      const reqs = items.filter(it => it.code).map(it => ({ code: it.code, times: mode === 'only' ? [] : (it.times || []) }));
-      const opts = mode === 'only'
+      const reqs = items.filter(it => it.code).map(it => ({ code: it.code, times: it.all ? [] : (it.times || []) }));
+      const useAll = mode === 'course' && items.some(it => it.code && (it.all || !(it.times && it.times.length)));
+      const opts = useAll
         ? { collectLimit: COURSE_ONLY_COLLECT, showLimit: 8, rankBy: rank }
         : { collectLimit: MAX_SOLUTIONS, showLimit: MAX_SOLUTIONS, rankBy: rank };
       const r = generateSchedules(reqs, coursesById, Object.assign({ locked: lockedSchedule || [] }, opts));
@@ -1929,12 +1935,10 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
       setBusy(false);
     }, 30);
   }
-  const hint = mode === 'only'
-    ? 'Only pick courses. All sections are searched, then ranked.'
-    : (mode === 'course' ? 'Pick a time from this course’s own class times' : 'Pick any clock time, keep sections that cover it');
-  const help = mode === 'only'
-    ? 'Course Only ignores time pins. New sections are added onto the current timetable, avoiding existing conflicts, then ranked by daily-hour evenness and 10-minute same-building transfers. Lecture/Tutorial same-index pairing is honoured.'
-    : 'Add courses from the searchable list. Generated plans are added onto the current timetable (existing classes stay). Time pins keep only sections whose meetings cover that day and time. Lecture/Tutorial same-index pairing is honoured.';
+  const hint = mode === 'course'
+    ? 'Pick a class time, or All to search every section'
+    : 'Pick any clock time, keep sections that cover it';
+  const help = 'Add courses from the searchable list. Generated plans are added onto the current timetable (existing classes stay). In Course first, choose All to search every section and rank by evenness / walking distance. Lecture/Tutorial same-index pairing is honoured.';
   return (
     <div>
       <div className="mode-switch">
@@ -1942,11 +1946,10 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
         <div className="switch">
           <button type="button" className={mode === 'time' ? 'on' : ''} onClick={() => setMode('time')}>Time first</button>
           <button type="button" className={mode === 'course' ? 'on' : ''} onClick={() => setMode('course')}>Course first</button>
-          <button type="button" className={mode === 'only' ? 'on' : ''} onClick={() => setMode('only')}>Course only</button>
         </div>
         <span className="switch-hint">{hint}</span>
       </div>
-      {mode === 'only' ? (
+      {mode === 'course' ? (
         <div className="mode-switch">
           <span className="mode-label">Rank by</span>
           <div className="switch">
