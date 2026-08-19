@@ -148,7 +148,7 @@ input,textarea,select{font:inherit}
 .cal-dayhead{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#46536e;background:#f6f8fb;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
 .cal-time{grid-column:1;display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 8px 0 0;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;border-right:1px solid var(--line)}
 .cal-line{grid-column:2 / -1;border-top:1px solid #eef1f6;z-index:1;pointer-events:none}
-.cal-col{z-index:0;pointer-events:none}
+.cal-col{z-index:0;pointer-events:none;border-right:1px solid #eef1f6}
 .cal-col-hover{background:rgba(36,86,230,.07)}
 .cal-block{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border-left:4px solid;padding:3px 7px;font-size:11px;z-index:2;box-shadow:0 1px 2px rgba(16,24,40,.1);overflow:hidden;cursor:default}
 .cal-block:hover{box-shadow:0 3px 8px rgba(16,24,40,.16);z-index:4}
@@ -157,7 +157,7 @@ input,textarea,select{font:inherit}
 .cal-block.dim{opacity:.28}
 .xdrag{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:#46536e;user-select:none;white-space:nowrap}
 .xdrag input{accent-color:var(--accent)}
-.cal-ghost{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border:2px dashed;z-index:3;pointer-events:none;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 4px;overflow:hidden}
+.cal-ghost{grid-row:2 / -1;position:relative;margin:0;border-radius:8px;border:2px dashed;z-index:3;pointer-events:none;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 3px;overflow:hidden;box-sizing:border-box}
 .cal-ghost.on{border-width:2.5px;box-shadow:0 0 0 1px currentColor;font-size:11px}
 .cal-pop{position:fixed;z-index:90;min-width:240px;max-width:300px;background:#182036;color:#fff;border-radius:12px;padding:11px 12px;box-shadow:0 12px 30px rgba(16,24,40,.3);font-size:12px;line-height:1.45;pointer-events:none}
 .cal-pop .cp-code{font-weight:800;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -901,17 +901,68 @@ function courseDragTargets(course, schedule){
     };
   });
 }
-function pickTarget(targets, e, el){
-  const cell = pointerCell(e, el);
-  if (!cell) return null;
-  const hits = (targets || []).filter(t => t.meetings.some(m => meetingContains(m, cell.day, cell.time)));
-  if (!hits.length) return null;
-  hits.sort((a, b) => {
-    const af = a.conflicts.length ? 1 : 0, bf = b.conflicts.length ? 1 : 0;
-    if (af !== bf) return af - bf;
-    return a.meetings.length - b.meetings.length;
+function meetingsOverlap(a, b){
+  return a.day === b.day && a.start < b.end && b.start < a.end;
+}
+function layoutGhostOverlays(targets){
+  const items = [];
+  (targets || []).forEach((t, ti) => {
+    (t.meetings || []).forEach((m, mi) => {
+      items.push({ t: t, m: m, ti: ti, mi: mi, day: m.day, start: m.start, end: m.end, lane: 0, lanes: 1 });
+    });
   });
-  return hits[0];
+  const byDay = {};
+  items.forEach(it => { (byDay[it.day] || (byDay[it.day] = [])).push(it); });
+  Object.keys(byDay).forEach(day => {
+    const list = byDay[day];
+    const seen = list.map(() => false);
+    for (let i = 0; i < list.length; i++){
+      if (seen[i]) continue;
+      const stack = [i];
+      seen[i] = true;
+      const group = [];
+      while (stack.length){
+        const u = stack.pop();
+        group.push(list[u]);
+        for (let v = 0; v < list.length; v++){
+          if (!seen[v] && meetingsOverlap(list[u], list[v])){ seen[v] = true; stack.push(v); }
+        }
+      }
+      group.sort((a, b) => String(a.t.label).localeCompare(String(b.t.label), undefined, { numeric: true }) || a.start - b.start || a.ti - b.ti);
+      group.forEach((it, idx) => { it.lane = idx; it.lanes = group.length; });
+    }
+  });
+  return items;
+}
+function ghostSliceBox(it, originTop, rowH){
+  const lanes = Math.max(1, it.lanes || 1);
+  const lane = it.lane || 0;
+  return {
+    top: originTop + (it.start - START_HOUR) * rowH + 4,
+    height: Math.max(8, (it.end - it.start) * rowH - 8),
+    leftPct: (lane / lanes) * 100,
+    widthPct: 100 / lanes,
+    lane: lane,
+    lanes: lanes
+  };
+}
+function pickTarget(targets, e, el){
+  const metrics = calendarMetrics(el);
+  const cell = pointerCell(e, el);
+  if (!metrics || !cell) return null;
+  const dayBox = metrics.days[cell.day - 1];
+  if (!dayBox || dayBox.width <= 0) return null;
+  const xRatio = (e.clientX - dayBox.left) / dayBox.width;
+  const hits = layoutGhostOverlays(targets).filter(it => {
+    if (it.day !== cell.day) return false;
+    const box = ghostSliceBox(it, metrics.originTop, metrics.rowH);
+    if (e.clientY < box.top || e.clientY >= box.top + box.height) return false;
+    const lane = Math.max(0, Math.min(box.lanes - 1, Math.floor(xRatio * box.lanes)));
+    return lane === box.lane;
+  });
+  if (!hits.length) return null;
+  hits.sort((a, b) => (a.t.conflicts.length ? 1 : 0) - (b.t.conflicts.length ? 1 : 0) || a.lanes - b.lanes);
+  return hits[0].t;
 }
 function generateSchedules(input, coursesById, opts){
   opts = opts || {};
@@ -1619,21 +1670,23 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
             </div>
           );
         }))}
-        {ghosts.map((t, ti) => t.meetings.map((m, mi) => {
+        {layoutGhostOverlays(ghosts).map(it => {
+          const t = it.t, m = it.m;
           const active = !!(hover && hover.active && hover.active.label === t.label);
           const bad = t.conflicts.length > 0;
-          const tint = t.tint || sectionTint(ti);
+          const tint = t.tint || sectionTint(it.ti);
           const fill = bad
             ? 'repeating-linear-gradient(135deg, ' + tint.bg + ' 0 7px, hsla(0,82%,52%,.20) 7px 14px)'
             : (active ? tint.bgOn : tint.bg);
+          const box = ghostSliceBox(it, 0, HOUR_H);
           return (
-            <div key={'g' + ti + '-' + mi}
+            <div key={'g' + it.ti + '-' + it.mi + '-' + m.day + '-' + m.start}
               className={'cal-ghost' + (active ? ' on' : '')}
-              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, background: fill, borderColor: bad ? '#e02424' : tint.border, color: tint.text }}>
+              style={{ gridColumn: m.day + 1, top: box.top, height: box.height, left: 'calc(' + box.leftPct + '% + 2px)', width: 'calc(' + box.widthPct + '% - 4px)', background: fill, borderColor: bad ? '#e02424' : tint.border, color: tint.text }}>
               {t.label}{bad ? ' ⚠' : ''}
             </div>
           );
-        }))}
+        })}
         {drag && drag.mode !== 'cross' && hover && hover.meetings ? hover.meetings.map((m, i) => {
           const bad = hover.conflicts.length > 0;
           return (
