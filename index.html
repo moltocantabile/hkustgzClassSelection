@@ -196,7 +196,15 @@ input,textarea,select{font:inherit}
 .switch-hint{font-size:11px;color:var(--muted)}
 .sched-slot{flex:1 1 120px;min-width:0;max-width:100%;height:28px;border:1px solid var(--line);border-radius:7px;padding:0 6px;background:#fff;font-size:11.5px}
 .sched-rows{display:flex;flex-direction:column;gap:8px}
-.sched-row{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fbfcfe;min-width:0;overflow:hidden}
+.sched-row{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fbfcfe;min-width:0}
+.sched-row.off{background:#f4f6fa;border-color:#e2e7f0;opacity:.75}
+.sched-row-body{display:flex;gap:8px;min-width:0}
+.sched-radio{flex:0 0 auto;width:30px;display:flex;align-items:center;justify-content:center}
+.sched-radio button{width:18px;height:18px;border-radius:50%;border:2px solid #b7c0d4;background:#fff;padding:0;position:relative}
+.sched-radio button:hover{border-color:var(--accent)}
+.sched-radio button.on{border-color:var(--accent)}
+.sched-radio button.on::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--accent)}
+.sched-radio-body{flex:1 1 auto;min-width:0}
 .sched-row-top{display:flex;gap:6px;align-items:center}
 .sched-row-times{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:7px;min-width:0}
 .sched-time-add{display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%;min-width:0}
@@ -206,6 +214,7 @@ input,textarea,select{font:inherit}
 .combo input{width:100%;height:32px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:#fff;font-size:12.5px;outline:none}
 .combo input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(36,86,230,.12)}
 .combo-list{position:absolute;left:0;right:0;top:34px;z-index:20;max-height:220px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(16,24,40,.12)}
+.combo-list.fixed{position:fixed;top:0;left:0;z-index:200;max-height:280px}
 .combo-item{display:flex;gap:6px;align-items:baseline;width:100%;text-align:left;border:0;background:#fff;padding:7px 10px;font-size:12px}
 .combo-item:hover,.combo-item.on{background:#eef4ff}
 .combo-item b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -320,7 +329,7 @@ const COURSE_ONLY_COLLECT = 120;
 const TRANSFER_GAP = 10 / 60;
 
 function defaultPlanner(){
-  return { mode: 'time', rank: 'even', items: [{ id: uid(), code: '', times: [] }] };
+  return { mode: 'time', rank: 'even', items: [{ id: uid(), code: '', times: [], all: false, enabled: true }] };
 }
 function sanitizePlanner(raw){
   const p = raw || {};
@@ -329,10 +338,11 @@ function sanitizePlanner(raw){
     id: uid(),
     code: normCode((it && it.code) || ''),
     all: wasOnly || !!(it && it.all),
+    enabled: it && typeof it.enabled === 'boolean' ? it.enabled : true,
     times: ((it && it.times) || []).filter(t => t && t.day >= 1 && t.day <= 5 && isFinite(Number(t.time)))
       .map(t => ({ day: Number(t.day), time: Number(t.time), labels: t.labels || null }))
   }));
-  if (!items.length) items.push({ id: uid(), code: '', times: [], all: false });
+  if (!items.length) items.push({ id: uid(), code: '', times: [], all: false, enabled: true });
   return {
     mode: (p.mode === 'course' || wasOnly) ? 'course' : 'time',
     rank: p.rank === 'distance' ? 'distance' : 'even',
@@ -351,7 +361,7 @@ function plannerForSave(planner){
   return {
     mode: planner.mode,
     rank: planner.rank,
-    items: (planner.items || []).map(it => ({ code: it.code || '', times: it.times || [], all: !!it.all }))
+    items: (planner.items || []).map(it => ({ code: it.code || '', times: it.times || [], all: !!it.all, enabled: it && typeof it.enabled === 'boolean' ? it.enabled : true }))
   };
 }
 function hydrateSchedule(arr, courseList){
@@ -1767,11 +1777,31 @@ function CourseCombo({ value, courses, used, onChange, inputRef }){
   const [q, setQ] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const boxRef = React.useRef(null);
+  const inputRef2 = React.useRef(null);
+  const [rect, setRect] = React.useState(null);
   const selected = courses.find(c => c.code === value) || null;
+  function measure(){
+    const el = (inputRef && inputRef.current) || inputRef2.current;
+    if (el) setRect(el.getBoundingClientRect());
+  }
+  function openList(){
+    setOpen(true);
+    setQ('');
+    measure();
+    requestAnimationFrame(measure);
+  }
   React.useEffect(() => {
     const h = (e) => { if (boxRef.current && !boxRef.current.contains(e.target)) setOpen(false); };
+    const closeOnScroll = (e) => { if (e.target && e.target.closest && e.target.closest('.combo-list.fixed')) return; setOpen(false); };
+    const closeOnResize = () => { setOpen(false); setRect(null); };
     document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
+    document.addEventListener('scroll', closeOnScroll, true);
+    window.addEventListener('resize', closeOnResize);
+    return () => {
+      document.removeEventListener('mousedown', h);
+      document.removeEventListener('scroll', closeOnScroll, true);
+      window.removeEventListener('resize', closeOnResize);
+    };
   }, []);
   const list = React.useMemo(() => {
     const avail = courses.filter(c => !used[c.code] || c.code === value);
@@ -1779,30 +1809,33 @@ function CourseCombo({ value, courses, used, onChange, inputRef }){
     if (!query) return avail.slice().sort((a, b) => a.code.localeCompare(b.code));
     return searchCourses(avail, query);
   }, [courses, used, value, q]);
+  const inputEl = inputRef || inputRef2;
+  const listBox = open && rect ? (
+    <div className="combo-list fixed" style={{ left: rect.left, top: rect.bottom + 4, width: rect.width }}>
+      {list.map(c => (
+        <button type="button" key={c.code} className={'combo-item' + (c.code === value ? ' on' : '')}
+          onMouseDown={(e) => { e.preventDefault(); onChange(c.code); setOpen(false); setQ(''); setRect(null); }}>
+          <b>{c.code}</b>
+          <span>{c.name}</span>
+          {parallelClassCount(c) > 1 ? <em>{parallelClassCount(c)} sections</em> : null}
+        </button>
+      ))}
+      {!list.length ? <div className="combo-empty">No matching courses</div> : null}
+    </div>
+  ) : null;
   return (
     <div className="combo" ref={boxRef}>
-      <input ref={inputRef} value={open ? q : (selected ? selected.code + '  ' + selected.name : q)}
+      <input ref={inputEl} value={open ? q : (selected ? selected.code + '  ' + selected.name : q)}
         placeholder="Search course code / name"
         spellCheck={false}
-        onFocus={() => { setOpen(true); setQ(''); }}
-        onChange={(e) => { setQ(e.target.value); setOpen(true); if (!e.target.value) onChange(''); }}
+        onFocus={openList}
+        onClick={measure}
+        onChange={(e) => { setQ(e.target.value); setOpen(true); measure(); if (!e.target.value) onChange(''); }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && list[0]){ onChange(list[0].code); setOpen(false); setQ(''); e.preventDefault(); }
-          if (e.key === 'Escape') setOpen(false);
+          if (e.key === 'Enter' && list[0]){ onChange(list[0].code); setOpen(false); setQ(''); setRect(null); e.preventDefault(); }
+          if (e.key === 'Escape'){ setOpen(false); setRect(null); }
         }} />
-      {open ? (
-        <div className="combo-list">
-          {list.map(c => (
-            <button type="button" key={c.code} className={'combo-item' + (c.code === value ? ' on' : '')}
-              onMouseDown={(e) => { e.preventDefault(); onChange(c.code); setOpen(false); setQ(''); }}>
-              <b>{c.code}</b>
-              <span>{c.name}</span>
-              {parallelClassCount(c) > 1 ? <em>{parallelClassCount(c)} sections</em> : null}
-            </button>
-          ))}
-          {!list.length ? <div className="combo-empty">No matching courses</div> : null}
-        </div>
-      ) : null}
+      {window.ReactDOM && listBox ? window.ReactDOM.createPortal(listBox, document.body) : null}
     </div>
   );
 }
@@ -1842,10 +1875,17 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
     const all = courseBundles(course);
     remain = all.filter(b => bundleCoversTimes(b, times)).length + '/' + all.length;
   }
+  const enabled = item.enabled !== false;
   return (
-    <div className="sched-row">
+    <div className={'sched-row' + (enabled ? '' : ' off')}>
+      <div className="sched-row-body">
+        <div className="sched-radio">
+          <button type="button" className={enabled ? 'on' : ''} title={enabled ? 'Exclude from scheduling' : 'Include in scheduling'}
+            onClick={() => onChange(Object.assign({}, item, { enabled: !enabled }))} aria-pressed={enabled}></button>
+        </div>
+        <div className="sched-radio-body">
       <div className="sched-row-top">
-        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [], all: false }))} inputRef={inputRef} />
+        <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [], all: false, enabled: true }))} inputRef={inputRef} />
         <button className="sbtn rm" onClick={onRemove}>Remove</button>
       </div>
       <div className="sched-row-times">
@@ -1880,6 +1920,8 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
           <span className="tchip">All sections<button type="button" onClick={() => onChange(Object.assign({}, item, { all: false, times: [] }))}>×</button></span>
         ) : null}
         {course && !item.all && !times.length && parallelClassCount(course) > 1 ? <span className="sched-note">{parallelClassCount(course)} sections</span> : null}
+      </div>
+        </div>
       </div>
     </div>
   );
@@ -1916,9 +1958,9 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     (lockedSchedule || []).forEach(en => {
       if (!en || !en.course || seen[en.course]) return;
       seen[en.course] = true;
-      next.push({ id: uid(), code: en.course, times: [], all: true });
+      next.push({ id: uid(), code: en.course, times: [], all: true, enabled: true });
     });
-    if (!next.length) next.push({ id: uid(), code: '', times: [], all: false });
+    if (!next.length) next.push({ id: uid(), code: '', times: [], all: false, enabled: true });
     setItems(next);
     setResult(null);
   }
@@ -1926,8 +1968,8 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     setBusy(true);
     setResult(null);
     setTimeout(() => {
-      const reqs = items.filter(it => it.code).map(it => ({ code: it.code, times: it.all ? [] : (it.times || []) }));
-      const useAll = mode === 'course' && items.some(it => it.code && (it.all || !(it.times && it.times.length)));
+      const reqs = items.filter(it => it.code && it.enabled !== false).map(it => ({ code: it.code, times: it.all ? [] : (it.times || []) }));
+      const useAll = mode === 'course' && items.some(it => it.code && it.enabled !== false && (it.all || !(it.times && it.times.length)));
       const opts = useAll
         ? { collectLimit: COURSE_ONLY_COLLECT, showLimit: 8, rankBy: rank }
         : { collectLimit: MAX_SOLUTIONS, showLimit: MAX_SOLUTIONS, rankBy: rank };
@@ -1968,12 +2010,12 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
             onChange={(next) => setItems(prev => prev.map(x => x.id === it.id ? next : x))}
             onRemove={() => setItems(prev => prev.filter(x => x.id !== it.id))} />
         ))}
-        <button className="sched-add" onClick={() => setItems(prev => prev.concat([{ id: uid(), code: '', times: [] }]))}>+ Add course</button>
+        <button className="sched-add" onClick={() => setItems(prev => prev.concat([{ id: uid(), code: '', times: [], enabled: true }]))}>+ Add course</button>
       </div>
       <div className="sched-actions">
-        <button className="sched-btn" onClick={generate} disabled={busy || !items.some(it => it.code)}>{busy ? 'Generating…' : 'Generate Schedule'}</button>
+        <button className="sched-btn" onClick={generate} disabled={busy || !items.some(it => it.code && it.enabled !== false)}>{busy ? 'Generating…' : 'Generate Schedule'}</button>
         <button className="sched-btn ghost" type="button" onClick={loadCurrent} disabled={busy || !(lockedSchedule && lockedSchedule.length)} title="Fill the list with courses currently on the timetable">Load current</button>
-        <span className="sched-note">{items.filter(it => it.code).length} course(s) selected</span>
+        <span className="sched-note">{items.filter(it => it.code && it.enabled !== false).length} course(s) selected</span>
       </div>
       {result ? (
         <div>
