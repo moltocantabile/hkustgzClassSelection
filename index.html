@@ -2005,10 +2005,19 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     if (filterSlots.some(sl => sl.day === slot.day && sl.start === slot.start && sl.end === slot.end)) return;
     setFilterSlots(prev => prev.concat([slot]));
   }
+  function pickStart(v){
+    setFStart(v);
+    if (v >= fEnd) setFEnd(Math.min(END_HOUR, v + 0.5));
+  }
+  function pickEnd(v){
+    setFEnd(v);
+    if (v <= fStart) setFStart(Math.max(START_HOUR, v - 0.5));
+  }
   const shown = result ? result.solutions.filter(sol =>
     filterSlots.every(slot => {
       const span = { day: slot.day, start: slot.start, end: slot.end };
-      return (sol.entries || []).some(en =>
+      const entries = sol.entries && sol.entries.length ? sol.entries : (sol.full || []);
+      return entries.some(en =>
         (en.meetings || []).some(m => meetingsOverlap(m, span)));
     })) : [];
   const hint = mode === 'course'
@@ -2058,14 +2067,15 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
               <select value={fDay} onChange={(e) => setFDay(Number(e.target.value))}>
                 {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(p => <option key={p[0]} value={p[0]}>{p[1]}</option>)}
               </select>
-              <select value={fStart} onChange={(e) => setFStart(Number(e.target.value))}>
+              <select value={fStart} onChange={(e) => pickStart(Number(e.target.value))}>
                 {hourOptions().map(h => <option key={h} value={h}>{fmtDec(h)}</option>)}
               </select>
               <span className="sched-note">to</span>
-              <select value={fEnd} onChange={(e) => setFEnd(Number(e.target.value))}>
+              <select value={fEnd} onChange={(e) => pickEnd(Number(e.target.value))}>
                 {hourOptions().map(h => <option key={h} value={h}>{fmtDec(h)}</option>)}
               </select>
               <button className="sbtn" onClick={addFilterSlot} disabled={fEnd <= fStart}>Add period</button>
+              {fEnd <= fStart ? <span className="sched-note bad">End must be after start</span> : null}
               {filterSlots.map((sl, i) => (
                 <span className="tchip" key={i}>
                   {DAY_NAMES[sl.day]} {fmtDec(sl.start)}–{fmtDec(sl.end)}
