@@ -410,7 +410,7 @@ function loadPlannerState(){
 }
 const API_LS_KEY = 'hkust-course-planner-api-v1';
 function defaultApiCfg(){
-  return { url: 'https://getclasslist.moltocantabile.workers.dev/', token: '', termId: '2610' };
+  return { url: 'https://getclasslist.moltocantabile.workers.dev/', cartUrl: 'https://addtocart.moltocantabile.workers.dev/', token: '', termId: '2610' };
 }
 function loadApiCfg(){
   try{
@@ -418,6 +418,7 @@ function loadApiCfg(){
     const d = defaultApiCfg();
     return {
       url: typeof parsed.url === 'string' && parsed.url ? parsed.url : d.url,
+      cartUrl: typeof parsed.cartUrl === 'string' && parsed.cartUrl ? parsed.cartUrl : d.cartUrl,
       token: typeof parsed.token === 'string' ? parsed.token : '',
       termId: typeof parsed.termId === 'string' && parsed.termId ? parsed.termId : d.termId
     };
@@ -689,9 +690,10 @@ function normalizeKlmsCourses(raw, catalogMap){
   return out;
 }
 function mergeCourses(sisCourses, klmsCourses){
+  const sis = sisCourses || [];
   const klms = klmsCourses || [];
-  const klmsCodes = new Set(klms.map(c => c.code));
-  return (sisCourses || []).filter(c => !klmsCodes.has(c.code)).concat(klms);
+  const sisCodes = new Set(sis.map(c => c.code));
+  return sis.concat(klms.filter(c => !sisCodes.has(c.code)));
 }
 
 const COMP_ORDER = ['LEC', 'TUT', 'LAB', 'SEM', 'IND', 'PRJ'];
@@ -2982,6 +2984,10 @@ function ApiModal({ cfg, busy, onCfg, onLoad, onClose }){
           <input value={cfg.url} onChange={set('url')} placeholder="https://…workers.dev/" spellCheck={false} />
         </label>
         <label className="api-field">
+          <span>Cart API URL (add to cart)</span>
+          <input value={cfg.cartUrl} onChange={set('cartUrl')} placeholder="https://…workers.dev/" spellCheck={false} />
+        </label>
+        <label className="api-field">
           <span>TOKEN</span>
           <input value={cfg.token} onChange={set('token')} type="password" autoComplete="off" placeholder="authorization token" />
         </label>
@@ -3029,6 +3035,7 @@ function App(){
   const [apiCfg, setApiCfg] = React.useState(loadApiCfg);
   const [apiOpen, setApiOpen] = React.useState(false);
   const [apiBusy, setApiBusy] = React.useState(null);
+  const [cartBusy, setCartBusy] = React.useState(false);
   const [blockedPeriods, setBlockedPeriods] = React.useState([]);
   const [containsSlots, setContainsSlots] = React.useState([]);
   const gridRef = React.useRef(null);
@@ -3144,6 +3151,69 @@ function App(){
       toast('API load failed: ' + ex.message);
     }finally{
       setApiBusy(null);
+    }
+  }
+
+  async function onAddToSystemCart(){
+    const token = String(apiCfg.token || '').trim();
+    if (!token){
+      toast('Set your API TOKEN first (API button)');
+      setApiOpen(true);
+      return;
+    }
+    if (!schedule.length){
+      toast('Timetable is empty — nothing to add');
+      return;
+    }
+    const base = String(apiCfg.cartUrl || '').trim().replace(/\/+$/, '');
+    if (!base){
+      toast('Cart API URL is empty — set it in the API settings');
+      setApiOpen(true);
+      return;
+    }
+    const idsByType = { sisn: [], klms: [] };
+    const seen = {};
+    for (const en of schedule){
+      if (seen[en.section]) continue;
+      seen[en.section] = true;
+      const c = en.course && coursesById[en.course];
+      const type = (c && c.klms) ? 'klms' : 'sisn';
+      idsByType[type].push(en.section);
+    }
+    setCartBusy(true);
+    try{
+      let added = 0, failed = [];
+      for (const type of ['sisn', 'klms']){
+        const ids = idsByType[type];
+        if (!ids.length) continue;
+        const qs = new URLSearchParams();
+        qs.set('TOKEN', token);
+        qs.set('TYPE', type);
+        const res = await fetch(base + '/?' + qs.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ classIds: ids })
+        });
+        let body = null;
+        try{ body = await res.json(); }catch(ex){ throw new Error('cart API returned non-JSON (HTTP ' + res.status + ')'); }
+        if (!res.ok || (body && body.error)){
+          throw new Error((body && body.error) ? String(body.error) : 'HTTP ' + res.status);
+        }
+        if (body && body._decryptError) throw new Error('cart response decryption failed: ' + body._decryptError);
+        if (body && body.code !== undefined && body.code !== null && String(body.code) !== '0'){
+          throw new Error((body && body.message) ? String(body.message) : 'upstream error ' + body.code);
+        }
+        const data = body && typeof body.data === 'object' ? body.data : null;
+        const failedIds = (data && Array.isArray(data.failedIds)) ? data.failedIds.map(String) : [];
+        const successCount = (data && isFinite(Number(data.successCount))) ? Number(data.successCount) : null;
+        added += successCount != null ? Math.max(0, successCount) : Math.max(0, ids.length - failedIds.length);
+        failed = failed.concat(failedIds);
+      }
+      toast('Added ' + added + ' section(s) to the system cart' + (failed.length ? ' · failed: ' + failed.join(', ') : ''));
+    }catch(ex){
+      toast('Add to cart failed: ' + ex.message);
+    }finally{
+      setCartBusy(false);
     }
   }
 
@@ -3509,6 +3579,7 @@ function App(){
             <input className="hfile" type="file" accept=".json,application/json" onChange={onPickSave} />
           </label>
         </div>
+        <button className="hbtn" title="Add every section on the timetable to the HKUST(GZ) SISN / KLMS course cart (uses the API TOKEN)" onClick={onAddToSystemCart} disabled={cartBusy}>{cartBusy ? 'Adding…' : 'Add to system cart'}</button>
         <div className="spacer"></div>
         <button className="hbtn primary" onClick={() => { setTab('sched'); setRightOpen(true); setSchedFocusTick(t => t + 1); }}>Generate Schedule</button>
         <button className="hbtn" onClick={() => openDeps(selected || '')}>Dependencies</button>
