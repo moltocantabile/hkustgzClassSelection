@@ -176,6 +176,19 @@ input,textarea,select{font:inherit}
 .cal-block-x{position:absolute;top:1px;right:2px;border:0;background:transparent;color:inherit;opacity:0;font-size:10px;padding:1px 4px;border-radius:4px}
 .cal-block:hover .cal-block-x{opacity:.85}
 .cal-block-x:hover{opacity:1;background:rgba(0,0,0,.12)}
+.cal-blocked{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;background:repeating-linear-gradient(135deg,rgba(220,38,38,.10) 0 8px,rgba(220,38,38,.20) 8px 16px);border:1.5px dashed rgba(220,38,38,.55);z-index:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(185,28,28,.9);letter-spacing:.5px;cursor:pointer}
+.cal-blocked:hover{border-color:#b91c1c;background:repeating-linear-gradient(135deg,rgba(220,38,38,.16) 0 8px,rgba(220,38,38,.30) 8px 16px)}
+.cal-sel{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;z-index:6;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.5px}
+.cal-sel.block{border:2px dashed rgba(220,38,38,.8);background:rgba(220,38,38,.14);color:#b91c1c}
+.cal-sel.contains{border:2px dashed rgba(36,86,230,.85);background:rgba(36,86,230,.14);color:#1d4ed8}
+.cal-ctx{position:fixed;z-index:120;min-width:280px;max-width:370px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(16,24,40,.18);padding:8px;font-size:12px}
+.cal-ctx-head{padding:4px 8px 9px;font-weight:800;color:#334155;border-bottom:1px solid var(--line);margin-bottom:6px;font-size:12.5px;line-height:1.4}
+.cal-ctx-item{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--ink)}
+.cal-ctx-item:hover{background:#f1f5ff}
+.cal-ctx-item b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px}
+.cal-ctx-item span{display:block;color:var(--muted);font-size:11px;margin-top:2px;white-space:normal}
+.cal-ctx-none{padding:6px 8px;color:var(--muted)}
+.cal-selecting{user-select:none;-webkit-user-select:none}
 .cal-preview{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;border:2px dashed rgba(36,86,230,.85);background:rgba(36,86,230,.16);z-index:3;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#1d4ed8;pointer-events:none;text-align:center;padding:0 4px}
 .cal-preview-bad{border-color:var(--bad);background:rgba(224,36,36,.15);color:#b91c1c}
 .cal-empty{grid-column:2 / -1;grid-row:2 / -1;display:flex;align-items:center;justify-content:center;color:#a6b0c4;font-size:13px;font-weight:600;letter-spacing:.3px;border:2px dashed #dbe2ee;border-radius:10px;margin:10px;background:#fbfcfe;z-index:1;pointer-events:none}
@@ -225,6 +238,7 @@ input,textarea,select{font:inherit}
 .combo-item em{margin-left:auto;font-style:normal;font-size:10.5px;color:#9a5b13;white-space:nowrap}
 .combo-empty{padding:10px;font-size:12px;color:var(--muted)}
 .tchip{display:inline-flex;align-items:center;gap:4px;background:#eef4ff;color:#1d4ed8;border-radius:999px;padding:2px 7px;font-size:11px;font-weight:700}
+.tchip.bad{background:#fee2e2;color:#b91c1c}
 .tchip button{border:0;background:transparent;color:#1d4ed8;padding:0 0 0 2px;font-size:12px;line-height:1}
 .sched-add{width:100%;margin-top:2px;border:1px dashed #c9d3e3;background:#fff;border-radius:9px;padding:7px;font-weight:700;font-size:12.5px;color:#46536e}
 .sched-add:hover{border-color:var(--accent);color:var(--accent);background:#f8fafd}
@@ -359,6 +373,14 @@ function sanitizePlanner(raw){
     rank: p.rank === 'distance' ? 'distance' : 'even',
     items: items
   };
+}
+function sanitizeBlocked(arr){
+  return (Array.isArray(arr) ? arr : []).map(b => ({
+    id: uid(),
+    day: Number(b && b.day),
+    start: Number(b && b.start),
+    end: Number(b && b.end)
+  })).filter(b => b.day >= 1 && b.day <= 5 && isFinite(b.start) && isFinite(b.end) && b.end > b.start);
 }
 function loadPlannerState(){
   try{
@@ -1045,6 +1067,28 @@ function pointerCell(e, el){
   if (time < START_HOUR || time > END_HOUR + 1) return null;
   return { day: day, time: time };
 }
+function pointerCellClamped(e, el){
+  const metrics = calendarMetrics(el);
+  if (!metrics) return null;
+  let day = 0;
+  for (let i = 0; i < metrics.days.length; i++){
+    if (e.clientX >= metrics.days[i].left) day = i + 1;
+  }
+  day = Math.max(1, Math.min(5, day));
+  const time = START_HOUR + (e.clientY - metrics.originTop) / metrics.rowH;
+  return { day: day, time: Math.max(START_HOUR, Math.min(END_HOUR + 1, time)) };
+}
+function boxRanges(a, b){
+  const out = [];
+  const d1 = Math.min(a.day, b.day), d2 = Math.max(a.day, b.day);
+  const t1 = Math.min(a.time, b.time), t2 = Math.max(a.time, b.time);
+  if (t2 - t1 < 0.01) return out;
+  for (let d = d1; d <= d2; d++) out.push({ day: d, start: t1, end: t2 });
+  return out;
+}
+function meetingInRanges(m, ranges){
+  return (ranges || []).some(r => r && r.day === m.day && m.start < r.end && r.start < m.end);
+}
 function meetingContains(m, day, time){
   return m.day === day && m.start <= time && time < m.end;
 }
@@ -1164,6 +1208,14 @@ function generateSchedules(input, coursesById, opts){
         continue;
       }
       warnings.push(code + ': time filter ' + label + ' → ' + bundles.length + '/' + before + ' section bundle(s)');
+    }
+    if (opts.blocked && opts.blocked.length){
+      const beforeB = bundles.length;
+      bundles = bundles.filter(bundle => !bundle.some(entry => (entry.meetings || []).some(m => meetingInRanges(m, opts.blocked))));
+      if (bundles.length !== beforeB){
+        warnings.push(code + ': blocked periods exclude ' + (beforeB - bundles.length) + '/' + beforeB + ' section bundle(s)');
+        if (!bundles.length) continue;
+      }
     }
     bundles = bundles.filter(bundle => !bundle.some(entry => findConflicts(entry.meetings, lockedForConflict).length));
     if (!bundles.length){
@@ -1943,10 +1995,15 @@ function exportTimetableImage(schedule, coursesById){
   a.click();
   return true;
 }
-function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry, crossDrag, onToggleCrossDrag, onDragBlock }){
+function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry, crossDrag, onToggleCrossDrag, onDragBlock, blockedPeriods, onAddBlocked, onRemoveBlocked, onSetContains, onSwitchSection }){
   const rows = [];
   for (let h = START_HOUR; h <= END_HOUR; h++) rows.push(h);
   const [tip, setTip] = React.useState(null);
+  const [sel, setSel] = React.useState(null);
+  const [ctxMenu, setCtxMenu] = React.useState(null);
+  const selRef = React.useRef(null);
+  const ctxRef = React.useRef(null);
+  const rightSelAtRef = React.useRef(0);
   const creditSum = React.useMemo(() => scheduleCreditSummary(schedule, coursesById), [schedule, coursesById]);
   const creditTitle = [
     creditSum.sis.rows.length ? 'SIS / courses.json:\n' + creditSum.sis.rows.map(r => r.code + ' · ' + formatCredits(r.credits) + ' cr').join('\n') : '',
@@ -1958,27 +2015,103 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
     return m;
   }, [schedule]);
   let hint = crossDrag
-    ? 'Cross-section drag on — drop onto any official section time of the course'
-    : 'Drag a section onto the grid — it stays at its official class time';
+    ? 'Cross-section drag on — drop onto any official section time · Right-click a class to switch section · Left-drag empty grid = block time · Right-drag = filter plans'
+    : 'Drag a section onto the grid — it stays at its official class time · Right-click a class to switch section · Left-drag empty grid = block time · Right-drag = filter plans';
   let hintBad = false;
   if (drag){
+    const hasBlocked = !!(hover && hover.conflicts && hover.conflicts.some(c => c.type === 'blocked'));
     if (hover && hover.active){
-      if (hover.conflicts && hover.conflicts.length){ hint = hover.active.label + ' · ' + hover.conflicts.length + ' conflict(s) — release still switches to this section'; hintBad = true; }
+      if (hover.conflicts && hover.conflicts.length){ hint = hover.active.label + ' · ' + (hasBlocked ? 'overlaps a blocked period' : hover.conflicts.length + ' conflict(s)') + ' — release still switches to this section'; hintBad = true; }
       else hint = hover.active.label + ' · no conflicts — release to use this section';
     } else if (hover && hover.meetings){
       if (hover.conflicts && hover.conflicts.some(c => c.type === 'duplicate')) { hint = 'Already in the timetable'; hintBad = true; }
-      else if (hover.conflicts && hover.conflicts.length){ hint = hover.conflicts.length + ' conflict(s) — releasing will still add it'; hintBad = true; }
+      else if (hover.conflicts && hover.conflicts.length){ hint = (hasBlocked ? 'Overlaps a blocked period' : hover.conflicts.length + ' conflict(s)') + ' — releasing will still add it'; hintBad = true; }
       else hint = 'Official time · no conflicts — release to add';
     } else hint = drag.mode === 'cross' ? 'Hover an outlined section time to switch' : 'Move over the grid to preview official meeting times…';
   }
   function showTip(e, en, m, conf){
-    if (drag) return;
+    if (drag || selRef.current) return;
     const r = e.currentTarget.getBoundingClientRect();
     const width = 280;
     const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
     const top = (r.bottom + 8 + 170 > window.innerHeight) ? Math.max(8, r.top - 178) : r.bottom + 8;
     setTip({ left: left, top: top, en: en, m: m, course: coursesById[en.course], conf: conf });
   }
+  function startBoxSelect(e){
+    const el = gridRef.current;
+    if (!el || !pointerOverCalendar(e, el)) return;
+    const cell = pointerCellClamped(e, el);
+    if (!cell) return;
+    const kind = e.button === 2 ? 'contains' : 'block';
+    const ref = { kind: kind, start: cell, cur: cell, moved: false, sx: e.clientX, sy: e.clientY, el: el };
+    selRef.current = ref;
+    setSel({ kind: kind, ranges: [] });
+    function onMove(ev){
+      const s = selRef.current;
+      if (!s) return;
+      if (!s.moved && Math.abs(ev.clientX - s.sx) + Math.abs(ev.clientY - s.sy) < 5) return;
+      const c = pointerCellClamped(ev, s.el);
+      if (!c) return;
+      s.moved = true;
+      s.cur = c;
+      setSel({ kind: s.kind, ranges: boxRanges(s.start, c) });
+    }
+    function onUp(){
+      const s = selRef.current;
+      selRef.current = null;
+      setSel(null);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      if (!s || !s.moved) return;
+      const ranges = boxRanges(s.start, s.cur);
+      if (!ranges.length) return;
+      if (s.kind === 'contains') rightSelAtRef.current = Date.now();
+      if (s.kind === 'block') onAddBlocked(ranges);
+      else onSetContains(ranges);
+    }
+    ref.onMove = onMove;
+    ref.onUp = onUp;
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+  function cancelBoxSelect(){
+    const s = selRef.current;
+    if (!s) return;
+    selRef.current = null;
+    setSel(null);
+    document.removeEventListener('mousemove', s.onMove);
+    document.removeEventListener('mouseup', s.onUp);
+  }
+  function openCtx(e, en, m){
+    e.preventDefault();
+    e.stopPropagation();
+    if (drag) return;
+    if (Date.now() - rightSelAtRef.current < 400) return;
+    setTip(null);
+    const course = coursesById[en.course];
+    if (!course) return;
+    const day = m.day;
+    const alts = (course.sections || []).filter(s => s.id !== en.section && (s.meetings || []).some(mt => mt.day === day && mt.start < m.end && m.start < mt.end));
+    const w = 340, hh = Math.min(380, 96 + alts.length * 56);
+    const x = Math.max(8, Math.min(e.clientX, window.innerWidth - w - 8));
+    const y = Math.max(8, Math.min(e.clientY, window.innerHeight - hh - 8));
+    setCtxMenu({ x: x, y: y, en: en, m: m, alts: alts });
+  }
+  React.useEffect(() => {
+    function onKey(e){
+      if (e.key === 'Escape'){ cancelBoxSelect(); setCtxMenu(null); }
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+  React.useEffect(() => {
+    if (!ctxMenu) return;
+    function onDoc(e){
+      if (ctxRef.current && !ctxRef.current.contains(e.target)) setCtxMenu(null);
+    }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [ctxMenu]);
   const ghosts = drag && drag.mode === 'cross' ? (drag.targets || []) : [];
   return (
     <div className="cal-wrap">
@@ -1998,9 +2131,20 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
         <div className="cal-legend">
           <span className="lg"><i style={{ background: 'hsla(210,78%,52%,.25)', border: '2px dashed hsl(210,72%,40%)' }}></i>section colors</span>
           <span className="lg"><i style={{ background: 'repeating-linear-gradient(135deg, hsla(210,78%,52%,.2) 0 6px, hsla(0,82%,52%,.2) 6px 12px)', border: '2px dashed #e02424' }}></i>conflict</span>
+          <span className="lg"><i style={{ background: 'repeating-linear-gradient(135deg, rgba(220,38,38,.10) 0 6px, rgba(220,38,38,.22) 6px 12px)', border: '1.5px dashed #b91c1c' }}></i>blocked</span>
         </div>
       </div>
-      <div className="cal" ref={gridRef} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <div className={'cal' + (sel ? ' cal-selecting' : '')} ref={gridRef}
+        onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
+        onMouseDown={(e) => {
+          if (drag) return;
+          if (e.button !== 0 && e.button !== 2) return;
+          const t = e.target;
+          if (t && t.closest && t.closest('.cal-block, .cal-blocked, .cal-ghost, .cal-preview, .cal-dayhead, .cal-time, .cal-corner, button')) return;
+          e.preventDefault();
+          startBoxSelect(e);
+        }}
+        onContextMenu={(e) => { e.preventDefault(); }}>
         <div className="cal-corner"></div>
         {DAY_LABELS.map((d, i) => <div key={d} className="cal-dayhead" style={{ gridRow: 1, gridColumn: i + 2 }}>{d}</div>)}
         {rows.map(h => (
@@ -2012,6 +2156,14 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
         {DAY_LABELS.map((d, i) => (
           <div key={'col' + d} className={'cal-col' + (drag && hover && hover.meetings && hover.meetings.some(m => m.day === i + 1) ? ' cal-col-hover' : '')} style={{ gridRow: '2 / -1', gridColumn: i + 2 }}></div>
         ))}
+        {(blockedPeriods || []).map(b => (
+          <div key={b.id} className="cal-blocked"
+            title={'Blocked ' + DAY_NAMES[b.day] + ' ' + fmtDec(b.start) + '–' + fmtDec(b.end) + ' — click to remove'}
+            onClick={() => onRemoveBlocked(b.id)}
+            style={{ gridColumn: b.day + 1, top: (b.start - START_HOUR) * HOUR_H + 4, height: Math.max(10, (b.end - b.start) * HOUR_H - 8) }}>
+            <span>blocked</span>
+          </div>
+        ))}
         {schedule.map(en => en.meetings.map(m => {
           const col = courseColor(en.course);
           const conf = conflictMap.get(en.section) || [];
@@ -2020,6 +2172,8 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
             <div key={en.section + '-' + m.day + '-' + m.start}
               className={'cal-block' + (conf.length ? ' cal-block-conf' : '') + (crossDrag ? ' movable' : '') + (dim ? ' dim' : '')}
               draggable={!!crossDrag}
+              onMouseDown={(e) => e.stopPropagation()}
+              onContextMenu={(e) => openCtx(e, en, m)}
               onDragStart={(e) => {
                 if (e.target && e.target.closest && e.target.closest('button')){ e.preventDefault(); return; }
                 setTip(null); if (onDragBlock) onDragBlock(e, en);
@@ -2061,8 +2215,30 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
           );
         }) : null}
         {!schedule.length && !drag ? <div className="cal-empty">Drag course sections here to build your schedule</div> : null}
+        {sel && sel.ranges.length ? sel.ranges.map((r, i) => (
+          <div key={'sel' + i} className={'cal-sel ' + (sel.kind === 'block' ? 'block' : 'contains')}
+            style={{ gridColumn: r.day + 1, top: (r.start - START_HOUR) * HOUR_H + 4, height: Math.max(10, (r.end - r.start) * HOUR_H - 8) }}>
+            {sel.kind === 'block' ? 'BLOCKED' : 'FILTER'}
+          </div>
+        )) : null}
       </div>
       {!drag ? <CalBlockTip tip={tip} /> : null}
+      {ctxMenu ? (
+        <div className="cal-ctx" ref={ctxRef} style={{ left: ctxMenu.x, top: ctxMenu.y }}>
+          <div className="cal-ctx-head">
+            {ctxMenu.en.course} {ctxMenu.en.label} · {DAY_NAMES[ctxMenu.m.day]} {fmtRange(ctxMenu.m)}<br />Other sections at the same time
+          </div>
+          {ctxMenu.alts.length ? ctxMenu.alts.map(alt => {
+            const same = (alt.meetings || []).filter(mt => mt.day === ctxMenu.m.day && mt.start < ctxMenu.m.end && ctxMenu.m.start < mt.end);
+            return (
+              <button key={alt.id} className="cal-ctx-item" onClick={() => { onSwitchSection(ctxMenu.en.course, alt); setCtxMenu(null); }}>
+                <b>{alt.label}</b>
+                <span>{(alt.componentName ? alt.componentName + ' · ' : '') + same.map(mt => DAY_NAMES[mt.day] + ' ' + fmtRange(mt) + (mt.room ? ' · ' + mt.room : '')).join(' / ')}{alt.meetings.length > same.length ? ' · +' + (alt.meetings.length - same.length) + ' more' : ''}</span>
+              </button>
+            );
+          }) : <div className="cal-ctx-none">No other section of this course meets at this time.</div>}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -2250,7 +2426,7 @@ function fmtHours(n){
   const x = Math.round(Number(n) * 10) / 10;
   return (x % 1 === 0 ? String(x.toFixed(0)) : String(x)) + 'h';
 }
-function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPlannerChange, lockedSchedule }){
+function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPlannerChange, lockedSchedule, blockedPeriods, containsSlots, onContainsChange }){
   const mode = planner.mode;
   const items = planner.items;
   const rank = planner.rank || 'even';
@@ -2294,7 +2470,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     setResult(null);
     setTimeout(() => {
       const reqs = items.filter(it => it.code && it.enabled !== false).map(it => ({ code: it.code, times: it.all ? [] : (it.times || []) }));
-      const opts = { collectLimit: 1000, showLimit: 1000, rankBy: rank };
+      const opts = { collectLimit: 1000, showLimit: 1000, rankBy: rank, blocked: blockedPeriods || [] };
       const r = generateSchedules(reqs, coursesById, Object.assign({ locked: lockedSchedule || [] }, opts));
       setResult(r);
       setBusy(false);
@@ -2314,13 +2490,21 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     setFEnd(v);
     if (v <= fStart) setFStart(Math.max(START_HOUR, v - 0.5));
   }
-  const shown = result ? result.solutions.filter(sol =>
-    filterSlots.every(slot => {
-      const entries = sol.entries && sol.entries.length ? sol.entries : (sol.full || []);
+  const shown = result ? result.solutions.filter(sol => {
+    const entriesOf = sol.entries && sol.entries.length ? sol.entries : (sol.full || []);
+    const passSlots = filterSlots.every(slot => {
       const dayMeetings = [];
-      entries.forEach(en => (en.meetings || []).forEach(m => { if (m.day === slot.day) dayMeetings.push(m); }));
+      entriesOf.forEach(en => (en.meetings || []).forEach(m => { if (m.day === slot.day) dayMeetings.push(m); }));
       return dayMeetings.length > 0 && dayMeetings.every(m => slot.start <= m.start && m.end <= slot.end);
-    })) : [];
+    });
+    const passContains = (containsSlots || []).every(slot => {
+      let hit = false;
+      entriesOf.forEach(en => (en.meetings || []).forEach(m => { if (m.day === slot.day && m.start < slot.end && slot.start < m.end) hit = true; }));
+      return hit;
+    });
+    const passBlocked = !(blockedPeriods || []).some(b => entriesOf.some(en => (en.meetings || []).some(m => m.day === b.day && m.start < b.end && b.start < m.end)));
+    return passSlots && passContains && passBlocked;
+  }) : [];
   const hint = mode === 'course'
     ? 'Pick a class time, or All to search every section'
     : 'Pick any clock time, keep sections that cover it';
@@ -2360,6 +2544,27 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
         <button className="sched-btn ghost" type="button" onClick={loadCurrent} disabled={busy || !(lockedSchedule && lockedSchedule.length)} title="Fill the list with courses currently on the timetable">Load current</button>
         <span className="sched-note">{items.filter(it => it.code && it.enabled !== false).length} course(s) selected</span>
       </div>
+      {containsSlots.length ? (
+        <div className="sched-filter">
+          <span className="sched-note">Must include classes in (timetable right-drag box):</span>
+          {containsSlots.map((sl, i) => (
+            <span className="tchip" key={'c' + i}>
+              {DAY_NAMES[sl.day]} {fmtDec(sl.start)}–{fmtDec(sl.end)}
+              <button type="button" onClick={() => onContainsChange(containsSlots.filter((_, j) => j !== i))}>×</button>
+            </span>
+          ))}
+          <button className="sbtn ghost" onClick={() => onContainsChange([])}>Clear</button>
+          {!result ? <span className="sched-note">Generate to apply this filter</span> : null}
+        </div>
+      ) : null}
+      {blockedPeriods.length ? (
+        <div className="sched-filter">
+          <span className="sched-note">Blocked periods (timetable left-drag box) — plans avoid them:</span>
+          {blockedPeriods.map(b => (
+            <span className="tchip bad" key={b.id}>{DAY_NAMES[b.day]} {fmtDec(b.start)}–{fmtDec(b.end)}</span>
+          ))}
+        </div>
+      ) : null}
       {result ? (
         <div>
           {result.solutions.length ? (
@@ -2384,7 +2589,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
                 </span>
               ))}
               {filterSlots.length ? <button className="sbtn ghost" onClick={() => setFilterSlots([])}>Clear</button> : null}
-              {filterSlots.length ? <span className="sched-note">Showing {shown.length} of {result.solutions.length} plan{result.solutions.length === 1 ? '' : 's'}</span> : null}
+              {(filterSlots.length || containsSlots.length || blockedPeriods.length) ? <span className="sched-note">Showing {shown.length} of {result.solutions.length} plan{result.solutions.length === 1 ? '' : 's'}</span> : null}
               <span className="sched-note">All classes on that day must fit inside the period</span>
             </div>
           ) : null}
@@ -2399,7 +2604,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
             <div className="sched-note" style={{ marginTop: 8 }}>{result.found} conflict-free timetable{result.found === 1 ? '' : 's'} found.</div>
           ) : null}
           {!shown.length && result.solutions.length ? (
-            <div className="warn">No plans fit the selected day windows — adjust or clear the filter.</div>
+            <div className="warn">No plans fit the current filters — adjust or clear them.</div>
           ) : null}
           {shown.map((sol, i) => (
             <div className="solution" key={i}>
@@ -2602,6 +2807,8 @@ function App(){
   const [crossDrag, setCrossDrag] = React.useState(false);
   const [hydrated, setHydrated] = React.useState(false);
   const [cartOpen, setCartOpen] = React.useState(false);
+  const [blockedPeriods, setBlockedPeriods] = React.useState([]);
+  const [containsSlots, setContainsSlots] = React.useState([]);
   const gridRef = React.useRef(null);
   const loadedRef = React.useRef(false);
   const rawCoursesRef = React.useRef(null);
@@ -2709,6 +2916,7 @@ function App(){
       schedule: schedule.map(en => ({ course: en.course, section: en.section, label: en.label })),
       planner: plannerForSave(planner),
       crossDrag: !!crossDrag,
+      blocked: blockedPeriods.map(b => ({ day: b.day, start: b.start, end: b.end })),
       savedAt: new Date().toISOString()
     };
   }
@@ -2735,10 +2943,12 @@ function App(){
     if (parsed.planner) setPlanner(nextPlanner);
     if (Array.isArray(parsed.schedule)) setSchedule(nextSchedule);
     if (typeof parsed.crossDrag === 'boolean') setCrossDrag(parsed.crossDrag);
+    if (Array.isArray(parsed.blocked)) setBlockedPeriods(sanitizeBlocked(parsed.blocked));
     try{
       localStorage.setItem(LS_KEY, JSON.stringify({
         schedule: nextSchedule.map(en => ({ course: en.course, section: en.section, label: en.label })),
         planner: plannerForSave(nextPlanner),
+        blocked: sanitizeBlocked(parsed.blocked).map(b => ({ day: b.day, start: b.start, end: b.end })),
         savedAt: new Date().toISOString()
       }));
     }catch(e){ /* storage full/blocked */ }
@@ -2765,6 +2975,7 @@ function App(){
       const parsed = JSON.parse(raw);
       if (parsed.planner) setPlanner(sanitizePlanner(parsed.planner));
       if (typeof parsed.crossDrag === 'boolean') setCrossDrag(parsed.crossDrag);
+      if (Array.isArray(parsed.blocked)) setBlockedPeriods(sanitizeBlocked(parsed.blocked));
       setSchedule(hydrateSchedule(parsed.schedule, courses));
     }catch(e){ /* ignore corrupt saves */ }
     setHydrated(true);
@@ -2773,7 +2984,7 @@ function App(){
   React.useEffect(() => {
     if (status !== 'ready' || !hydrated) return;
     writeLocal();
-  }, [schedule, planner, status, hydrated]);
+  }, [schedule, planner, blockedPeriods, status, hydrated]);
 
   React.useEffect(() => {
     const clear = () => { setDrag(null); setHover(null); };
@@ -2798,6 +3009,29 @@ function App(){
       bundle.forEach(sec => { if (sec && sec.id) ids[sec.id] = true; });
       return prev.filter(en => !ids[en.section]);
     });
+  }
+  function addBlockedRanges(ranges){
+    const clean = (ranges || []).map(r => ({ id: uid(), day: Number(r.day), start: Number(r.start), end: Number(r.end) }))
+      .filter(r => r.day >= 1 && r.day <= 5 && isFinite(r.start) && isFinite(r.end) && r.end > r.start);
+    if (!clean.length) return;
+    setBlockedPeriods(prev => prev.concat(clean));
+    toast('Blocked ' + clean.map(r => DAY_NAMES[r.day] + ' ' + fmtDec(r.start) + '–' + fmtDec(r.end)).join(', '));
+  }
+  function removeBlocked(id){
+    setBlockedPeriods(prev => prev.filter(b => b.id !== id));
+  }
+  function setContainsRanges(ranges){
+    const clean = (ranges || []).map(r => ({ day: Number(r.day), start: Number(r.start), end: Number(r.end) }))
+      .filter(r => r.day >= 1 && r.day <= 5 && isFinite(r.start) && isFinite(r.end) && r.end > r.start);
+    setContainsSlots(clean);
+    if (clean.length) toast('Plan filter: only plans with classes ' + clean.map(r => DAY_NAMES[r.day] + ' ' + fmtDec(r.start) + '–' + fmtDec(r.end)).join(', '));
+  }
+  function switchSection(courseCode, section){
+    const course = coursesById[courseCode];
+    if (!course) return;
+    const extras = companionSections(course, section).map(x => x.label);
+    setSchedule(prev => upsertSectionChoice(prev, course, section));
+    toast('Switched ' + courseCode + ' to ' + section.label + (extras.length ? ' + ' + extras.join(', ') : ''));
   }
   function beginCrossDrag(e, course, origin){
     e.dataTransfer.setData('text/plain', course.code);
@@ -2843,12 +3077,15 @@ function App(){
     }
     if (drag.mode === 'cross'){
       const active = pickTarget(drag.targets, e, el);
-      setHover({ meetings: active ? active.meetings : [], conflicts: active ? active.conflicts : [], active: active });
+      const conflicts = active ? active.conflicts.slice() : [];
+      if (active && (active.meetings || []).some(m => meetingInRanges(m, blockedPeriods))) conflicts.push({ type: 'blocked' });
+      setHover({ meetings: active ? active.meetings : [], conflicts: conflicts, active: active });
       return;
     }
     const others = schedule.filter(en => en.course !== drag.course || (drag.raw && en.component !== drag.raw.component));
     const conflicts = findConflicts(drag.meetings, others);
     if (schedule.some(en => en.section === drag.section)) conflicts.push({ type: 'duplicate' });
+    if ((drag.meetings || []).some(m => meetingInRanges(m, blockedPeriods))) conflicts.push({ type: 'blocked' });
     setHover({ meetings: drag.meetings, conflicts: conflicts });
   }
   function handleDragLeave(e){
@@ -3015,7 +3252,8 @@ function App(){
           <Timetable schedule={schedule} coursesById={coursesById} drag={drag} hover={hover} gridRef={gridRef}
             onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
             onRemoveEntry={removeSection} crossDrag={crossDrag} onToggleCrossDrag={setCrossDrag}
-            onDragBlock={startBlockDrag} />
+            onDragBlock={startBlockDrag} blockedPeriods={blockedPeriods} onAddBlocked={addBlockedRanges}
+            onRemoveBlocked={removeBlocked} onSetContains={setContainsRanges} onSwitchSection={switchSection} />
         </section>
         <aside className={'right' + (rightOpen ? '' : ' collapsed')}>
           {rightOpen ? (
@@ -3028,7 +3266,7 @@ function App(){
           </div>
           <div className="tab-body">
             {tab === 'sched'
-              ? <SchedulerTab courses={courses} coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} planner={planner} onPlannerChange={setPlanner} lockedSchedule={schedule} />
+              ? <SchedulerTab courses={courses} coursesById={coursesById} onApply={applySolution} focusTick={schedFocusTick} planner={planner} onPlannerChange={setPlanner} lockedSchedule={schedule} blockedPeriods={blockedPeriods} containsSlots={containsSlots} onContainsChange={setContainsSlots} />
               : <DepsTab key={'deps' + deps.key} initialCode={deps.code} courses={courses} coursesById={coursesById}
                   catalogMap={catalogMap} names={names} onJump={jumpTo} />}
           </div>
