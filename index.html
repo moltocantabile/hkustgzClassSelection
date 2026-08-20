@@ -178,6 +178,8 @@ input,textarea,select{font:inherit}
 .cal-block-x:hover{opacity:1;background:rgba(0,0,0,.12)}
 .cal-blocked{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;background:repeating-linear-gradient(135deg,rgba(220,38,38,.10) 0 8px,rgba(220,38,38,.20) 8px 16px);border:1.5px dashed rgba(220,38,38,.55);z-index:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(185,28,28,.9);letter-spacing:.5px;cursor:pointer}
 .cal-blocked:hover{border-color:#b91c1c;background:repeating-linear-gradient(135deg,rgba(220,38,38,.16) 0 8px,rgba(220,38,38,.30) 8px 16px)}
+.cal-contains{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;background:repeating-linear-gradient(135deg,rgba(36,86,230,.08) 0 8px,rgba(36,86,230,.16) 8px 16px);border:1.5px dashed rgba(36,86,230,.55);z-index:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(29,78,216,.9);letter-spacing:.5px;cursor:pointer}
+.cal-contains:hover{border-color:#1d4ed8;background:repeating-linear-gradient(135deg,rgba(36,86,230,.14) 0 8px,rgba(36,86,230,.24) 8px 16px)}
 .cal-sel{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;z-index:6;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.5px}
 .cal-sel.block{border:2px dashed rgba(220,38,38,.8);background:rgba(220,38,38,.14);color:#b91c1c}
 .cal-sel.contains{border:2px dashed rgba(36,86,230,.85);background:rgba(36,86,230,.14);color:#1d4ed8}
@@ -374,7 +376,7 @@ function sanitizePlanner(raw){
     items: items
   };
 }
-function sanitizeBlocked(arr){
+function sanitizeRanges(arr){
   return (Array.isArray(arr) ? arr : []).map(b => ({
     id: uid(),
     day: Number(b && b.day),
@@ -443,9 +445,16 @@ function sectionTint(index){
 function truncate(s, n){ s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 function summaryOf(meetings){
   if (!meetings || !meetings.length) return 'TBA';
-  const m = meetings[0];
+  const seen = new Set();
+  const uniq = (meetings || []).filter(m => {
+    const k = m.day + '|' + m.start + '|' + m.end;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  const m = uniq[0];
   let s = DAY_NAMES[m.day] + ' ' + fmtRange(m);
-  if (meetings.length > 1) s += ' · +' + (meetings.length - 1) + ' more';
+  if (uniq.length > 1) s += ' · +' + (uniq.length - 1) + ' more';
   return s;
 }
 let _uid = 0;
@@ -1995,7 +2004,7 @@ function exportTimetableImage(schedule, coursesById){
   a.click();
   return true;
 }
-function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry, crossDrag, onToggleCrossDrag, onDragBlock, blockedPeriods, onAddBlocked, onRemoveBlocked, onSetContains, onSwitchSection }){
+function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry, crossDrag, onToggleCrossDrag, onDragBlock, blockedPeriods, onAddBlocked, onRemoveBlocked, containsSlots, onRemoveContains, onSetContains, onSwitchSection }){
   const rows = [];
   for (let h = START_HOUR; h <= END_HOUR; h++) rows.push(h);
   const [tip, setTip] = React.useState(null);
@@ -2014,6 +2023,55 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
     schedule.forEach((en, i) => m.set(en.section, findConflicts(en.meetings, schedule.filter((e, j) => j !== i))));
     return m;
   }, [schedule]);
+  const displayMeetings = React.useMemo(() => {
+    const map = new Map();
+    schedule.forEach((en, ei) => {
+      const seen = new Map();
+      for (const m of (en.meetings || [])){
+        const k = m.day + '|' + m.start + '|' + m.end;
+        const prev = seen.get(k);
+        if (prev){
+          if (m.startDate && (!prev.startDate || m.startDate < prev.startDate)) prev.startDate = m.startDate;
+          if (m.endDate && (!prev.endDate || m.endDate > prev.endDate)) prev.endDate = m.endDate;
+          for (const i of (m.instructors || [])){
+            if (!prev.instructors.some(x => x.name === i.name)) prev.instructors.push(i);
+          }
+          prev.teacher = prev.instructors.map(x => x.name).join('; ');
+        } else {
+          seen.set(k, Object.assign({}, m, { instructors: (m.instructors || []).slice() }));
+        }
+      }
+      map.set(en.section, Array.from(seen.values()));
+    });
+    return map;
+  }, [schedule]);
+  const laneInfo = React.useMemo(() => {
+    const items = [];
+    schedule.forEach((en, ei) => {
+      (displayMeetings.get(en.section) || []).forEach((m, mi) => items.push({ en: en, m: m, ei: ei, mi: mi }));
+    });
+    const byDay = {};
+    items.forEach(it => { (byDay[it.m.day] || (byDay[it.m.day] = [])).push(it); });
+    const map = {};
+    Object.keys(byDay).forEach(d => {
+      const list = byDay[d];
+      const used = list.map(() => false);
+      for (let i = 0; i < list.length; i++){
+        if (used[i]) continue;
+        const stack = [i]; used[i] = true; const group = [];
+        while (stack.length){
+          const u = stack.pop(); group.push(list[u]);
+          for (let v = 0; v < list.length; v++){
+            if (!used[v] && meetingsOverlap(list[u].m, list[v].m)){ used[v] = true; stack.push(v); }
+          }
+        }
+        group.sort((a, b) => String(a.en.course).localeCompare(String(b.en.course)) || String(a.en.section).localeCompare(String(b.en.section)) || a.m.start - b.m.start || a.ei - b.ei || a.mi - b.mi);
+        group.forEach((it, idx) => { it.lane = idx; it.lanes = group.length; });
+      }
+    });
+    items.forEach(it => { map[it.en.section + '|' + it.m.day + '|' + it.m.start + '|' + it.m.end] = { lane: it.lane, lanes: it.lanes }; });
+    return map;
+  }, [schedule, displayMeetings]);
   let hint = crossDrag
     ? 'Cross-section drag on — drop onto any official section time · Right-click a class to switch section · Left-drag empty grid = block time · Right-drag = filter plans'
     : 'Drag a section onto the grid — it stays at its official class time · Right-click a class to switch section · Left-drag empty grid = block time · Right-drag = filter plans';
@@ -2132,6 +2190,7 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
           <span className="lg"><i style={{ background: 'hsla(210,78%,52%,.25)', border: '2px dashed hsl(210,72%,40%)' }}></i>section colors</span>
           <span className="lg"><i style={{ background: 'repeating-linear-gradient(135deg, hsla(210,78%,52%,.2) 0 6px, hsla(0,82%,52%,.2) 6px 12px)', border: '2px dashed #e02424' }}></i>conflict</span>
           <span className="lg"><i style={{ background: 'repeating-linear-gradient(135deg, rgba(220,38,38,.10) 0 6px, rgba(220,38,38,.22) 6px 12px)', border: '1.5px dashed #b91c1c' }}></i>blocked</span>
+          <span className="lg"><i style={{ background: 'repeating-linear-gradient(135deg, rgba(36,86,230,.08) 0 6px, rgba(36,86,230,.16) 6px 12px)', border: '1.5px dashed #1d4ed8' }}></i>filter</span>
         </div>
       </div>
       <div className={'cal' + (sel ? ' cal-selecting' : '')} ref={gridRef}
@@ -2140,7 +2199,7 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
           if (drag) return;
           if (e.button !== 0 && e.button !== 2) return;
           const t = e.target;
-          if (t && t.closest && t.closest('.cal-block, .cal-blocked, .cal-ghost, .cal-preview, .cal-dayhead, .cal-time, .cal-corner, button')) return;
+          if (t && t.closest && t.closest('.cal-block, .cal-blocked, .cal-contains, .cal-ghost, .cal-preview, .cal-dayhead, .cal-time, .cal-corner, button')) return;
           e.preventDefault();
           startBoxSelect(e);
         }}
@@ -2164,10 +2223,21 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
             <span>blocked</span>
           </div>
         ))}
-        {schedule.map(en => en.meetings.map(m => {
+        {(containsSlots || []).map(c => (
+          <div key={c.id} className="cal-contains"
+            title={'Filter: plans must include classes ' + DAY_NAMES[c.day] + ' ' + fmtDec(c.start) + '–' + fmtDec(c.end) + ' — click to remove'}
+            onClick={() => onRemoveContains(c.id)}
+            style={{ gridColumn: c.day + 1, top: (c.start - START_HOUR) * HOUR_H + 4, height: Math.max(10, (c.end - c.start) * HOUR_H - 8) }}>
+            <span>filter</span>
+          </div>
+        ))}
+        {schedule.map(en => (displayMeetings.get(en.section) || en.meetings).map(m => {
           const col = courseColor(en.course);
           const conf = conflictMap.get(en.section) || [];
           const dim = !!(drag && drag.course === en.course);
+          const lm = laneInfo[en.section + '|' + m.day + '|' + m.start + '|' + m.end] || { lane: 0, lanes: 1 };
+          const lanes = Math.max(1, lm.lanes || 1);
+          const lane = Math.min(Math.max(0, lm.lane || 0), lanes - 1);
           return (
             <div key={en.section + '-' + m.day + '-' + m.start}
               className={'cal-block' + (conf.length ? ' cal-block-conf' : '') + (crossDrag ? ' movable' : '') + (dim ? ' dim' : '')}
@@ -2180,7 +2250,7 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
               }}
               onMouseEnter={(e) => showTip(e, en, m, conf)}
               onMouseLeave={() => setTip(null)}
-              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, background: col.bg, borderLeftColor: col.border }}>
+              style={{ gridColumn: m.day + 1, top: (m.start - START_HOUR) * HOUR_H + 4, height: (m.end - m.start) * HOUR_H - 8, left: 'calc(' + (lane / lanes) * 100 + '% + 2px)', width: 'calc(' + 100 / lanes + '% - 4px)', margin: 0, background: col.bg, borderLeftColor: col.border }}>
               <div className="cal-block-code" style={{ color: col.text }}>{en.course} <span className="cal-block-sec">{en.label}</span></div>
               <div className="cal-block-room">{m.room || 'TBA'}</div>
               {conf.length ? <div className="cal-block-warn">⚠</div> : null}
@@ -2547,10 +2617,10 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
       {containsSlots.length ? (
         <div className="sched-filter">
           <span className="sched-note">Must include classes in (timetable right-drag box):</span>
-          {containsSlots.map((sl, i) => (
-            <span className="tchip" key={'c' + i}>
+          {containsSlots.map(sl => (
+            <span className="tchip" key={sl.id}>
               {DAY_NAMES[sl.day]} {fmtDec(sl.start)}–{fmtDec(sl.end)}
-              <button type="button" onClick={() => onContainsChange(containsSlots.filter((_, j) => j !== i))}>×</button>
+              <button type="button" onClick={() => onContainsChange(containsSlots.filter(c => c.id !== sl.id))}>×</button>
             </span>
           ))}
           <button className="sbtn ghost" onClick={() => onContainsChange([])}>Clear</button>
@@ -2917,6 +2987,7 @@ function App(){
       planner: plannerForSave(planner),
       crossDrag: !!crossDrag,
       blocked: blockedPeriods.map(b => ({ day: b.day, start: b.start, end: b.end })),
+      contains: containsSlots.map(c => ({ day: c.day, start: c.start, end: c.end })),
       savedAt: new Date().toISOString()
     };
   }
@@ -2943,12 +3014,14 @@ function App(){
     if (parsed.planner) setPlanner(nextPlanner);
     if (Array.isArray(parsed.schedule)) setSchedule(nextSchedule);
     if (typeof parsed.crossDrag === 'boolean') setCrossDrag(parsed.crossDrag);
-    if (Array.isArray(parsed.blocked)) setBlockedPeriods(sanitizeBlocked(parsed.blocked));
+    if (Array.isArray(parsed.blocked)) setBlockedPeriods(sanitizeRanges(parsed.blocked));
+    if (Array.isArray(parsed.contains)) setContainsSlots(sanitizeRanges(parsed.contains));
     try{
       localStorage.setItem(LS_KEY, JSON.stringify({
         schedule: nextSchedule.map(en => ({ course: en.course, section: en.section, label: en.label })),
         planner: plannerForSave(nextPlanner),
-        blocked: sanitizeBlocked(parsed.blocked).map(b => ({ day: b.day, start: b.start, end: b.end })),
+        blocked: sanitizeRanges(parsed.blocked).map(b => ({ day: b.day, start: b.start, end: b.end })),
+        contains: sanitizeRanges(parsed.contains).map(c => ({ day: c.day, start: c.start, end: c.end })),
         savedAt: new Date().toISOString()
       }));
     }catch(e){ /* storage full/blocked */ }
@@ -2975,7 +3048,8 @@ function App(){
       const parsed = JSON.parse(raw);
       if (parsed.planner) setPlanner(sanitizePlanner(parsed.planner));
       if (typeof parsed.crossDrag === 'boolean') setCrossDrag(parsed.crossDrag);
-      if (Array.isArray(parsed.blocked)) setBlockedPeriods(sanitizeBlocked(parsed.blocked));
+      if (Array.isArray(parsed.blocked)) setBlockedPeriods(sanitizeRanges(parsed.blocked));
+      if (Array.isArray(parsed.contains)) setContainsSlots(sanitizeRanges(parsed.contains));
       setSchedule(hydrateSchedule(parsed.schedule, courses));
     }catch(e){ /* ignore corrupt saves */ }
     setHydrated(true);
@@ -2984,7 +3058,7 @@ function App(){
   React.useEffect(() => {
     if (status !== 'ready' || !hydrated) return;
     writeLocal();
-  }, [schedule, planner, blockedPeriods, status, hydrated]);
+  }, [schedule, planner, blockedPeriods, containsSlots, status, hydrated]);
 
   React.useEffect(() => {
     const clear = () => { setDrag(null); setHover(null); };
@@ -3021,10 +3095,13 @@ function App(){
     setBlockedPeriods(prev => prev.filter(b => b.id !== id));
   }
   function setContainsRanges(ranges){
-    const clean = (ranges || []).map(r => ({ day: Number(r.day), start: Number(r.start), end: Number(r.end) }))
+    const clean = (ranges || []).map(r => ({ id: uid(), day: Number(r.day), start: Number(r.start), end: Number(r.end) }))
       .filter(r => r.day >= 1 && r.day <= 5 && isFinite(r.start) && isFinite(r.end) && r.end > r.start);
     setContainsSlots(clean);
     if (clean.length) toast('Plan filter: only plans with classes ' + clean.map(r => DAY_NAMES[r.day] + ' ' + fmtDec(r.start) + '–' + fmtDec(r.end)).join(', '));
+  }
+  function removeContains(id){
+    setContainsSlots(prev => prev.filter(c => c.id !== id));
   }
   function switchSection(courseCode, section){
     const course = coursesById[courseCode];
@@ -3253,7 +3330,8 @@ function App(){
             onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
             onRemoveEntry={removeSection} crossDrag={crossDrag} onToggleCrossDrag={setCrossDrag}
             onDragBlock={startBlockDrag} blockedPeriods={blockedPeriods} onAddBlocked={addBlockedRanges}
-            onRemoveBlocked={removeBlocked} onSetContains={setContainsRanges} onSwitchSection={switchSection} />
+            onRemoveBlocked={removeBlocked} containsSlots={containsSlots} onRemoveContains={removeContains}
+            onSetContains={setContainsRanges} onSwitchSection={switchSection} />
         </section>
         <aside className={'right' + (rightOpen ? '' : ' collapsed')}>
           {rightOpen ? (
