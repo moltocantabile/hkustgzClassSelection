@@ -508,6 +508,102 @@ function normalizeCourses(raw, catalogMap){
   return (Array.isArray(raw) ? raw : []).map(c => normalizeCourse(c, catalogMap)).filter(c => c.code);
 }
 
+const COMP_MAP_KLMS = { 'Lecture': 'LEC', 'Laboratory': 'LAB', 'Tutorial': 'TUT', 'Seminar': 'SEM', 'Other': 'OTH' };
+function normalizeKlmsCourses(raw, catalogMap){
+  const out = [];
+  for (const item of (Array.isArray(raw) ? raw : [])){
+    const ci = item.courseInfo || {};
+    const code = normCode(ci.crseCode);
+    if (!code) continue;
+    const cat = (catalogMap && catalogMap[code]) || {};
+    const sections = [];
+    const seenIds = new Set();
+    for (const m of (item.courseModuleInfos || [])){
+      const id = String(m.classId || '');
+      if (!id || seenIds.has(id)) continue;
+      seenIds.add(id);
+      const meetings = [];
+      for (const mt of (m.meetingInfoList || [])){
+        const days = String(mt.weekDay || '').split(',').map(x => parseInt(x, 10)).filter(x => x >= 1 && x <= 5);
+        const start = toDec(mt.meetingStartTime), end = toDec(mt.meetingEndTime);
+        if (!days.length || !isFinite(start) || !isFinite(end) || end <= start) continue;
+        const instructors = [];
+        const seenInst = {};
+        for (const raw of (mt.instructorList || [])){
+          const name = cleanTeacher(raw.instructorName) || cleanTeacher(raw.lastName) || cleanTeacher(raw.firstName) || '';
+          if (!name) continue;
+          const inst = {
+            name: name,
+            email: cleanField(raw.email),
+            account: cleanField(raw.userAccount),
+            role: cleanField(raw.instructorRole),
+            firstName: cleanField(raw.firstName),
+            lastName: cleanField(raw.lastName)
+          };
+          const key = inst.name + '|' + inst.email + '|' + inst.account;
+          if (seenInst[key]) continue;
+          seenInst[key] = true;
+          instructors.push(inst);
+        }
+        const teacher = instructors.map(x => x.name).join('; ');
+        const room = String(mt.facilityName || mt.location || '').trim();
+        const startDate = cleanField(mt.startDate), endDate = cleanField(mt.endDate);
+        for (const day of days) meetings.push({ day: day, start: start, end: end, room: room, teacher: teacher, instructors: instructors, startDate: startDate, endDate: endDate });
+      }
+      meetings.sort((a, b) => a.day - b.day || a.start - b.start);
+      const componentName = cleanField(m.crseComponentName) || 'Other';
+      const rawLabel = cleanField(m.classSection) || cleanField(m.classCode) || 'Section';
+      const classCode = cleanField(m.classCode);
+      sections.push({
+        id: id,
+        label: rawLabel,
+        type: componentName,
+        component: COMP_MAP_KLMS[componentName] || 'OTH',
+        componentName: componentName,
+        associatedClass: 0,
+        optional: false,
+        primary: false,
+        capacity: Number(m.enrollmentCapacity) || 0,
+        enrolled: Number(m.enrollmentNbr) || 0,
+        _rawLabel: rawLabel,
+        _classCode: classCode,
+        meetings: meetings
+      });
+    }
+    const labelCount = {};
+    sections.forEach(s => labelCount[s._rawLabel] = (labelCount[s._rawLabel] || 0) + 1);
+    sections.forEach(s => {
+      s.label = (labelCount[s._rawLabel] > 1 && s._classCode) ? s._rawLabel + ' (' + s._classCode + ')' : s._rawLabel;
+      delete s._rawLabel;
+      delete s._classCode;
+    });
+    sections.sort((a, b) => a.component.localeCompare(b.component) || a.label.localeCompare(b.label, undefined, { numeric: true }));
+    if (!sections.length) continue;
+    out.push({
+      code: code,
+      name: ci.crseName || '',
+      credits: Number(ci.totalCredits) || 0,
+      shortDesc: cleanField(ci.crseShortDesc),
+      desc: cleanField(cat.crseDescr) || cleanField(ci.crseShortDesc),
+      sections: sections,
+      isMulti: false,
+      associateMsg: '',
+      subject: cleanField(ci.subjectArea) || (code.match(/^[A-Z]+/) || [''])[0],
+      career: cleanField(ci.academicCareer) || 'UGRD',
+      prereq: cleanField(cat.crsePrerequisite),
+      coreq: cleanField(cat.crseCorequisite),
+      equiv: cleanField(cat.equivCourseCode),
+      title: cleanField(cat.crseTitle)
+    });
+  }
+  return out;
+}
+function mergeCourses(sisCourses, klmsCourses){
+  const klms = klmsCourses || [];
+  const klmsCodes = new Set(klms.map(c => c.code));
+  return (sisCourses || []).filter(c => !klmsCodes.has(c.code)).concat(klms);
+}
+
 const COMP_ORDER = ['LEC', 'TUT', 'LAB', 'SEM', 'IND', 'PRJ'];
 function isWildcardAssoc(n){ return n == null || n === 0 || n === 9999; }
 function groupSections(sections){
@@ -1268,14 +1364,15 @@ function LoadScreen(){
     <div className="screen"><div className="screen-card">
       <div className="spinner"></div>
       <h2>Loading course data…</h2>
-      <p>Fetching courses.json and data.json from the same folder.</p>
+      <p>Fetching courses.json, courses_klms.json and data.json from the same folder.</p>
     </div></div>
   );
 }
 function ManualLoad({ onData }){
-  const [files, setFiles] = React.useState({ courses: null, catalog: null });
+  const [files, setFiles] = React.useState({ courses: null, catalog: null, klms: null });
   const [err, setErr] = React.useState('');
   const [busy, setBusy] = React.useState(false);
+  const fileName = { courses: 'courses.json', catalog: 'data.json', klms: 'courses_klms.json' };
   function readFile(file){
     return new Promise((resolve, reject) => {
       const r = new FileReader();
@@ -1292,17 +1389,24 @@ function ManualLoad({ onData }){
       const data = await readFile(f);
       setFiles(prev => ({ ...prev, [key]: data }));
     }catch(ex){
-      setErr(key === 'courses' ? 'courses.json is not valid JSON: ' + ex.message : 'data.json is not valid JSON: ' + ex.message);
+      setErr((fileName[key] || key) + ' is not valid JSON: ' + ex.message);
     }
   }
   async function load(){
-    if (!files.courses || !files.catalog){ setErr('Please select both JSON files.'); return; }
+    if (!files.courses || !files.catalog){ setErr('Please select courses.json and data.json. courses_klms.json is optional.'); return; }
     setBusy(true);
     try{
       const catalogMap = buildCatalog(files.catalog);
-      const courses = normalizeCourses(files.courses, catalogMap);
-      if (!courses.length) throw new Error('no courses could be parsed');
-      onData({ courses: courses, catalogMap: catalogMap, rawCourses: files.courses, rawCatalog: files.catalog });
+      const sis = normalizeCourses(files.courses, catalogMap);
+      if (!sis.length) throw new Error('no courses could be parsed');
+      const kl = files.klms ? normalizeKlmsCourses(files.klms, catalogMap) : [];
+      onData({
+        courses: mergeCourses(sis, kl),
+        catalogMap: catalogMap,
+        rawCourses: files.courses,
+        rawCatalog: files.catalog,
+        rawKlms: files.klms || []
+      });
     }catch(ex){
       setErr('Could not parse data: ' + ex.message);
       setBusy(false);
@@ -1311,11 +1415,16 @@ function ManualLoad({ onData }){
   return (
     <div className="screen"><div className="screen-card">
       <h2>📚 HKUST SIS Course Planner</h2>
-      <p>Could not auto-load JSON from this folder. Select <code>courses.json</code> and <code>data.json</code> below.</p>
+      <p>Could not auto-load JSON from this folder. Select <code>courses.json</code> and <code>data.json</code> below; <code>courses_klms.json</code> (PE / general education) is optional.</p>
       <div className="file-row">
         <label>courses.json</label>
         <input type="file" accept=".json,application/json" onChange={(e) => onPick('courses', e)} />
         <span className="fstate">{files.courses ? '✓ loaded' : ''}</span>
+      </div>
+      <div className="file-row">
+        <label>courses_klms.json <span style={{ fontWeight: 400, color: '#5a6580' }}>(optional)</span></label>
+        <input type="file" accept=".json,application/json" onChange={(e) => onPick('klms', e)} />
+        <span className="fstate">{files.klms ? '✓ loaded' : ''}</span>
       </div>
       <div className="file-row">
         <label>data.json</label>
@@ -2284,7 +2393,7 @@ function App(){
   const [schedFocusTick, setSchedFocusTick] = React.useState(0);
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
-  const [dataLabels, setDataLabels] = React.useState({ courses: 'courses.json', catalog: 'data.json' });
+  const [dataLabels, setDataLabels] = React.useState({ courses: 'courses.json', catalog: 'data.json', klms: 'courses_klms.json' });
   const [planner, setPlanner] = React.useState(() => loadPlannerState());
   const [crossDrag, setCrossDrag] = React.useState(false);
   const [hydrated, setHydrated] = React.useState(false);
@@ -2293,6 +2402,7 @@ function App(){
   const loadedRef = React.useRef(false);
   const rawCoursesRef = React.useRef(null);
   const rawCatalogRef = React.useRef(null);
+  const rawKlmsRef = React.useRef([]);
 
   const coursesById = React.useMemo(() => { const m = {}; courses.forEach(c => m[c.code] = c); return m; }, [courses]);
   const names = React.useMemo(() => {
@@ -2314,15 +2424,17 @@ function App(){
     setToasts(t => t.concat([{ id: id, msg: msg }]));
     setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 2600);
   }
-  function applyLoadedData(rawCourses, rawCatalog, labels){
+  function applyLoadedData(rawCourses, rawCatalog, labels, rawKlms){
     const cm = buildCatalog(rawCatalog || []);
-    const cs = normalizeCourses(Array.isArray(rawCourses) ? rawCourses : [], cm);
+    const klmsRaw = rawKlms !== undefined ? (rawKlms || []) : (rawKlmsRef.current || []);
+    const cs = mergeCourses(normalizeCourses(Array.isArray(rawCourses) ? rawCourses : [], cm), normalizeKlmsCourses(klmsRaw, cm));
     if (!cs.length) throw new Error('no courses could be parsed');
     rawCoursesRef.current = rawCourses;
     rawCatalogRef.current = rawCatalog;
+    rawKlmsRef.current = klmsRaw;
     setCatalogMap(cm);
     setCourses(cs);
-    setDataLabels(Object.assign({ courses: 'courses.json', catalog: 'data.json' }, labels || {}));
+    setDataLabels(Object.assign({ courses: 'courses.json', catalog: 'data.json', klms: 'courses_klms.json' }, labels || {}));
     setSelected(null);
     const ids = {};
     cs.forEach(c => c.sections.forEach(s => { ids[s.id] = true; }));
@@ -2346,6 +2458,10 @@ function App(){
         if (!Array.isArray(data)) throw new Error('courses file must be a JSON array');
         applyLoadedData(data, rawCatalogRef.current, { courses: f.name, catalog: dataLabels.catalog });
         toast('Loaded course data · ' + f.name);
+      } else if (kind === 'klms'){
+        if (!Array.isArray(data)) throw new Error('KLMS file must be a JSON array');
+        applyLoadedData(rawCoursesRef.current, rawCatalogRef.current, { courses: dataLabels.courses, catalog: dataLabels.catalog, klms: f.name }, data);
+        toast('Loaded KLMS courses · ' + f.name);
       } else {
         applyLoadedData(rawCoursesRef.current, data, { courses: dataLabels.courses, catalog: f.name });
         toast('Loaded catalog · ' + f.name);
@@ -2360,19 +2476,22 @@ function App(){
     (async () => {
       if (window.location.protocol === 'file:'){ if (alive) setStatus('manual'); return; }
       try{
-        const [cr, dt] = await Promise.all([
+        const [cr, dt, kl] = await Promise.all([
           fetch('courses.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
-          fetch('data.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          fetch('data.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+          fetch('courses_klms.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : []).catch(() => [])
         ]);
         if (!alive) return;
         const cm = buildCatalog(dt);
-        const cs = normalizeCourses(cr, cm);
+        const klms = Array.isArray(kl) ? kl : [];
+        const cs = mergeCourses(normalizeCourses(cr, cm), normalizeKlmsCourses(klms, cm));
         if (!cs.length) throw new Error('no courses parsed');
         rawCoursesRef.current = cr;
         rawCatalogRef.current = dt;
+        rawKlmsRef.current = klms;
         setCatalogMap(cm);
         setCourses(cs);
-        setDataLabels({ courses: 'courses.json', catalog: 'data.json' });
+        setDataLabels({ courses: 'courses.json', catalog: 'data.json', klms: 'courses_klms.json' });
         setStatus('ready');
       }catch(err){
         if (alive) setStatus('manual');
@@ -2609,24 +2728,31 @@ function App(){
   if (status === 'manual') return <ManualLoad onData={(d) => {
     rawCoursesRef.current = d.rawCourses || null;
     rawCatalogRef.current = d.rawCatalog || null;
+    rawKlmsRef.current = d.rawKlms || [];
     setCourses(d.courses);
     setCatalogMap(d.catalogMap);
-    setDataLabels({ courses: d.coursesName || 'courses.json', catalog: d.catalogName || 'data.json' });
+    setDataLabels({ courses: d.coursesName || 'courses.json', catalog: d.catalogName || 'data.json', klms: d.klmsName || 'courses_klms.json' });
     setStatus('ready');
   }} />;
 
   const results = applyFilters(searchCourses(courses, query), filters, schedule);
+  const klmsActive = !!(rawKlmsRef.current && rawKlmsRef.current.length && dataLabels.klms);
+  const coursesPill = dataLabels.courses + (klmsActive ? ' + ' + dataLabels.klms : '');
   return (
     <div className="app">
       <header className="app-header">
         <div className="brand">HKUST SIS Course Planner</div>
         <div className="header-status">
-          <span className="status-pill ok" title={dataLabels.courses}>{dataLabels.courses} · {courses.length}</span>
+          <span className="status-pill ok" title={coursesPill}>{coursesPill} · {courses.length}</span>
           <span className="status-pill ok" title={dataLabels.catalog}>{dataLabels.catalog} · {Object.keys(catalogMap).length}</span>
         </div>
         <label className="hbtn file" title="Replace course sections JSON">
           Load courses
           <input className="hfile" type="file" accept=".json,application/json" onChange={(e) => onPickCustom('courses', e)} />
+        </label>
+        <label className="hbtn file" title="Replace KLMS course sections JSON (PE / general education)">
+          Load KLMS courses
+          <input className="hfile" type="file" accept=".json,application/json" onChange={(e) => onPickCustom('klms', e)} />
         </label>
         <label className="hbtn file" title="Replace catalog / prerequisite JSON">
           Load catalog
