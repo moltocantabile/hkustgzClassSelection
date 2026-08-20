@@ -1011,18 +1011,19 @@ function generateSchedules(input, coursesById, opts){
   const showLimit = Math.max(1, opts.showLimit || MAX_SOLUTIONS);
   const rankBy = opts.rankBy === 'distance' ? 'distance' : 'even';
   const locked = (opts.locked || []).map(cloneEntry);
-  const lockedCodes = {};
-  locked.forEach(e => { if (e.course) lockedCodes[e.course] = true; });
   const requests = normalizeSchedRequests(input);
+  const reqCodes = {};
+  requests.forEach(r => { if (r.code) reqCodes[r.code] = true; });
+  const lockedForConflict = locked.filter(e => !(e.course && reqCodes[e.course]));
   const warnings = [];
   const pool = [];
   let kept = 0;
   for (const req of requests){
     const code = req.code;
-    if (lockedCodes[code]){
+    const onTimetable = locked.some(e => e.course === code);
+    if (onTimetable){
       kept++;
-      warnings.push(code + ': already on the timetable — kept as-is');
-      continue;
+      warnings.push(code + ': already on the timetable — regenerating will replace its current sections');
     }
     const c = coursesById[code];
     if (!c){ warnings.push(code + ': not offered this term (no class sections)'); continue; }
@@ -1037,7 +1038,7 @@ function generateSchedules(input, coursesById, opts){
       }
       warnings.push(code + ': time filter ' + label + ' → ' + bundles.length + '/' + before + ' section bundle(s)');
     }
-    bundles = bundles.filter(bundle => !bundle.some(entry => findConflicts(entry.meetings, locked).length));
+    bundles = bundles.filter(bundle => !bundle.some(entry => findConflicts(entry.meetings, lockedForConflict).length));
     if (!bundles.length){
       warnings.push(code + ': every section bundle conflicts with the current timetable');
       continue;
@@ -1049,8 +1050,8 @@ function generateSchedules(input, coursesById, opts){
   if (!pool.length) return { solutions: [], warnings: warnings, truncated: false, rankBy: rankBy, kept: kept };
   pool.sort((a, b) => a.bundles.length - b.bundles.length);
   const solutions = [];
-  const chosen = locked.slice();
-  const baseLen = locked.length;
+  const chosen = lockedForConflict.slice();
+  const baseLen = lockedForConflict.length;
   let nodes = 0;
   const MAX_NODES = 400000;
   let truncated = false;
@@ -1981,7 +1982,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
   const hint = mode === 'course'
     ? 'Pick a class time, or All to search every section'
     : 'Pick any clock time, keep sections that cover it';
-  const help = 'Add courses from the searchable list. Generated plans are added onto the current timetable (existing classes stay). In Course first, choose All to search every section and rank by evenness / walking distance. Lecture/Tutorial same-index pairing is honoured.';
+  const help = 'Add courses from the searchable list. A generated plan adds new courses, or replaces their sections if they are already on the timetable — other classes stay untouched. In Course first, choose All to search every section and rank by evenness / walking distance. Lecture/Tutorial same-index pairing is honoured.';
   return (
     <div>
       <div className="mode-switch">
@@ -2023,7 +2024,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
             <div className="warn">{result.warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}</div>
           ) : null}
           {!result.solutions.length && !result.truncated ? (
-            <div className="warn bad">{result.kept && !items.filter(it => it.code).some(it => !(lockedSchedule || []).some(en => en.course === it.code)) ? 'Nothing new to add — every listed course is already on the timetable.' : 'No conflict-free addition found against the current timetable.'}</div>
+            <div className="warn bad">No conflict-free schedule found for these courses.</div>
           ) : null}
           {result.truncated ? <div className="warn">Search space exceeded — showing partial results.</div> : null}
           {result.found && result.found > result.solutions.length ? (
@@ -2046,9 +2047,9 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
               {sol.even ? (
                 <div className="sol-days">Daily hours (full timetable): {['Mon','Tue','Wed','Thu','Fri'].map((d, di) => d + ' ' + fmtHours(sol.even.hours[di])).join(' · ')}</div>
               ) : null}
-              <div className="sol-days">Adds the classes below onto the current timetable. Existing classes stay.</div>
+              <div className="sol-days">Adds the classes below, or replaces them if already on the timetable. Other classes stay.</div>
               {lockedSchedule && lockedSchedule.length ? (
-                <div className="sol-days">Kept: {lockedSchedule.map(en => en.course + ' ' + en.label).join(' · ')}</div>
+                <div className="sol-days">Current: {lockedSchedule.map(en => en.course + ' ' + en.label).join(' · ')}</div>
               ) : null}
               {(Array.isArray(sol.entries) ? sol.entries : sol).map(en => (
                 <div className="sol-row" key={en.section}>
@@ -2490,13 +2491,12 @@ function App(){
   }
   function applySolution(sol){
     const raw = Array.isArray(sol && sol.entries) ? sol.entries : (Array.isArray(sol) ? sol : []);
-    const existing = {};
-    schedule.forEach(en => { existing[en.course] = true; });
+    const codes = {};
+    (raw || []).forEach(en => { if (en && en.course) codes[en.course] = true; });
     const extra = [];
     const seen = {};
     for (const en of raw){
-      if (!en || !en.section || existing[en.course]) continue;
-      if (seen[en.section]) continue;
+      if (!en || !en.section || seen[en.section]) continue;
       const course = coursesById[en.course];
       const section = course && course.sections.find(sec => sec.id === en.section);
       if (course && section) extra.push(makeEntry(course.code, section));
@@ -2504,11 +2504,14 @@ function App(){
       seen[en.section] = true;
     }
     if (!extra.length){
-      toast('Nothing new to add — existing classes were kept');
+      toast('Nothing to apply from this plan');
       return;
     }
-    setSchedule(prev => prev.concat(extra));
-    toast('Added ' + extra.length + ' class' + (extra.length === 1 ? '' : 'es') + ' to the timetable');
+    setSchedule(prev => prev.filter(en => !codes[en.course]).concat(extra));
+    const replaced = Object.keys(codes).filter(code => schedule.some(en => en.course === code));
+    toast(replaced.length
+      ? 'Replaced ' + replaced.join(', ') + ' on the timetable'
+      : 'Added ' + extra.length + ' class' + (extra.length === 1 ? '' : 'es') + ' to the timetable');
   }
   function openDeps(code){
     setDeps(d => ({ key: d.key + 1, code: code || '' }));
