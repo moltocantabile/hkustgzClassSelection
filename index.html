@@ -2015,10 +2015,10 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
   }
   const shown = result ? result.solutions.filter(sol =>
     filterSlots.every(slot => {
-      const span = { day: slot.day, start: slot.start, end: slot.end };
       const entries = sol.entries && sol.entries.length ? sol.entries : (sol.full || []);
-      return entries.some(en =>
-        (en.meetings || []).some(m => meetingsOverlap(m, span)));
+      const dayMeetings = [];
+      entries.forEach(en => (en.meetings || []).forEach(m => { if (m.day === slot.day) dayMeetings.push(m); }));
+      return dayMeetings.length > 0 && dayMeetings.every(m => slot.start <= m.start && m.end <= slot.end);
     })) : [];
   const hint = mode === 'course'
     ? 'Pick a class time, or All to search every section'
@@ -2063,7 +2063,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
         <div>
           {result.solutions.length ? (
             <div className="sched-filter">
-              <span className="sched-note">Filter plans by class period:</span>
+              <span className="sched-note">Filter plans by day window:</span>
               <select value={fDay} onChange={(e) => setFDay(Number(e.target.value))}>
                 {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(p => <option key={p[0]} value={p[0]}>{p[1]}</option>)}
               </select>
@@ -2084,6 +2084,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
               ))}
               {filterSlots.length ? <button className="sbtn ghost" onClick={() => setFilterSlots([])}>Clear</button> : null}
               {filterSlots.length ? <span className="sched-note">Showing {shown.length} of {result.solutions.length} plan{result.solutions.length === 1 ? '' : 's'}</span> : null}
+              <span className="sched-note">All classes on that day must fit inside the period</span>
             </div>
           ) : null}
           {result.warnings.length ? (
@@ -2097,7 +2098,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
             <div className="sched-note" style={{ marginTop: 8 }}>{result.found} conflict-free timetable{result.found === 1 ? '' : 's'} found.</div>
           ) : null}
           {!shown.length && result.solutions.length ? (
-            <div className="warn">No plans cover the filtered periods — adjust or clear the filter.</div>
+            <div className="warn">No plans fit the selected day windows — adjust or clear the filter.</div>
           ) : null}
           {shown.map((sol, i) => (
             <div className="solution" key={i}>
