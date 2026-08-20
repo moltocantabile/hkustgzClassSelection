@@ -138,6 +138,9 @@ input,textarea,select{font:inherit}
 .cal-title{font-weight:800;font-size:15px}
 .cal-credits{display:inline-flex;align-items:baseline;gap:6px;padding:3px 9px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-weight:800;font-size:12.5px;white-space:nowrap}
 .cal-credits small{font-weight:600;font-size:11px;color:#5a6580}
+.cal-export{border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:8px;cursor:pointer}
+.cal-export:hover{border-color:var(--accent);color:var(--accent)}
+.cal-export:disabled{opacity:.5;cursor:not-allowed}
 .cal-hint{font-size:11.5px;color:var(--muted)}
 .cal-hint.bad{color:#b91c1c;font-weight:700}
 .cal-legend{margin-left:auto;display:flex;gap:10px;font-size:11px;color:var(--muted)}
@@ -1771,6 +1774,156 @@ function CalBlockTip({ tip }){
     </div>
   );
 }
+function roundRectPath(ctx, x, y, w, h, r){
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function ellipsizeText(ctx, text, maxW){
+  if (ctx.measureText(text).width <= maxW) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+  return t + '…';
+}
+function exportTimetableImage(schedule, coursesById){
+  const entries = (schedule || []).filter(en => en && en.course && Array.isArray(en.meetings) && en.meetings.length);
+  if (!entries.length) return false;
+  const S = 2;
+  const TIME_COL = 70, DAY_W = 230, HEADER = 48, HOUR_H = 64;
+  const FOOTER = 26;
+  const W = TIME_COL + DAY_W * 5;
+  const H = HEADER + (END_HOUR - START_HOUR + 1) * HOUR_H + FOOTER;
+  const GRID_BOTTOM = HEADER + (END_HOUR - START_HOUR + 1) * HOUR_H;
+  const canvas = document.createElement('canvas');
+  canvas.width = W * S; canvas.height = H * S;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(S, S);
+  const FONT_UI = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+  const FONT_MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#f6f8fb';
+  ctx.fillRect(0, 0, W, HEADER);
+  ctx.fillRect(0, 0, TIME_COL, H);
+
+  ctx.strokeStyle = '#e8edf4';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++){
+    const x = TIME_COL + DAY_W * i;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, GRID_BOTTOM); ctx.stroke();
+  }
+  ctx.fillStyle = '#7c8aa0';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.font = '500 10.5px ' + FONT_MONO;
+  for (let h = START_HOUR; h <= END_HOUR; h++){
+    const y = HEADER + (h - START_HOUR) * HOUR_H;
+    ctx.fillText(String(h).padStart(2, '0') + ':00', TIME_COL - 8, y - 2);
+    ctx.beginPath(); ctx.moveTo(TIME_COL, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  ctx.beginPath(); ctx.moveTo(TIME_COL, GRID_BOTTOM); ctx.lineTo(W, GRID_BOTTOM); ctx.stroke();
+
+  ctx.fillStyle = '#334155';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '800 13px ' + FONT_UI;
+  DAY_LABELS.forEach((d, i) => ctx.fillText(d, TIME_COL + DAY_W * i + DAY_W / 2, HEADER / 2 + 1));
+
+  const creditSum = scheduleCreditSummary(entries, coursesById);
+  const footLeft = formatCredits(creditSum.total) + ' cr · ' + creditSum.courses + ' course' + (creditSum.courses === 1 ? '' : 's') + (creditSum.klms.courses ? ' · KLMS ' + formatCredits(creditSum.klms.total) + ' cr' : '');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, GRID_BOTTOM, W, FOOTER);
+  ctx.fillStyle = '#7c8aa0';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.font = '600 11px ' + FONT_UI;
+  ctx.fillText(footLeft, TIME_COL + 8, GRID_BOTTOM + FOOTER / 2 + 1);
+  ctx.textAlign = 'right';
+  ctx.fillText('HKUST SIS Course Planner · ' + new Date().toISOString().slice(0, 10), W - 12, GRID_BOTTOM + FOOTER / 2 + 1);
+
+  const items = [];
+  const seen = new Set();
+  entries.forEach(en => {
+    for (const m of (en.meetings || [])){
+      const key = en.section + '|' + m.day + '|' + m.start + '|' + m.end;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      items.push({ en: en, m: m, course: coursesById && coursesById[en.course] });
+    }
+  });
+  const byDay = {};
+  items.forEach(it => { (byDay[it.m.day] || (byDay[it.m.day] = [])).push(it); });
+  Object.keys(byDay).forEach(d => {
+    const list = byDay[d];
+    const used = list.map(() => false);
+    for (let i = 0; i < list.length; i++){
+      if (used[i]) continue;
+      const stack = [i]; used[i] = true; const group = [];
+      while (stack.length){
+        const u = stack.pop(); group.push(list[u]);
+        for (let v = 0; v < list.length; v++){
+          if (!used[v] && meetingsOverlap(list[u].m, list[v].m)){ used[v] = true; stack.push(v); }
+        }
+      }
+      group.sort((a, b) => String(a.en.course).localeCompare(String(b.en.course)) || a.m.start - b.m.start);
+      group.forEach((it, idx) => { it.lane = idx; it.lanes = group.length; });
+    }
+  });
+
+  items.forEach(it => {
+    const m = it.m, en = it.en, course = it.course;
+    const lanes = Math.max(1, it.lanes || 1);
+    const lane = it.lane || 0;
+    const slotW = DAY_W / lanes;
+    const x = TIME_COL + (m.day - 1) * DAY_W + lane * slotW + 2;
+    const y = HEADER + (m.start - START_HOUR) * HOUR_H + 3;
+    const bh = (m.end - m.start) * HOUR_H - 6;
+    if (bh < 14) return;
+    const col = courseColor(en.course);
+    roundRectPath(ctx, x, y, slotW - 4, bh, 8);
+    ctx.fillStyle = col.bg; ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = col.border; ctx.stroke();
+    ctx.fillStyle = col.border; ctx.fillRect(x, y, 4, bh);
+
+    ctx.save();
+    roundRectPath(ctx, x + 6, y + 4, slotW - 16, bh - 8, 6);
+    ctx.clip();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const tx = x + 12;
+    let lineY = y + 7;
+    const teacher = m.teacher || (m.instructors || []).map(i => i.name).filter(Boolean).join('; ');
+    const lines = [];
+    lines.push({ text: en.course + ' ' + (en.label || ''), font: '800 12.5px ' + FONT_MONO, color: col.text });
+    lines.push({ text: fmtDec(m.start) + ' – ' + fmtDec(m.end), font: '700 11px ' + FONT_UI, color: '#334155' });
+    lines.push({ text: m.room || 'TBA', font: '500 10.5px ' + FONT_UI, color: '#475569' });
+    if (teacher) lines.push({ text: teacher, font: '500 10.5px ' + FONT_UI, color: '#475569' });
+    if (course && Number(course.credits)) lines.push({ text: formatCredits(course.credits) + ' cr', font: '700 10.5px ' + FONT_UI, color: '#1d4ed8' });
+    if (m.startDate && m.endDate) lines.push({ text: m.startDate.slice(5) + '–' + m.endDate.slice(5), font: '600 10px ' + FONT_UI, color: '#9a5b13' });
+    const maxW = slotW - 26;
+    for (const ln of lines){
+      if (lineY + 12.5 > y + bh - 4) break;
+      ctx.font = ln.font;
+      ctx.fillStyle = ln.color;
+      ctx.fillText(ellipsizeText(ctx, ln.text, maxW), tx, lineY);
+      lineY += 13.5;
+    }
+    ctx.restore();
+  });
+
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'timetable-' + new Date().toISOString().slice(0, 10) + '.png';
+  a.click();
+  return true;
+}
 function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, onDragLeave, onDrop, onRemoveEntry, crossDrag, onToggleCrossDrag, onDragBlock }){
   const rows = [];
   for (let h = START_HOUR; h <= END_HOUR; h++) rows.push(h);
@@ -1817,6 +1970,7 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
           {creditSum.klms.courses ? <small>+ {formatCredits(creditSum.klms.total)} cr KLMS</small> : null}
           <small>{creditSum.courses} course{creditSum.courses === 1 ? '' : 's'}</small>
         </div>
+        <button className="cal-export" type="button" onClick={() => exportTimetableImage(schedule, coursesById)} disabled={!schedule.length} title="Download the timetable as a PNG image with full course details">Export image</button>
         <label className="xdrag" title="Drag a course from search or the grid onto any of its official section times">
           <input type="checkbox" checked={!!crossDrag} onChange={(e) => onToggleCrossDrag(e.target.checked)} />
           Enable cross-section dragging
