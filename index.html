@@ -1008,16 +1008,70 @@ function buildingOf(room){
   if (m) return 'LH-' + m[1].toUpperCase();
   return s;
 }
+function parseISODate(s){
+  const m = String(s || '').match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  return m ? new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))) : null;
+}
+function mondayOf(d){
+  const out = new Date(d);
+  out.setUTCDate(out.getUTCDate() - ((out.getUTCDay() + 6) % 7));
+  out.setUTCHours(0, 0, 0, 0);
+  return out;
+}
+function mergeDayIntervals(list){
+  const arr = list.slice().sort((a, b) => a.start - b.start || a.end - b.end);
+  const out = [];
+  for (const it of arr){
+    const last = out[out.length - 1];
+    if (last && it.start < last.end + 1e-9){
+      if (it.end > last.end) last.end = it.end;
+    } else {
+      out.push(Object.assign({}, it));
+    }
+  }
+  return out;
+}
+function meetingInWeek(m, weekMonday){
+  if (!m.startDate || !m.endDate) return true;
+  const s = parseISODate(m.startDate), e = parseISODate(m.endDate);
+  if (!s || !e) return true;
+  const occ = new Date(weekMonday);
+  occ.setUTCDate(occ.getUTCDate() + (m.day - 1));
+  return occ >= s && occ <= e;
+}
 function scoreTimetable(entries){
-  const hours = [0, 0, 0, 0, 0];
   const byDay = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+  let minD = null, maxD = null;
   for (const en of (entries || [])){
     for (const mt of (en.meetings || [])){
       if (mt.day < 1 || mt.day > 5) continue;
-      hours[mt.day - 1] += Math.max(0, mt.end - mt.start);
-      byDay[mt.day].push({ start: mt.start, end: mt.end, building: buildingOf(mt.room), course: en.course, label: en.label });
+      byDay[mt.day].push({ day: mt.day, start: mt.start, end: mt.end, building: buildingOf(mt.room), course: en.course, label: en.label, startDate: mt.startDate, endDate: mt.endDate });
+      if (mt.startDate){
+        const d = parseISODate(mt.startDate);
+        if (d && (!minD || d < minD)) minD = d;
+      }
+      if (mt.endDate){
+        const d = parseISODate(mt.endDate);
+        if (d && (!maxD || d > maxD)) maxD = d;
+      }
     }
   }
+  const hours = [0, 0, 0, 0, 0];
+  if (minD && maxD){
+    for (let wk = mondayOf(minD); wk <= maxD; wk.setUTCDate(wk.getUTCDate() + 7)){
+      for (const day of [1, 2, 3, 4, 5]){
+        const h = mergeDayIntervals(byDay[day].filter(m => meetingInWeek(m, wk)))
+          .reduce((s, it) => s + Math.max(0, it.end - it.start), 0);
+        if (h > hours[day - 1]) hours[day - 1] = h;
+      }
+    }
+  } else {
+    for (const day of [1, 2, 3, 4, 5]){
+      hours[day - 1] = mergeDayIntervals(byDay[day])
+        .reduce((s, it) => s + Math.max(0, it.end - it.start), 0);
+    }
+  }
+  for (const day of [1, 2, 3, 4, 5]) byDay[day] = mergeDayIntervals(byDay[day]);
   const mean = hours.reduce((a, b) => a + b, 0) / 5;
   const variance = hours.reduce((s, h) => s + (h - mean) * (h - mean), 0) / 5;
   let pairs = 0, same = 0, far = 0, unknown = 0;
