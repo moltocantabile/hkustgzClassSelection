@@ -289,6 +289,10 @@ input,textarea,select{font:inherit}
 .cart-head{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
 .cart-head h3{margin:0;font-size:14px;font-weight:800}
 .cart-head .cart-cr{margin-left:auto;font-size:12px;font-weight:800;color:#1d4ed8;background:#eef4ff;border-radius:999px;padding:2px 8px}
+.cart-tabs{display:flex;gap:6px;padding:8px 10px 0}
+.cart-tabs button{flex:1;border:0;border-bottom:2px solid transparent;background:transparent;padding:6px 4px;font-size:11.5px;font-weight:700;color:var(--muted);border-radius:8px 8px 0 0;white-space:nowrap}
+.cart-tabs button:hover{color:var(--accent)}
+.cart-tabs button.on{color:var(--accent);border-bottom-color:var(--accent);background:#eef4ff}
 .cart-close{width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:8px;color:#46536e}
 .cart-list{overflow:auto;padding:8px}
 .cart-empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13px}
@@ -583,6 +587,7 @@ function normalizeKlmsCourses(raw, catalogMap){
       code: code,
       name: ci.crseName || '',
       credits: Number(ci.totalCredits) || 0,
+      klms: true,
       shortDesc: cleanField(ci.crseShortDesc),
       desc: cleanField(cat.crseDescr) || cleanField(ci.crseShortDesc),
       sections: sections,
@@ -653,11 +658,20 @@ function scheduleCreditSummary(schedule, coursesById){
   for (const en of (schedule || [])){
     if (!en || !en.course || map[en.course] != null) continue;
     const c = coursesById && coursesById[en.course];
-    map[en.course] = c ? (Number(c.credits) || 0) : 0;
+    map[en.course] = { credits: c ? (Number(c.credits) || 0) : 0, klms: !!(c && c.klms) };
   }
-  const rows = Object.keys(map).sort().map(code => ({ code: code, credits: map[code] }));
+  const rows = Object.keys(map).sort().map(code => ({ code: code, credits: map[code].credits, klms: map[code].klms }));
   const total = rows.reduce((s, r) => s + r.credits, 0);
-  return { total: total, courses: rows.length, rows: rows };
+  const sum = list => list.reduce((s, r) => s + r.credits, 0);
+  const sisRows = rows.filter(r => !r.klms);
+  const klmsRows = rows.filter(r => r.klms);
+  return {
+    total: total,
+    courses: rows.length,
+    rows: rows,
+    sis: { total: sum(sisRows), courses: sisRows.length, rows: sisRows },
+    klms: { total: sum(klmsRows), courses: klmsRows.length, rows: klmsRows }
+  };
 }
 function upsertSectionChoice(prev, course, section){
   const bundle = [section].concat(companionSections(course, section));
@@ -1762,6 +1776,10 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
   for (let h = START_HOUR; h <= END_HOUR; h++) rows.push(h);
   const [tip, setTip] = React.useState(null);
   const creditSum = React.useMemo(() => scheduleCreditSummary(schedule, coursesById), [schedule, coursesById]);
+  const creditTitle = [
+    creditSum.sis.rows.length ? 'SIS / courses.json:\n' + creditSum.sis.rows.map(r => r.code + ' · ' + formatCredits(r.credits) + ' cr').join('\n') : '',
+    creditSum.klms.rows.length ? 'KLMS / courses_klms.json:\n' + creditSum.klms.rows.map(r => r.code + ' · ' + formatCredits(r.credits) + ' cr').join('\n') : ''
+  ].filter(Boolean).join('\n\n') || 'No courses in timetable';
   const conflictMap = React.useMemo(() => {
     const m = new Map();
     schedule.forEach((en, i) => m.set(en.section, findConflicts(en.meetings, schedule.filter((e, j) => j !== i))));
@@ -1794,8 +1812,9 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
     <div className="cal-wrap">
       <div className="cal-head">
         <div className="cal-title">Timetable</div>
-        <div className="cal-credits" title={creditSum.rows.map(r => r.code + ' · ' + formatCredits(r.credits) + ' cr').join('\n') || 'No courses in timetable'}>
-          {formatCredits(creditSum.total)} cr
+        <div className="cal-credits" title={creditTitle}>
+          {formatCredits(creditSum.sis.total)} cr
+          {creditSum.klms.courses ? <small>+ {formatCredits(creditSum.klms.total)} cr KLMS</small> : null}
           <small>{creditSum.courses} course{creditSum.courses === 1 ? '' : 's'}</small>
         </div>
         <label className="xdrag" title="Drag a course from search or the grid onto any of its official section times">
@@ -2321,7 +2340,7 @@ function groupCart(schedule, coursesById){
     if (!en || !en.course) return;
     if (!map[en.course]){
       const c = coursesById && coursesById[en.course];
-      map[en.course] = { code: en.course, name: c ? c.name : '', credits: c ? (Number(c.credits) || 0) : 0, entries: [] };
+      map[en.course] = { code: en.course, name: c ? c.name : '', credits: c ? (Number(c.credits) || 0) : 0, klms: !!(c && c.klms), entries: [] };
     }
     map[en.course].entries.push(en);
   });
@@ -2329,8 +2348,12 @@ function groupCart(schedule, coursesById){
 }
 function CartFab({ schedule, coursesById, open, onToggle, onClose, onOpenCourse, onRemoveSection, onRemoveCourse }){
   const wrapRef = React.useRef(null);
+  const [cartTab, setCartTab] = React.useState('sis');
   const groups = React.useMemo(() => groupCart(schedule, coursesById), [schedule, coursesById]);
   const creditSum = React.useMemo(() => scheduleCreditSummary(schedule, coursesById), [schedule, coursesById]);
+  const sisGroups = React.useMemo(() => groups.filter(g => !g.klms), [groups]);
+  const klmsGroups = React.useMemo(() => groups.filter(g => g.klms), [groups]);
+  const activeGroups = cartTab === 'klms' ? klmsGroups : sisGroups;
   React.useEffect(() => {
     if (!open) return;
     const onDoc = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) onClose(); };
@@ -2348,9 +2371,17 @@ function CartFab({ schedule, coursesById, open, onToggle, onClose, onOpenCourse,
             <span className="cart-cr">{formatCredits(creditSum.total)} cr</span>
             <button className="cart-close" onClick={onClose} title="Close">✕</button>
           </div>
+          <div className="cart-tabs">
+            <button type="button" className={cartTab === 'sis' ? 'on' : ''} onClick={() => setCartTab('sis')}>
+              Courses · {sisGroups.length} · {formatCredits(creditSum.sis.total)} cr
+            </button>
+            <button type="button" className={cartTab === 'klms' ? 'on' : ''} onClick={() => setCartTab('klms')}>
+              KLMS · {klmsGroups.length} · {formatCredits(creditSum.klms.total)} cr
+            </button>
+          </div>
           <div className="cart-list">
-            {!groups.length ? <div className="cart-empty">No courses in the timetable yet.</div> : null}
-            {groups.map(g => (
+            {!activeGroups.length ? <div className="cart-empty">{cartTab === 'klms' ? 'No KLMS courses in the timetable yet.' : 'No courses in the timetable yet.'}</div> : null}
+            {activeGroups.map(g => (
               <div className="cart-item" key={g.code}>
                 <div className="cart-item-top">
                   <button className="cart-item-code" onClick={() => onOpenCourse(g.code)}>{g.code}</button>
@@ -2737,13 +2768,15 @@ function App(){
 
   const results = applyFilters(searchCourses(courses, query), filters, schedule);
   const klmsActive = !!(rawKlmsRef.current && rawKlmsRef.current.length && dataLabels.klms);
-  const coursesPill = dataLabels.courses + (klmsActive ? ' + ' + dataLabels.klms : '');
+  const sisCount = Array.isArray(rawCoursesRef.current) ? rawCoursesRef.current.length : courses.filter(c => !c.klms).length;
+  const klmsCount = courses.filter(c => c.klms).length;
   return (
     <div className="app">
       <header className="app-header">
         <div className="brand">HKUST SIS Course Planner</div>
         <div className="header-status">
-          <span className="status-pill ok" title={coursesPill}>{coursesPill} · {courses.length}</span>
+          <span className="status-pill ok" title={dataLabels.courses}>{dataLabels.courses} · {sisCount}</span>
+          {klmsActive ? <span className="status-pill ok" title={dataLabels.klms}>{dataLabels.klms} · {klmsCount}</span> : null}
           <span className="status-pill ok" title={dataLabels.catalog}>{dataLabels.catalog} · {Object.keys(catalogMap).length}</span>
         </div>
         <label className="hbtn file" title="Replace course sections JSON">
