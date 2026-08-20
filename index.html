@@ -1889,7 +1889,12 @@ function exportTimetableImage(schedule, coursesById){
     roundRectPath(ctx, x, y, slotW - 4, bh, 8);
     ctx.fillStyle = col.bg; ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = col.border; ctx.stroke();
-    ctx.fillStyle = col.border; ctx.fillRect(x, y, 4, bh);
+    ctx.save();
+    roundRectPath(ctx, x, y, slotW - 4, bh, 8);
+    ctx.clip();
+    ctx.fillStyle = col.border;
+    ctx.fillRect(x, y, 4, bh);
+    ctx.restore();
 
     ctx.save();
     roundRectPath(ctx, x + 6, y + 4, slotW - 16, bh - 8, 6);
@@ -1901,6 +1906,7 @@ function exportTimetableImage(schedule, coursesById){
     const teacher = m.teacher || (m.instructors || []).map(i => i.name).filter(Boolean).join('; ');
     const lines = [];
     lines.push({ text: en.course + ' ' + (en.label || ''), font: '800 12.5px ' + FONT_MONO, color: col.text });
+    if (course && course.name) lines.push({ text: course.name, font: '700 11px ' + FONT_UI, color: '#334155' });
     lines.push({ text: fmtDec(m.start) + ' – ' + fmtDec(m.end), font: '700 11px ' + FONT_UI, color: '#334155' });
     lines.push({ text: m.room || 'TBA', font: '500 10.5px ' + FONT_UI, color: '#475569' });
     if (teacher) lines.push({ text: teacher, font: '500 10.5px ' + FONT_UI, color: '#475569' });
