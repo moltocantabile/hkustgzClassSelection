@@ -233,6 +233,7 @@ input,textarea,select{font:inherit}
 .sched-btn.ghost:hover{background:#f8fafd;border-color:#c7d3e8}
 .sched-btn.ghost:disabled{background:#f3f5f8;color:#9aa6bd;border-color:var(--line);cursor:not-allowed}
 .sched-note{font-size:11.5px;color:var(--muted)}
+.sched-note.bad{color:#b91c1c;font-weight:700}
 .solution{margin-top:12px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fbfcfe}
 .solution h4{margin:0 0 6px;font-size:13px;display:flex;align-items:center;gap:8px}
 .sol-row{font-size:12px;padding:2px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -463,7 +464,8 @@ function normalizeCourse(c, catalogMap){
       }
       const teacher = instructors.map(x => x.name).join('; ');
       const room = String(m.facilityName || '').trim();
-      for (const day of days) meetings.push({ day: day, start: start, end: end, room: room, teacher: teacher, instructors: instructors });
+      const startDate = cleanField(m.startDate), endDate = cleanField(m.endDate);
+      for (const day of days) meetings.push({ day: day, start: start, end: end, room: room, teacher: teacher, instructors: instructors, startDate: startDate, endDate: endDate });
     }
     meetings.sort((a, b) => a.day - b.day || a.start - b.start);
     const assoc = Number(s.associatedClass);
@@ -768,6 +770,10 @@ function astString(n){
 }
 
 /* ================= conflict engine ================= */
+function dateRangesDisjoint(a, b){
+  if (!a || !b || !a.startDate || !a.endDate || !b.startDate || !b.endDate) return false;
+  return a.endDate < b.startDate || b.endDate < a.startDate;
+}
 function findConflicts(meetings, entries){
   const res = [];
   for (const en of (entries || [])){
@@ -775,6 +781,7 @@ function findConflicts(meetings, entries){
       for (const m2 of (en.meetings || [])){
         if (m1.day !== m2.day) continue;
         if (!(m1.start < m2.end && m2.start < m1.end)) continue;
+        if (dateRangesDisjoint(m1, m2)) continue;
         const other = en.course + ' ' + (en.label || '');
         res.push({ type: 'time', other: other });
         if (m1.room && m2.room && m1.room === m2.room) res.push({ type: 'room', other: other, room: m1.room });
@@ -1029,6 +1036,10 @@ function generateSchedules(input, coursesById, opts){
     if (!c){ warnings.push(code + ': not offered this term (no class sections)'); continue; }
     let bundles = courseBundles(c);
     const before = bundles.length;
+    if (!before){
+      warnings.push(code + ': no valid section combination (Lecture/Tutorial pairing has no conflict-free option)');
+      continue;
+    }
     if (req.times && req.times.length){
       bundles = bundles.filter(b => bundleCoversTimes(b, req.times));
       const label = req.times.map(t => DAY_NAMES[t.day] + ' ' + fmtDec(t.time)).join(' + ');
@@ -1552,6 +1563,7 @@ function SectionCard({ course, s, scheduledIds, conflictSections, onAdd, onRemov
           <span className="mtg-day">{DAY_NAMES[m.day]}</span>
           <span>{fmtRange(m)}</span>
           {m.room ? <span className="mtg-tag">· {m.room}</span> : null}
+          {m.startDate && m.endDate ? <span className="mtg-tag" title={'Weeks: ' + m.startDate + ' – ' + m.endDate}>· {m.startDate.slice(5) + '–' + m.endDate.slice(5)}</span> : null}
           <TeacherList meeting={m} />
         </div>
       ))}
@@ -1870,8 +1882,11 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
     onChange(Object.assign({}, item, { times: times.filter((_, i) => i !== idx) }));
   }
   let remain = null;
+  let remainBad = false;
   if (course && item.all){
-    remain = courseBundles(course).length + ' section bundle(s)';
+    const nBundles = courseBundles(course).length;
+    remain = nBundles ? nBundles + ' section bundle(s)' : 'No valid section combination for this course';
+    remainBad = !nBundles;
   } else if (course && times.length){
     const all = courseBundles(course);
     remain = all.filter(b => bundleCoversTimes(b, times)).length + '/' + all.length;
@@ -1916,7 +1931,7 @@ function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, inputRe
             <button type="button" onClick={() => removeTime(i)}>×</button>
           </span>
         ))}
-        {remain ? <span className="sched-note">{item.all ? remain : remain + ' bundles cover the selected time(s)'}</span> : null}
+        {remain ? <span className={'sched-note' + (remainBad ? ' bad' : '')}>{item.all ? remain : remain + ' bundles cover the selected time(s)'}</span> : null}
         {item.all ? (
           <span className="tchip">All sections<button type="button" onClick={() => onChange(Object.assign({}, item, { all: false, times: [] }))}>×</button></span>
         ) : null}
@@ -1952,7 +1967,15 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
       const next = typeof updater === 'function' ? updater(cur) : updater;
       return Object.assign({}, prev, { items: next });
     });
+    setResult(null);
   }
+  const lastLockedRef = React.useRef(lockedSchedule);
+  React.useEffect(() => {
+    if (lastLockedRef.current !== lockedSchedule){
+      lastLockedRef.current = lockedSchedule;
+      setResult(null);
+    }
+  }, [lockedSchedule]);
   function loadCurrent(){
     const seen = {};
     const next = [];
@@ -2034,7 +2057,7 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
             <div className="solution" key={i}>
               <h4>
                 Plan {i + 1}
-                <button className="sbtn sol-apply" onClick={() => onApply(sol)}>Add to timetable</button>
+                <button className="sbtn sol-apply" onClick={() => onApply(sol, items.filter(it => it.code && it.enabled !== false).map(it => it.code))}>Add to timetable</button>
               </h4>
               {sol.even ? (
                 <div className="sol-metrics">
@@ -2489,10 +2512,13 @@ function App(){
     setDrag(null);
     setHover(null);
   }
-  function applySolution(sol){
+  function applySolution(sol, requestCodes){
     const raw = Array.isArray(sol && sol.entries) ? sol.entries : (Array.isArray(sol) ? sol : []);
     const codes = {};
+    const replaceCodes = {};
     (raw || []).forEach(en => { if (en && en.course) codes[en.course] = true; });
+    const requested = (Array.isArray(requestCodes) ? requestCodes : []).map(normCode).filter(Boolean);
+    requested.forEach(code => { if (!codes[code]) codes[code] = false; });
     const extra = [];
     const seen = {};
     for (const en of raw){
@@ -2503,15 +2529,14 @@ function App(){
       else extra.push({ course: en.course, section: en.section, label: en.label || '', meetings: Array.isArray(en.meetings) ? en.meetings : [], component: en.component || '' });
       seen[en.section] = true;
     }
-    if (!extra.length){
-      toast('Nothing to apply from this plan');
-      return;
-    }
-    setSchedule(prev => prev.filter(en => !codes[en.course]).concat(extra));
-    const replaced = Object.keys(codes).filter(code => schedule.some(en => en.course === code));
-    toast(replaced.length
-      ? 'Replaced ' + replaced.join(', ') + ' on the timetable'
-      : 'Added ' + extra.length + ' class' + (extra.length === 1 ? '' : 'es') + ' to the timetable');
+    const removed = requested.filter(code => schedule.some(en => en.course === code));
+    setSchedule(prev => prev.filter(en => !(codes[en.course] === true || codes[en.course] === false)).concat(extra));
+    const replaced = raw.filter(en => en && en.course && schedule.some(x => x.course === en.course)).map(en => en.course);
+    const bits = [];
+    if (replaced.length) bits.push('Replaced ' + replaced.join(', '));
+    else if (extra.length) bits.push('Added ' + extra.length + ' class' + (extra.length === 1 ? '' : 'es'));
+    if (removed.length) bits.push('Removed ' + removed.join(', '));
+    toast(bits.length ? bits.join(' · ') : 'Nothing to apply from this plan');
   }
   function openDeps(code){
     setDeps(d => ({ key: d.key + 1, code: code || '' }));
