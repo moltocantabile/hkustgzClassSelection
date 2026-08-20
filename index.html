@@ -1794,8 +1794,32 @@ function exportTimetableImage(schedule, coursesById){
   const entries = (schedule || []).filter(en => en && en.course && Array.isArray(en.meetings) && en.meetings.length);
   if (!entries.length) return false;
   const S = 2;
-  const TIME_COL = 70, DAY_W = 230, HEADER = 48, HOUR_H = 64;
+  const TIME_COL = 70, DAY_W = 230, HEADER = 48;
   const FOOTER = 26;
+  const LINE_H = 13.5;
+  const items = [];
+  const seen = new Set();
+  entries.forEach(en => {
+    for (const m of (en.meetings || [])){
+      const key = en.section + '|' + m.day + '|' + m.start + '|' + m.end;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      items.push({ en: en, m: m, course: coursesById && coursesById[en.course] });
+    }
+  });
+  let maxLines = 3, minDur = Infinity;
+  items.forEach(it => {
+    const m = it.m, en = it.en, course = it.course;
+    let n = 3;
+    if (course && course.name) n++;
+    if (m.teacher || (m.instructors || []).some(i => i && i.name)) n++;
+    if (course && Number(course.credits)) n++;
+    if (m.startDate && m.endDate) n++;
+    if (n > maxLines) maxLines = n;
+    const d = m.end - m.start;
+    if (d > 0 && d < minDur) minDur = d;
+  });
+  const HOUR_H = Math.min(340, Math.max(64, Math.ceil((maxLines * LINE_H + 16) / (minDur === Infinity ? 1 : minDur))));
   const W = TIME_COL + DAY_W * 5;
   const H = HEADER + (END_HOUR - START_HOUR + 1) * HOUR_H + FOOTER;
   const GRID_BOTTOM = HEADER + (END_HOUR - START_HOUR + 1) * HOUR_H;
@@ -1847,16 +1871,6 @@ function exportTimetableImage(schedule, coursesById){
   ctx.textAlign = 'right';
   ctx.fillText('HKUST SIS Course Planner · ' + new Date().toISOString().slice(0, 10), W - 12, GRID_BOTTOM + FOOTER / 2 + 1);
 
-  const items = [];
-  const seen = new Set();
-  entries.forEach(en => {
-    for (const m of (en.meetings || [])){
-      const key = en.section + '|' + m.day + '|' + m.start + '|' + m.end;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      items.push({ en: en, m: m, course: coursesById && coursesById[en.course] });
-    }
-  });
   const byDay = {};
   items.forEach(it => { (byDay[it.m.day] || (byDay[it.m.day] = [])).push(it); });
   Object.keys(byDay).forEach(d => {
@@ -1914,11 +1928,10 @@ function exportTimetableImage(schedule, coursesById){
     if (m.startDate && m.endDate) lines.push({ text: m.startDate.slice(5) + '–' + m.endDate.slice(5), font: '600 10px ' + FONT_UI, color: '#9a5b13' });
     const maxW = slotW - 26;
     for (const ln of lines){
-      if (lineY + 12.5 > y + bh - 4) break;
       ctx.font = ln.font;
       ctx.fillStyle = ln.color;
       ctx.fillText(ellipsizeText(ctx, ln.text, maxW), tx, lineY);
-      lineY += 13.5;
+      lineY += LINE_H;
     }
     ctx.restore();
   });
