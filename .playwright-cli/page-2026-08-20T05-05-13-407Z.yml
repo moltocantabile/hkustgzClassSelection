@@ -1,0 +1,3420 @@
+- generic [ref=f2e8]:
+  - banner [ref=f2e9]:
+    - generic [ref=f2e10]: HKUST SIS Course Planner
+    - generic [ref=f2e11]:
+      - generic "courses.json" [ref=f2e12]: courses.json · 383
+      - generic "data.json" [ref=f2e13]: data.json · 816
+    - generic "Replace course sections JSON" [ref=f2e14]:
+      - text: Load courses
+      - button "Load courses" [ref=f2e15] [cursor=pointer]
+    - generic "Replace catalog / prerequisite JSON" [ref=f2e16]:
+      - text: Load catalog
+      - button "Load catalog" [ref=f2e17] [cursor=pointer]
+    - generic [ref=f2e18]:
+      - button "Save" [ref=f2e19] [cursor=pointer]
+      - button "Export" [ref=f2e20] [cursor=pointer]
+      - generic "Import a previously exported save file" [ref=f2e21]:
+        - text: Import
+        - button "Import" [ref=f2e22] [cursor=pointer]
+    - button "Generate Schedule" [ref=f2e23] [cursor=pointer]
+    - button "Dependencies" [ref=f2e24] [cursor=pointer]
+    - button "Clear timetable" [ref=f2e25] [cursor=pointer]
+  - main [ref=f2e26]:
+    - complementary [ref=f2e27]:
+      - generic [ref=f2e28]:
+        - generic [ref=f2e29]: Search
+        - button "‹" [ref=f2e30] [cursor=pointer]
+      - textbox "Search code / name / description… e.g. AI, AIAA2205, Introduction" [ref=f2e32]:
+        - /placeholder: Search code / name / description…  e.g. AI, AIAA2205, Introduction
+      - generic [ref=f2e33]:
+        - generic [ref=f2e34]:
+          - combobox [ref=f2e35]:
+            - option "All subjects" [selected]
+            - option "AIAA (25)"
+            - option "AMAT (19)"
+            - option "BSBE (11)"
+            - option "CMAA (23)"
+            - option "CNCC (13)"
+            - option "CNGF (6)"
+            - option "DLED (3)"
+            - option "DSAA (27)"
+            - option "EOAS (10)"
+            - option "FTEC (16)"
+            - option "FUNH (3)"
+            - option "INFH (2)"
+            - option "INTR (14)"
+            - option "IOTA (15)"
+            - option "IPEN (19)"
+            - option "LANG (1)"
+            - option "MICS (19)"
+            - option "MOES (1)"
+            - option "MSSM (6)"
+            - option "PDEV (16)"
+            - option "PLED (1)"
+            - option "ROAS (10)"
+            - option "SEEN (20)"
+            - option "SMMG (22)"
+            - option "SOCH (2)"
+            - option "SYSH (2)"
+            - option "UCMP (2)"
+            - option "UCUG (29)"
+            - option "UFUG (26)"
+            - option "UGOD (20)"
+          - combobox [ref=f2e36]:
+            - option "All credits" [selected]
+            - option "0 cr"
+            - option "1 cr"
+            - option "2 cr"
+            - option "3 cr"
+            - option "4 cr"
+            - option "6 cr"
+        - textbox "Instructor, e.g. Liu" [ref=f2e38]
+        - generic [ref=f2e39]:
+          - button "UG" [ref=f2e40] [cursor=pointer]
+          - button "PG" [ref=f2e41] [cursor=pointer]
+          - button "TPG" [ref=f2e42] [cursor=pointer]
+          - button "RPG" [ref=f2e43] [cursor=pointer]
+          - button "Mon" [ref=f2e44] [cursor=pointer]
+          - button "Tue" [ref=f2e45] [cursor=pointer]
+          - button "Wed" [ref=f2e46] [cursor=pointer]
+          - button "Thu" [ref=f2e47] [cursor=pointer]
+          - button "Fri" [ref=f2e48] [cursor=pointer]
+          - button "Morning" [ref=f2e49] [cursor=pointer]
+          - button "Afternoon" [ref=f2e50] [cursor=pointer]
+          - button "Evening" [ref=f2e51] [cursor=pointer]
+          - button "Fits timetable" [ref=f2e52] [cursor=pointer]
+          - button "Has seats" [ref=f2e53] [cursor=pointer]
+          - button "Sections" [ref=f2e54] [cursor=pointer]
+          - button "Tutorial" [ref=f2e55] [cursor=pointer]
+          - button "Lab" [ref=f2e56] [cursor=pointer]
+          - button "Has prereq" [ref=f2e57] [cursor=pointer]
+        - generic [ref=f2e58]:
+          - generic [ref=f2e59]: Filter by UG/PG, subject, day, time
+          - button "Clear filters" [disabled] [ref=f2e60]
+      - generic [ref=f2e62]:
+        - generic [ref=f2e63]: 383 courses — click to inspect
+        - generic [ref=f2e64] [cursor=pointer]:
+          - generic [ref=f2e65]:
+            - generic [ref=f2e66]: AIAA1010
+            - generic [ref=f2e67]: UG
+            - generic [ref=f2e68]: 1 cr
+          - generic [ref=f2e69]: Acad. Orient for AI Ss
+          - generic [ref=f2e70]: LEC L01
+          - generic [ref=f2e71]: 1 section
+        - generic [ref=f2e72] [cursor=pointer]:
+          - generic [ref=f2e73]:
+            - generic [ref=f2e74]: AIAA2205
+            - generic [ref=f2e75]: UG
+            - generic [ref=f2e76]: 3 cr
+          - generic [ref=f2e77]: Introduction to AI
+          - generic [ref=f2e78]:
+            - text: LEC L01/L02
+            - generic [ref=f2e79]: 2 sections
+          - generic [ref=f2e80]: 2 sections · has prerequisite
+        - generic [ref=f2e81] [cursor=pointer]:
+          - generic [ref=f2e82]:
+            - generic [ref=f2e83]: AIAA2290
+            - generic [ref=f2e84]: UG
+            - generic [ref=f2e85]: 3 cr
+          - generic [ref=f2e86]: EPS in AI
+          - generic [ref=f2e87]:
+            - text: LEC L01/L02
+            - generic [ref=f2e88]: 2 sections
+          - generic [ref=f2e89]: 2 sections
+        - generic [ref=f2e90] [cursor=pointer]:
+          - generic [ref=f2e91]:
+            - generic [ref=f2e92]: AIAA3072
+            - generic [ref=f2e93]: UG
+            - generic [ref=f2e94]: 3 cr
+          - generic [ref=f2e95]: Foundations for QC & QAI
+          - generic [ref=f2e96]: LEC L01
+          - generic [ref=f2e97]: 1 section · has prerequisite
+        - generic [ref=f2e98] [cursor=pointer]:
+          - generic [ref=f2e99]:
+            - generic [ref=f2e100]: AIAA3102
+            - generic [ref=f2e101]: UG
+            - generic [ref=f2e102]: 3 cr
+          - generic [ref=f2e103]: Python Program. with AI
+          - generic [ref=f2e104]:
+            - text: LEC L01/L02
+            - generic [ref=f2e105]: 2 sections
+          - generic [ref=f2e106]: 2 sections · has prerequisite
+        - generic [ref=f2e107] [cursor=pointer]:
+          - generic [ref=f2e108]:
+            - generic [ref=f2e109]: AIAA3111
+            - generic [ref=f2e110]: UG
+            - generic [ref=f2e111]: 3 cr
+          - generic [ref=f2e112]: Introduction to Data Mining
+          - generic [ref=f2e113]:
+            - text: LEC L01/L02
+            - generic [ref=f2e114]: 2 sections
+          - generic [ref=f2e115]: 2 sections · has prerequisite
+        - generic [ref=f2e116] [cursor=pointer]:
+          - generic [ref=f2e117]:
+            - generic [ref=f2e118]: AIAA3201
+            - generic [ref=f2e119]: UG
+            - generic [ref=f2e120]: 3 cr
+          - generic [ref=f2e121]: Intro. to CV
+          - generic [ref=f2e122]:
+            - text: LEC L01/L02 · LAB LA01/LA02
+            - generic [ref=f2e123]: 2 sections
+          - generic [ref=f2e124]: 4 sections · multi-component · has prerequisite
+        - generic [ref=f2e125] [cursor=pointer]:
+          - generic [ref=f2e126]:
+            - generic [ref=f2e127]: AIAA3225
+            - generic [ref=f2e128]: UG
+            - generic [ref=f2e129]: 3 cr
+          - generic [ref=f2e130]: Lrn&Optim for AI
+          - generic [ref=f2e131]: LEC L01
+          - generic [ref=f2e132]: 1 section · has prerequisite
+        - generic [ref=f2e133] [cursor=pointer]:
+          - generic [ref=f2e134]:
+            - generic [ref=f2e135]: AIAA3800
+            - generic [ref=f2e136]: UG
+            - generic [ref=f2e137]: 3 cr
+          - generic [ref=f2e138]: Human-Centered AI
+          - generic [ref=f2e139]: LEC L01
+          - generic [ref=f2e140]: 1 section · has prerequisite
+        - generic [ref=f2e141] [cursor=pointer]:
+          - generic [ref=f2e142]:
+            - generic [ref=f2e143]: AIAA4051
+            - generic [ref=f2e144]: UG
+            - generic [ref=f2e145]: 3 cr
+          - generic [ref=f2e146]: Nat Language Processing
+          - generic [ref=f2e147]:
+            - text: LEC L01/L02
+            - generic [ref=f2e148]: 2 sections
+          - generic [ref=f2e149]: 2 sections · has prerequisite
+        - generic [ref=f2e150] [cursor=pointer]:
+          - generic [ref=f2e151]:
+            - generic [ref=f2e152]: AIAA4220
+            - generic [ref=f2e153]: UG
+            - generic [ref=f2e154]: 3 cr
+          - generic [ref=f2e155]: Embodied AI
+          - generic [ref=f2e156]: LEC L01
+          - generic [ref=f2e157]: 1 section · has prerequisite
+        - generic [ref=f2e158] [cursor=pointer]:
+          - generic [ref=f2e159]:
+            - generic [ref=f2e160]: AIAA4432
+            - generic [ref=f2e161]: UG
+            - generic [ref=f2e162]: 3 cr
+          - generic [ref=f2e163]: Statistical Machine Learning
+          - generic [ref=f2e164]: LEC L01
+          - generic [ref=f2e165]: 1 section · has prerequisite
+        - generic [ref=f2e166] [cursor=pointer]:
+          - generic [ref=f2e167]:
+            - generic [ref=f2e168]: AIAA4435
+            - generic [ref=f2e169]: UG
+            - generic [ref=f2e170]: 3 cr
+          - generic [ref=f2e171]: Interactive AI
+          - generic [ref=f2e172]: LEC L01
+          - generic [ref=f2e173]: 1 section
+        - generic [ref=f2e174] [cursor=pointer]:
+          - generic [ref=f2e175]:
+            - generic [ref=f2e176]: AIAA4490
+            - generic [ref=f2e177]: UG
+            - generic [ref=f2e178]: 6 cr
+          - generic [ref=f2e179]: Final Year Capstone Project
+          - generic [ref=f2e180]: LEC L01
+          - generic [ref=f2e181]: 1 section
+        - generic [ref=f2e182] [cursor=pointer]:
+          - generic [ref=f2e183]:
+            - generic [ref=f2e184]: AIAA5026
+            - generic [ref=f2e185]: RPG
+            - generic [ref=f2e186]: 3 cr
+          - generic [ref=f2e187]: Computer Vision & Its Appl.
+          - generic [ref=f2e188]: LEC L01
+          - generic [ref=f2e189]: 1 section
+        - generic [ref=f2e190] [cursor=pointer]:
+          - generic [ref=f2e191]:
+            - generic [ref=f2e192]: AIAA5032
+            - generic [ref=f2e193]: RPG
+            - generic [ref=f2e194]: 3 cr
+          - generic [ref=f2e195]: Foundations of AI
+          - generic [ref=f2e196]: LEC L01
+          - generic [ref=f2e197]: 1 section
+        - generic [ref=f2e198] [cursor=pointer]:
+          - generic [ref=f2e199]:
+            - generic [ref=f2e200]: AIAA5033
+            - generic [ref=f2e201]: RPG
+            - generic [ref=f2e202]: 3 cr
+          - generic [ref=f2e203]: AI Security and Privacy
+          - generic [ref=f2e204]: LEC L01
+          - generic [ref=f2e205]: 1 section
+        - generic [ref=f2e206] [cursor=pointer]:
+          - generic [ref=f2e207]:
+            - generic [ref=f2e208]: AIAA5034
+            - generic [ref=f2e209]: RPG
+            - generic [ref=f2e210]: 3 cr
+          - generic [ref=f2e211]: RL and Optimization
+          - generic [ref=f2e212]: LEC L01
+          - generic [ref=f2e213]: 1 section
+        - generic [ref=f2e214] [cursor=pointer]:
+          - generic [ref=f2e215]:
+            - generic [ref=f2e216]: AIAA5050
+            - generic [ref=f2e217]: RPG
+            - generic [ref=f2e218]: 3 cr
+          - generic [ref=f2e219]: Machine Consciousness
+          - generic [ref=f2e220]: LEC L01
+          - generic [ref=f2e221]: 1 section
+        - generic [ref=f2e222] [cursor=pointer]:
+          - generic [ref=f2e223]:
+            - generic [ref=f2e224]: AIAA5088
+            - generic [ref=f2e225]: RPG
+            - generic [ref=f2e226]: 3 cr
+          - generic [ref=f2e227]: Natural Language Processing
+          - generic [ref=f2e228]: LEC L01
+          - generic [ref=f2e229]: 1 section
+        - generic [ref=f2e230] [cursor=pointer]:
+          - generic [ref=f2e231]:
+            - generic [ref=f2e232]: AIAA6091A
+            - generic [ref=f2e233]: RPG
+            - generic [ref=f2e234]: 3 cr
+          - generic [ref=f2e235]: Independent Study
+          - generic [ref=f2e236]: IND R01
+          - generic [ref=f2e237]: 1 section
+        - generic [ref=f2e238] [cursor=pointer]:
+          - generic [ref=f2e239]:
+            - generic [ref=f2e240]: AIAA6091B
+            - generic [ref=f2e241]: RPG
+            - generic [ref=f2e242]: 1 cr
+          - generic [ref=f2e243]: Independent Study
+          - generic [ref=f2e244]: IND R01
+          - generic [ref=f2e245]: 1 section
+        - generic [ref=f2e246] [cursor=pointer]:
+          - generic [ref=f2e247]:
+            - generic [ref=f2e248]: AIAA6102
+            - generic [ref=f2e249]: RPG
+            - generic [ref=f2e250]: 1 cr
+          - generic [ref=f2e251]: AI Seminar II
+          - generic [ref=f2e252]: TUT T01
+          - generic [ref=f2e253]: 1 section
+        - generic [ref=f2e254] [cursor=pointer]:
+          - generic [ref=f2e255]:
+            - generic [ref=f2e256]: AIAA6990
+            - generic [ref=f2e257]: RPG
+            - generic [ref=f2e258]: 0 cr
+          - generic [ref=f2e259]: MPhil Thesis Research
+          - generic [ref=f2e260]: IND R01
+          - generic [ref=f2e261]: 1 section
+        - generic [ref=f2e262] [cursor=pointer]:
+          - generic [ref=f2e263]:
+            - generic [ref=f2e264]: AIAA7990
+            - generic [ref=f2e265]: RPG
+            - generic [ref=f2e266]: 0 cr
+          - generic [ref=f2e267]: Doctoral Thesis Research
+          - generic [ref=f2e268]: IND R01
+          - generic [ref=f2e269]: 1 section
+        - generic [ref=f2e270] [cursor=pointer]:
+          - generic [ref=f2e271]:
+            - generic [ref=f2e272]: AMAT2020
+            - generic [ref=f2e273]: UG
+            - generic [ref=f2e274]: 3 cr
+          - generic [ref=f2e275]: Math Methods in Physics
+          - generic [ref=f2e276]: LEC L01
+          - generic [ref=f2e277]: 1 section · has prerequisite
+        - generic [ref=f2e278] [cursor=pointer]:
+          - generic [ref=f2e279]:
+            - generic [ref=f2e280]: AMAT2030
+            - generic [ref=f2e281]: UG
+            - generic [ref=f2e282]: 3 cr
+          - generic [ref=f2e283]: Fundamentals of Organic Chem
+          - generic [ref=f2e284]: LEC L01
+          - generic [ref=f2e285]: 1 section · has prerequisite
+        - generic [ref=f2e286] [cursor=pointer]:
+          - generic [ref=f2e287]:
+            - generic [ref=f2e288]: AMAT2040
+            - generic [ref=f2e289]: UG
+            - generic [ref=f2e290]: 3 cr
+          - generic [ref=f2e291]: Physical Chemistry I
+          - generic [ref=f2e292]: LEC L01
+          - generic [ref=f2e293]: 1 section · has prerequisite
+        - generic [ref=f2e294] [cursor=pointer]:
+          - generic [ref=f2e295]:
+            - generic [ref=f2e296]: AMAT3350
+            - generic [ref=f2e297]: UG
+            - generic [ref=f2e298]: 3 cr
+          - generic [ref=f2e299]: Properties of Crystals
+          - generic [ref=f2e300]: LEC L01
+          - generic [ref=f2e301]: 1 section · has prerequisite
+        - generic [ref=f2e302] [cursor=pointer]:
+          - generic [ref=f2e303]:
+            - generic [ref=f2e304]: AMAT3520
+            - generic [ref=f2e305]: UG
+            - generic [ref=f2e306]: 3 cr
+          - generic [ref=f2e307]: Quantum Mechanics I
+          - generic [ref=f2e308]: LEC L01 · TUT T01
+          - generic [ref=f2e309]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e310] [cursor=pointer]:
+          - generic [ref=f2e311]:
+            - generic [ref=f2e312]: AMAT5315
+            - generic [ref=f2e313]: RPG
+            - generic [ref=f2e314]: 3 cr
+          - generic [ref=f2e315]: Modern Scientific Computing
+          - generic [ref=f2e316]: LEC L01
+          - generic [ref=f2e317]: 1 section
+        - generic [ref=f2e318] [cursor=pointer]:
+          - generic [ref=f2e319]:
+            - generic [ref=f2e320]: AMAT5340
+            - generic [ref=f2e321]: RPG
+            - generic [ref=f2e322]: 3 cr
+          - generic [ref=f2e323]: Intro to Soft Matter Physics
+          - generic [ref=f2e324]: LEC L01
+          - generic [ref=f2e325]: 1 section
+        - generic [ref=f2e326] [cursor=pointer]:
+          - generic [ref=f2e327]:
+            - generic [ref=f2e328]: AMAT5430
+            - generic [ref=f2e329]: RPG
+            - generic [ref=f2e330]: 3 cr
+          - generic [ref=f2e331]: Photonic Crystals
+          - generic [ref=f2e332]: LEC L01
+          - generic [ref=f2e333]: 1 section
+        - generic [ref=f2e334] [cursor=pointer]:
+          - generic [ref=f2e335]:
+            - generic [ref=f2e336]: AMAT5530
+            - generic [ref=f2e337]: RPG
+            - generic [ref=f2e338]: 3 cr
+          - generic [ref=f2e339]: Ultracold Phys & Quantum Tech
+          - generic [ref=f2e340]: LEC L01
+          - generic [ref=f2e341]: 1 section
+        - generic [ref=f2e342] [cursor=pointer]:
+          - generic [ref=f2e343]:
+            - generic [ref=f2e344]: AMAT5540
+            - generic [ref=f2e345]: RPG
+            - generic [ref=f2e346]: 3 cr
+          - generic [ref=f2e347]: Low-Dimensional Materials
+          - generic [ref=f2e348]: LEC L01
+          - generic [ref=f2e349]: 1 section
+        - generic [ref=f2e350] [cursor=pointer]:
+          - generic [ref=f2e351]:
+            - generic [ref=f2e352]: AMAT5560
+            - generic [ref=f2e353]: RPG
+            - generic [ref=f2e354]: 3 cr
+          - generic [ref=f2e355]: Optical Spectro- & Microscopy
+          - generic [ref=f2e356]: LEC L01
+          - generic [ref=f2e357]: 1 section
+        - generic [ref=f2e358] [cursor=pointer]:
+          - generic [ref=f2e359]:
+            - generic [ref=f2e360]: AMAT5910
+            - generic [ref=f2e361]: RPG
+            - generic [ref=f2e362]: 3 cr
+          - generic [ref=f2e363]: Compound Semi Mat Tech
+          - generic [ref=f2e364]: LEC L01
+          - generic [ref=f2e365]: 1 section
+        - generic [ref=f2e366] [cursor=pointer]:
+          - generic [ref=f2e367]:
+            - generic [ref=f2e368]: AMAT5996
+            - generic [ref=f2e369]: RPG
+            - generic [ref=f2e370]: 3 cr
+          - generic [ref=f2e371]: Modern Quantum Mechanics
+          - generic [ref=f2e372]: LEC L01
+          - generic [ref=f2e373]: 1 section
+        - generic [ref=f2e374] [cursor=pointer]:
+          - generic [ref=f2e375]:
+            - generic [ref=f2e376]: AMAT6000D
+            - generic [ref=f2e377]: RPG
+            - generic [ref=f2e378]: 3 cr
+          - generic [ref=f2e379]: Material Design & Synthesis
+          - generic [ref=f2e380]: LEC L01
+          - generic [ref=f2e381]: 1 section
+        - generic [ref=f2e382] [cursor=pointer]:
+          - generic [ref=f2e383]:
+            - generic [ref=f2e384]: AMAT6000E
+            - generic [ref=f2e385]: RPG
+            - generic [ref=f2e386]: 3 cr
+          - generic [ref=f2e387]: Quantum Chemistry
+          - generic [ref=f2e388]: LEC L01
+          - generic [ref=f2e389]: 1 section
+        - generic [ref=f2e390] [cursor=pointer]:
+          - generic [ref=f2e391]:
+            - generic [ref=f2e392]: AMAT6900A
+            - generic [ref=f2e393]: RPG
+            - generic [ref=f2e394]: 1 cr
+          - generic [ref=f2e395]: Independent Study
+          - generic [ref=f2e396]: IND R01
+          - generic [ref=f2e397]: 1 section
+        - generic [ref=f2e398] [cursor=pointer]:
+          - generic [ref=f2e399]:
+            - generic [ref=f2e400]: AMAT6900B
+            - generic [ref=f2e401]: RPG
+            - generic [ref=f2e402]: 1 cr
+          - generic [ref=f2e403]: Independent Study
+          - generic [ref=f2e404]: IND R01
+          - generic [ref=f2e405]: 1 section
+        - generic [ref=f2e406] [cursor=pointer]:
+          - generic [ref=f2e407]:
+            - generic [ref=f2e408]: AMAT6990
+            - generic [ref=f2e409]: RPG
+            - generic [ref=f2e410]: 0 cr
+          - generic [ref=f2e411]: MPhil Thesis Research
+          - generic [ref=f2e412]: IND R01
+          - generic [ref=f2e413]: 1 section
+        - generic [ref=f2e414] [cursor=pointer]:
+          - generic [ref=f2e415]:
+            - generic [ref=f2e416]: AMAT7990
+            - generic [ref=f2e417]: RPG
+            - generic [ref=f2e418]: 0 cr
+          - generic [ref=f2e419]: Doctoral Thesis Research
+          - generic [ref=f2e420]: IND R01
+          - generic [ref=f2e421]: 1 section
+        - generic [ref=f2e422] [cursor=pointer]:
+          - generic [ref=f2e423]:
+            - generic [ref=f2e424]: BSBE5300
+            - generic [ref=f2e425]: RPG
+            - generic [ref=f2e426]: 3 cr
+          - generic [ref=f2e427]: Brain and Behavior
+          - generic [ref=f2e428]: LEC L01
+          - generic [ref=f2e429]: 1 section
+        - generic [ref=f2e430] [cursor=pointer]:
+          - generic [ref=f2e431]:
+            - generic [ref=f2e432]: BSBE5400
+            - generic [ref=f2e433]: RPG
+            - generic [ref=f2e434]: 3 cr
+          - generic [ref=f2e435]: Light Microscopy & E Imaging
+          - generic [ref=f2e436]: LEC L01
+          - generic [ref=f2e437]: 1 section
+        - generic [ref=f2e438] [cursor=pointer]:
+          - generic [ref=f2e439]:
+            - generic [ref=f2e440]: BSBE5500
+            - generic [ref=f2e441]: RPG
+            - generic [ref=f2e442]: 3 cr
+          - generic [ref=f2e443]: Biomater,Drug Deliv&Tissue Eng
+          - generic [ref=f2e444]: LEC L01
+          - generic [ref=f2e445]: 1 section
+        - generic [ref=f2e446] [cursor=pointer]:
+          - generic [ref=f2e447]:
+            - generic [ref=f2e448]: BSBE5700
+            - generic [ref=f2e449]: RPG
+            - generic [ref=f2e450]: 3 cr
+          - generic [ref=f2e451]: Medical Microrobotics
+          - generic [ref=f2e452]: LEC L01
+          - generic [ref=f2e453]: 1 section
+        - generic [ref=f2e454] [cursor=pointer]:
+          - generic [ref=f2e455]:
+            - generic [ref=f2e456]: BSBE5800
+            - generic [ref=f2e457]: RPG
+            - generic [ref=f2e458]: 3 cr
+          - generic [ref=f2e459]: Concepts & App of Chemical Bio
+          - generic [ref=f2e460]: LEC L01
+          - generic [ref=f2e461]: 1 section
+        - generic [ref=f2e462] [cursor=pointer]:
+          - generic [ref=f2e463]:
+            - generic [ref=f2e464]: BSBE5900
+            - generic [ref=f2e465]: RPG
+            - generic [ref=f2e466]: 3 cr
+          - generic [ref=f2e467]: Intro to Advanced Proteomics
+          - generic [ref=f2e468]: LEC L01
+          - generic [ref=f2e469]: 1 section
+        - generic [ref=f2e470] [cursor=pointer]:
+          - generic [ref=f2e471]:
+            - generic [ref=f2e472]: BSBE6200A
+            - generic [ref=f2e473]: RPG
+            - generic [ref=f2e474]: 1 cr
+          - generic [ref=f2e475]: Independent Study
+          - generic [ref=f2e476]: IND R01
+          - generic [ref=f2e477]: 1 section
+        - generic [ref=f2e478] [cursor=pointer]:
+          - generic [ref=f2e479]:
+            - generic [ref=f2e480]: BSBE6200B
+            - generic [ref=f2e481]: RPG
+            - generic [ref=f2e482]: 1 cr
+          - generic [ref=f2e483]: Independent Study
+          - generic [ref=f2e484]: IND R01
+          - generic [ref=f2e485]: 1 section
+        - generic [ref=f2e486] [cursor=pointer]:
+          - generic [ref=f2e487]:
+            - generic [ref=f2e488]: BSBE6800K
+            - generic [ref=f2e489]: RPG
+            - generic [ref=f2e490]: 0 cr
+          - generic [ref=f2e491]: Seminar in BSBE
+          - generic [ref=f2e492]: TUT T01
+          - generic [ref=f2e493]: 1 section
+        - generic [ref=f2e494] [cursor=pointer]:
+          - generic [ref=f2e495]:
+            - generic [ref=f2e496]: BSBE6990
+            - generic [ref=f2e497]: RPG
+            - generic [ref=f2e498]: 0 cr
+          - generic [ref=f2e499]: MPhil Thesis Research
+          - generic [ref=f2e500]: IND R01
+          - generic [ref=f2e501]: 1 section
+        - generic [ref=f2e502] [cursor=pointer]:
+          - generic [ref=f2e503]:
+            - generic [ref=f2e504]: BSBE7990
+            - generic [ref=f2e505]: RPG
+            - generic [ref=f2e506]: 0 cr
+          - generic [ref=f2e507]: Doctoral Thesis Research
+          - generic [ref=f2e508]: IND R01
+          - generic [ref=f2e509]: 1 section
+        - generic [ref=f2e510] [cursor=pointer]:
+          - generic [ref=f2e511]:
+            - generic [ref=f2e512]: CMAA5003
+            - generic [ref=f2e513]: RPG
+            - generic [ref=f2e514]: 3 cr
+          - generic [ref=f2e515]: Virtual Production Studio
+          - generic [ref=f2e516]: LEC L01
+          - generic [ref=f2e517]: 1 section
+        - generic [ref=f2e518] [cursor=pointer]:
+          - generic [ref=f2e519]:
+            - generic [ref=f2e520]: CMAA5008
+            - generic [ref=f2e521]: RPG
+            - generic [ref=f2e522]: 3 cr
+          - generic [ref=f2e523]: Visual Comm & Expression
+          - generic [ref=f2e524]: LEC L01
+          - generic [ref=f2e525]: 1 section
+        - generic [ref=f2e526] [cursor=pointer]:
+          - generic [ref=f2e527]:
+            - generic [ref=f2e528]: CMAA5016
+            - generic [ref=f2e529]: RPG
+            - generic [ref=f2e530]: 3 cr
+          - generic [ref=f2e531]: Creative Coding
+          - generic [ref=f2e532]: LEC L01
+          - generic [ref=f2e533]: 1 section
+        - generic [ref=f2e534] [cursor=pointer]:
+          - generic [ref=f2e535]:
+            - generic [ref=f2e536]: CMAA5023
+            - generic [ref=f2e537]: RPG
+            - generic [ref=f2e538]: 3 cr
+          - generic [ref=f2e539]: Programming for VR & AR
+          - generic [ref=f2e540]: LEC L01
+          - generic [ref=f2e541]: 1 section
+        - generic [ref=f2e542] [cursor=pointer]:
+          - generic [ref=f2e543]:
+            - generic [ref=f2e544]: CMAA5025
+            - generic [ref=f2e545]: RPG
+            - generic [ref=f2e546]: 3 cr
+          - generic [ref=f2e547]: CompTec for Sketch-based Creat
+          - generic [ref=f2e548]: LEC L01
+          - generic [ref=f2e549]: 1 section
+        - generic [ref=f2e550] [cursor=pointer]:
+          - generic [ref=f2e551]:
+            - generic [ref=f2e552]: CMAA5030
+            - generic [ref=f2e553]: RPG
+            - generic [ref=f2e554]: 3 cr
+          - generic [ref=f2e555]: Interactive Music
+          - generic [ref=f2e556]: LEC L01
+          - generic [ref=f2e557]: 1 section
+        - generic [ref=f2e558] [cursor=pointer]:
+          - generic [ref=f2e559]:
+            - generic [ref=f2e560]: CMAA5031
+            - generic [ref=f2e561]: TPG
+            - generic [ref=f2e562]: 3 cr
+          - generic [ref=f2e563]: Intro to Game Development
+          - generic [ref=f2e564]: LEC L01
+          - generic [ref=f2e565]: 1 section
+        - generic [ref=f2e566] [cursor=pointer]:
+          - generic [ref=f2e567]:
+            - generic [ref=f2e568]: CMAA5033
+            - generic [ref=f2e569]: TPG
+            - generic [ref=f2e570]: 3 cr
+          - generic [ref=f2e571]: Comp Media & Arts Theory I
+          - generic [ref=f2e572]: LEC L01
+          - generic [ref=f2e573]: 1 section
+        - generic [ref=f2e574] [cursor=pointer]:
+          - generic [ref=f2e575]:
+            - generic [ref=f2e576]: CMAA5036
+            - generic [ref=f2e577]: RPG
+            - generic [ref=f2e578]: 3 cr
+          - generic [ref=f2e579]: e-Textiles & Wearable Tech
+          - generic [ref=f2e580]: LEC L01
+          - generic [ref=f2e581]: 1 section
+        - generic [ref=f2e582] [cursor=pointer]:
+          - generic [ref=f2e583]:
+            - generic [ref=f2e584]: CMAA5037
+            - generic [ref=f2e585]: RPG
+            - generic [ref=f2e586]: 3 cr
+          - generic [ref=f2e587]: Social Robots
+          - generic [ref=f2e588]: LEC L01
+          - generic [ref=f2e589]: 1 section
+        - generic [ref=f2e590] [cursor=pointer]:
+          - generic [ref=f2e591]:
+            - generic [ref=f2e592]: CMAA5040
+            - generic [ref=f2e593]: RPG
+            - generic [ref=f2e594]: 3 cr
+          - generic [ref=f2e595]: Sensor Tech in CA and HCI
+          - generic [ref=f2e596]: LEC L01
+          - generic [ref=f2e597]: 1 section
+        - generic [ref=f2e598] [cursor=pointer]:
+          - generic [ref=f2e599]:
+            - generic [ref=f2e600]: CMAA5042
+            - generic [ref=f2e601]: RPG
+            - generic [ref=f2e602]: 3 cr
+          - generic [ref=f2e603]: Immersive Cinema
+          - generic [ref=f2e604]: LEC L01
+          - generic [ref=f2e605]: 1 section
+        - generic [ref=f2e606] [cursor=pointer]:
+          - generic [ref=f2e607]:
+            - generic [ref=f2e608]: CMAA5045
+            - generic [ref=f2e609]: RPG
+            - generic [ref=f2e610]: 3 cr
+          - generic [ref=f2e611]: Dig Fabrication & Phys Comp
+          - generic [ref=f2e612]: LEC L01
+          - generic [ref=f2e613]: 1 section
+        - generic [ref=f2e614] [cursor=pointer]:
+          - generic [ref=f2e615]:
+            - generic [ref=f2e616]: CMAA6018A
+            - generic [ref=f2e617]: RPG
+            - generic [ref=f2e618]: 3 cr
+          - generic [ref=f2e619]: Independent Study
+          - generic [ref=f2e620]:
+            - text: IND R01/R02/R03/R04/…/R33
+            - generic [ref=f2e621]: 33 sections
+          - generic [ref=f2e622]: 33 sections
+        - generic [ref=f2e623] [cursor=pointer]:
+          - generic [ref=f2e624]:
+            - generic [ref=f2e625]: CMAA6018B
+            - generic [ref=f2e626]: RPG
+            - generic [ref=f2e627]: 1 cr
+          - generic [ref=f2e628]: Independent Study
+          - generic [ref=f2e629]: IND R01
+          - generic [ref=f2e630]: 1 section
+        - generic [ref=f2e631] [cursor=pointer]:
+          - generic [ref=f2e632]:
+            - generic [ref=f2e633]: CMAA6019J
+            - generic [ref=f2e634]: RPG
+            - generic [ref=f2e635]: 3 cr
+          - generic [ref=f2e636]: City as Canvas
+          - generic [ref=f2e637]: LEC L01
+          - generic [ref=f2e638]: 1 section
+        - generic [ref=f2e639] [cursor=pointer]:
+          - generic [ref=f2e640]:
+            - generic [ref=f2e641]: CMAA6019K
+            - generic [ref=f2e642]: RPG
+            - generic [ref=f2e643]: 3 cr
+          - generic [ref=f2e644]: AI Filmmaking & Script Writing
+          - generic [ref=f2e645]: LEC L01
+          - generic [ref=f2e646]: 1 section
+        - generic [ref=f2e647] [cursor=pointer]:
+          - generic [ref=f2e648]:
+            - generic [ref=f2e649]: CMAA6019L
+            - generic [ref=f2e650]: RPG
+            - generic [ref=f2e651]: 3 cr
+          - generic [ref=f2e652]: Emerging Art Business and Tech
+          - generic [ref=f2e653]: LEC L01
+          - generic [ref=f2e654]: 1 section
+        - generic [ref=f2e655] [cursor=pointer]:
+          - generic [ref=f2e656]:
+            - generic [ref=f2e657]: CMAA6019M
+            - generic [ref=f2e658]: RPG
+            - generic [ref=f2e659]: 3 cr
+          - generic [ref=f2e660]: Designing for Embodied AI
+          - generic [ref=f2e661]: LEC L01
+          - generic [ref=f2e662]: 1 section
+        - generic [ref=f2e663] [cursor=pointer]:
+          - generic [ref=f2e664]:
+            - generic [ref=f2e665]: CMAA6020
+            - generic [ref=f2e666]: TPG
+            - generic [ref=f2e667]: 1 cr
+          - generic [ref=f2e668]: Group Critique
+          - generic [ref=f2e669]: TUT T01
+          - generic [ref=f2e670]: 1 section
+        - generic [ref=f2e671] [cursor=pointer]:
+          - generic [ref=f2e672]:
+            - generic [ref=f2e673]: CMAA6101
+            - generic [ref=f2e674]: RPG
+            - generic [ref=f2e675]: 0 cr
+          - generic [ref=f2e676]: CMA Seminar I
+          - generic [ref=f2e677]: TUT T01
+          - generic [ref=f2e678]: 1 section
+        - generic [ref=f2e679] [cursor=pointer]:
+          - generic [ref=f2e680]:
+            - generic [ref=f2e681]: CMAA6990
+            - generic [ref=f2e682]: RPG
+            - generic [ref=f2e683]: 0 cr
+          - generic [ref=f2e684]: MPhil Thesis Research
+          - generic [ref=f2e685]: IND R01
+          - generic [ref=f2e686]: 1 section
+        - generic [ref=f2e687] [cursor=pointer]:
+          - generic [ref=f2e688]:
+            - generic [ref=f2e689]: CMAA7990
+            - generic [ref=f2e690]: RPG
+            - generic [ref=f2e691]: 0 cr
+          - generic [ref=f2e692]: Doctoral Thesis Research
+          - generic [ref=f2e693]: IND R01
+          - generic [ref=f2e694]: 1 section
+        - generic [ref=f2e695] [cursor=pointer]:
+          - generic [ref=f2e696]:
+            - generic [ref=f2e697]: CNCC5100
+            - generic [ref=f2e698]: RPG
+            - generic [ref=f2e699]: 3 cr
+          - generic [ref=f2e700]: Carbon Neutrality & Climate
+          - generic [ref=f2e701]: LEC L01
+          - generic [ref=f2e702]: 1 section
+        - generic [ref=f2e703] [cursor=pointer]:
+          - generic [ref=f2e704]:
+            - generic [ref=f2e705]: CNCC5140
+            - generic [ref=f2e706]: RPG
+            - generic [ref=f2e707]: 3 cr
+          - generic [ref=f2e708]: Research Design & Emp. Methods
+          - generic [ref=f2e709]: LEC L01
+          - generic [ref=f2e710]: 1 section
+        - generic [ref=f2e711] [cursor=pointer]:
+          - generic [ref=f2e712]:
+            - generic [ref=f2e713]: CNCC5150
+            - generic [ref=f2e714]: RPG
+            - generic [ref=f2e715]: 3 cr
+          - generic [ref=f2e716]: Quali Research for Climate Pol
+          - generic [ref=f2e717]: LEC L01
+          - generic [ref=f2e718]: 1 section
+        - generic [ref=f2e719] [cursor=pointer]:
+          - generic [ref=f2e720]:
+            - generic [ref=f2e721]: CNCC5200
+            - generic [ref=f2e722]: RPG
+            - generic [ref=f2e723]: 3 cr
+          - generic [ref=f2e724]: "Climate Change: Sc & Govern"
+          - generic [ref=f2e725]: LEC L01
+          - generic [ref=f2e726]: 1 section
+        - generic [ref=f2e727] [cursor=pointer]:
+          - generic [ref=f2e728]:
+            - generic [ref=f2e729]: CNCC5600
+            - generic [ref=f2e730]: RPG
+            - generic [ref=f2e731]: 3 cr
+          - generic [ref=f2e732]: Energy Economics and Policy
+          - generic [ref=f2e733]: LEC L01
+          - generic [ref=f2e734]: 1 section
+        - generic [ref=f2e735] [cursor=pointer]:
+          - generic [ref=f2e736]:
+            - generic [ref=f2e737]: CNCC5700
+            - generic [ref=f2e738]: RPG
+            - generic [ref=f2e739]: 3 cr
+          - generic [ref=f2e740]: Energy Systems and Policy
+          - generic [ref=f2e741]: LEC L01
+          - generic [ref=f2e742]: 1 section
+        - generic [ref=f2e743] [cursor=pointer]:
+          - generic [ref=f2e744]:
+            - generic [ref=f2e745]: CNCC5820
+            - generic [ref=f2e746]: RPG
+            - generic [ref=f2e747]: 3 cr
+          - generic [ref=f2e748]: Greenhouse Gas Quantification
+          - generic [ref=f2e749]: LEC L01
+          - generic [ref=f2e750]: 1 section
+        - generic [ref=f2e751] [cursor=pointer]:
+          - generic [ref=f2e752]:
+            - generic [ref=f2e753]: CNCC5840
+            - generic [ref=f2e754]: RPG
+            - generic [ref=f2e755]: 3 cr
+          - generic [ref=f2e756]: Econ Analysis of Cities & Envt
+          - generic [ref=f2e757]: LEC L01
+          - generic [ref=f2e758]: 1 section
+        - generic [ref=f2e759] [cursor=pointer]:
+          - generic [ref=f2e760]:
+            - generic [ref=f2e761]: CNCC6100A
+            - generic [ref=f2e762]: RPG
+            - generic [ref=f2e763]: 3 cr
+          - generic [ref=f2e764]: ET&ET
+          - generic [ref=f2e765]: LEC L01
+          - generic [ref=f2e766]: 1 section
+        - generic [ref=f2e767] [cursor=pointer]:
+          - generic [ref=f2e768]:
+            - generic [ref=f2e769]: CNCC6100B
+            - generic [ref=f2e770]: RPG
+            - generic [ref=f2e771]: 3 cr
+          - generic [ref=f2e772]: Introduction to ESS
+          - generic [ref=f2e773]: LEC L01
+          - generic [ref=f2e774]: 1 section
+        - generic [ref=f2e775] [cursor=pointer]:
+          - generic [ref=f2e776]:
+            - generic [ref=f2e777]: CNCC6900
+            - generic [ref=f2e778]: RPG
+            - generic [ref=f2e779]: 1 cr
+          - generic [ref=f2e780]: CNCC Program Seminar I
+          - generic [ref=f2e781]: LEC L01
+          - generic [ref=f2e782]: 1 section
+        - generic [ref=f2e783] [cursor=pointer]:
+          - generic [ref=f2e784]:
+            - generic [ref=f2e785]: CNCC6990
+            - generic [ref=f2e786]: RPG
+            - generic [ref=f2e787]: 0 cr
+          - generic [ref=f2e788]: MPhil Thesis Research
+          - generic [ref=f2e789]: IND R01
+          - generic [ref=f2e790]: 1 section
+        - generic [ref=f2e791] [cursor=pointer]:
+          - generic [ref=f2e792]:
+            - generic [ref=f2e793]: CNCC7990
+            - generic [ref=f2e794]: RPG
+            - generic [ref=f2e795]: 0 cr
+          - generic [ref=f2e796]: Doctoral Thesis Research
+          - generic [ref=f2e797]: IND R01
+          - generic [ref=f2e798]: 1 section
+        - generic [ref=f2e799] [cursor=pointer]:
+          - generic [ref=f2e800]:
+            - generic [ref=f2e801]: CNGF5000
+            - generic [ref=f2e802]: TPG
+            - generic [ref=f2e803]: 3 cr
+          - generic [ref=f2e804]: Green & Sustainable Finance
+          - generic [ref=f2e805]: LEC L01
+          - generic [ref=f2e806]: 1 section
+        - generic [ref=f2e807] [cursor=pointer]:
+          - generic [ref=f2e808]:
+            - generic [ref=f2e809]: CNGF5020
+            - generic [ref=f2e810]: TPG
+            - generic [ref=f2e811]: 3 cr
+          - generic [ref=f2e812]: Env Model & Big Data Analytics
+          - generic [ref=f2e813]: LEC L01
+          - generic [ref=f2e814]: 1 section
+        - generic [ref=f2e815] [cursor=pointer]:
+          - generic [ref=f2e816]:
+            - generic [ref=f2e817]: CNGF5200
+            - generic [ref=f2e818]: TPG
+            - generic [ref=f2e819]: 3 cr
+          - generic [ref=f2e820]: Life Cycle Assessment
+          - generic [ref=f2e821]: LEC L01
+          - generic [ref=f2e822]: 1 section
+        - generic [ref=f2e823] [cursor=pointer]:
+          - generic [ref=f2e824]:
+            - generic [ref=f2e825]: CNGF6050
+            - generic [ref=f2e826]: TPG
+            - generic [ref=f2e827]: 3 cr
+          - generic [ref=f2e828]: Internship I
+          - generic [ref=f2e829]: IND R01
+          - generic [ref=f2e830]: 1 section
+        - generic [ref=f2e831] [cursor=pointer]:
+          - generic [ref=f2e832]:
+            - generic [ref=f2e833]: CNGF6051
+            - generic [ref=f2e834]: TPG
+            - generic [ref=f2e835]: 3 cr
+          - generic [ref=f2e836]: Internship II
+          - generic [ref=f2e837]: IND R01
+          - generic [ref=f2e838]: 1 section · has prerequisite
+        - generic [ref=f2e839] [cursor=pointer]:
+          - generic [ref=f2e840]:
+            - generic [ref=f2e841]: CNGF6980A
+            - generic [ref=f2e842]: TPG
+            - generic [ref=f2e843]: 3 cr
+          - generic [ref=f2e844]: Independent Project
+          - generic [ref=f2e845]:
+            - text: IND R01/R02/R03/R04/…/R07
+            - generic [ref=f2e846]: 7 sections
+          - generic [ref=f2e847]: 7 sections
+        - generic [ref=f2e848] [cursor=pointer]:
+          - generic [ref=f2e849]:
+            - generic [ref=f2e850]: DLED3020
+            - generic [ref=f2e851]: UG
+            - generic [ref=f2e852]: 3 cr
+          - generic [ref=f2e853]: English Comm. I for INFH
+          - generic [ref=f2e854]:
+            - text: LEC L01/L02/L03
+            - generic [ref=f2e855]: 3 sections
+          - generic [ref=f2e856]: 3 sections · has prerequisite
+        - generic [ref=f2e857] [cursor=pointer]:
+          - generic [ref=f2e858]:
+            - generic [ref=f2e859]: DLED4020
+            - generic [ref=f2e860]: UG
+            - generic [ref=f2e861]: 3 cr
+          - generic [ref=f2e862]: English Comm. II for INFH
+          - generic [ref=f2e863]:
+            - text: LEC L01/L02/L03
+            - generic [ref=f2e864]: 3 sections
+          - generic [ref=f2e865]: 3 sections · has prerequisite
+        - generic [ref=f2e866] [cursor=pointer]:
+          - generic [ref=f2e867]:
+            - generic [ref=f2e868]: DLED4040
+            - generic [ref=f2e869]: UG
+            - generic [ref=f2e870]: 3 cr
+          - generic [ref=f2e871]: English Comm. II for SYSH
+          - generic [ref=f2e872]: LEC L01 · TUT T01
+          - generic [ref=f2e873]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e874] [cursor=pointer]:
+          - generic [ref=f2e875]:
+            - generic [ref=f2e876]: DSAA1001
+            - generic [ref=f2e877]: UG
+            - generic [ref=f2e878]: 3 cr
+          - generic [ref=f2e879]: IDSA
+          - generic [ref=f2e880]: LEC L01 · LAB LA01
+          - generic [ref=f2e881]: 2 sections · multi-component
+        - generic [ref=f2e882] [cursor=pointer]:
+          - generic [ref=f2e883]:
+            - generic [ref=f2e884]: DSAA2011
+            - generic [ref=f2e885]: UG
+            - generic [ref=f2e886]: 3 cr
+          - generic [ref=f2e887]: Machine Learning
+          - generic [ref=f2e888]:
+            - text: LEC L01/L02 · LAB LA01/LA02
+            - generic [ref=f2e889]: 2 sections
+          - generic [ref=f2e890]: 4 sections · multi-component · has prerequisite
+        - generic [ref=f2e891] [cursor=pointer]:
+          - generic [ref=f2e892]:
+            - generic [ref=f2e893]: DSAA2012
+            - generic [ref=f2e894]: UG
+            - generic [ref=f2e895]: 3 cr
+          - generic [ref=f2e896]: Deep Learning
+          - generic [ref=f2e897]:
+            - text: LEC L01/L02 · LAB LA01/LA02
+            - generic [ref=f2e898]: 2 sections
+          - generic [ref=f2e899]: 4 sections · multi-component · has prerequisite
+        - generic [ref=f2e900] [cursor=pointer]:
+          - generic [ref=f2e901]:
+            - generic [ref=f2e902]: DSAA2043
+            - generic [ref=f2e903]: UG
+            - generic [ref=f2e904]: 3 cr
+          - generic [ref=f2e905]: DAA
+          - generic [ref=f2e906]:
+            - text: LEC L01/L02 · LAB LA01/LA02/LA03
+            - generic [ref=f2e907]: 3 sections
+          - generic [ref=f2e908]: 5 sections · multi-component · has prerequisite
+        - generic [ref=f2e909] [cursor=pointer]:
+          - generic [ref=f2e910]:
+            - generic [ref=f2e911]: DSAA2044
+            - generic [ref=f2e912]: UG
+            - generic [ref=f2e913]: 3 cr
+          - generic [ref=f2e914]: Data Science Project
+          - generic [ref=f2e915]: LEC L01 · LAB LA01
+          - generic [ref=f2e916]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e917] [cursor=pointer]:
+          - generic [ref=f2e918]:
+            - generic [ref=f2e919]: DSAA2088
+            - generic [ref=f2e920]: UG
+            - generic [ref=f2e921]: 3 cr
+          - generic [ref=f2e922]: Math for DS
+          - generic [ref=f2e923]: LEC L01 · TUT T01
+          - generic [ref=f2e924]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e925] [cursor=pointer]:
+          - generic [ref=f2e926]:
+            - generic [ref=f2e927]: DSAA3032
+            - generic [ref=f2e928]: UG
+            - generic [ref=f2e929]: 3 cr
+          - generic [ref=f2e930]: Intro. to HPPC
+          - generic [ref=f2e931]: LEC L01 · LAB LA01
+          - generic [ref=f2e932]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e933] [cursor=pointer]:
+          - generic [ref=f2e934]:
+            - generic [ref=f2e935]: DSAA3051
+            - generic [ref=f2e936]: UG
+            - generic [ref=f2e937]: 3 cr
+          - generic [ref=f2e938]: Intro to NLP & KE
+          - generic [ref=f2e939]: LEC L01 · TUT T01
+          - generic [ref=f2e940]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e941] [cursor=pointer]:
+          - generic [ref=f2e942]:
+            - generic [ref=f2e943]: DSAA3073
+            - generic [ref=f2e944]: UG
+            - generic [ref=f2e945]: 4 cr
+          - generic [ref=f2e946]: Theories in Data Science
+          - generic [ref=f2e947]: LEC L01 · TUT T01
+          - generic [ref=f2e948]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e949] [cursor=pointer]:
+          - generic [ref=f2e950]:
+            - generic [ref=f2e951]: DSAA3074
+            - generic [ref=f2e952]: UG
+            - generic [ref=f2e953]: 3 cr
+          - generic [ref=f2e954]: Deep Learning for Science
+          - generic [ref=f2e955]: LEC L01 · TUT T01
+          - generic [ref=f2e956]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e957] [cursor=pointer]:
+          - generic [ref=f2e958]:
+            - generic [ref=f2e959]: DSAA4011
+            - generic [ref=f2e960]: UG
+            - generic [ref=f2e961]: 4 cr
+          - generic [ref=f2e962]: AML & ADL
+          - generic [ref=f2e963]: LEC L01 · LAB LA01
+          - generic [ref=f2e964]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e965] [cursor=pointer]:
+          - generic [ref=f2e966]:
+            - generic [ref=f2e967]: DSAA4032
+            - generic [ref=f2e968]: UG
+            - generic [ref=f2e969]: 3 cr
+          - generic [ref=f2e970]: Complex Data Management
+          - generic [ref=f2e971]: LEC L01
+          - generic [ref=f2e972]: 1 section · has prerequisite
+        - generic [ref=f2e973] [cursor=pointer]:
+          - generic [ref=f2e974]:
+            - generic [ref=f2e975]: DSAA4591
+            - generic [ref=f2e976]: UG
+            - generic [ref=f2e977]: 6 cr
+          - generic [ref=f2e978]: Final Year Capstone Project
+          - generic [ref=f2e979]: IND R01
+          - generic [ref=f2e980]: 1 section · has prerequisite
+        - generic [ref=f2e981] [cursor=pointer]:
+          - generic [ref=f2e982]:
+            - generic [ref=f2e983]: DSAA5002
+            - generic [ref=f2e984]: RPG
+            - generic [ref=f2e985]: 3 cr
+          - generic [ref=f2e986]: Data Mining
+          - generic [ref=f2e987]:
+            - text: LEC L01/L02
+            - generic [ref=f2e988]: 2 sections
+          - generic [ref=f2e989]: 2 sections
+        - generic [ref=f2e990] [cursor=pointer]:
+          - generic [ref=f2e991]:
+            - generic [ref=f2e992]: DSAA5012
+            - generic [ref=f2e993]: RPG
+            - generic [ref=f2e994]: 3 cr
+          - generic [ref=f2e995]: Advanced Database Management
+          - generic [ref=f2e996]: LEC L01
+          - generic [ref=f2e997]: 1 section
+        - generic [ref=f2e998] [cursor=pointer]:
+          - generic [ref=f2e999]:
+            - generic [ref=f2e1000]: DSAA5020
+            - generic [ref=f2e1001]: RPG
+            - generic [ref=f2e1002]: 3 cr
+          - generic [ref=f2e1003]: Foundation of DSA
+          - generic [ref=f2e1004]: LEC L01
+          - generic [ref=f2e1005]: 1 section
+        - generic [ref=f2e1006] [cursor=pointer]:
+          - generic [ref=f2e1007]:
+            - generic [ref=f2e1008]: DSAA5024
+            - generic [ref=f2e1009]: RPG
+            - generic [ref=f2e1010]: 3 cr
+          - generic [ref=f2e1011]: Data Exploration&Visualization
+          - generic [ref=f2e1012]: LEC L01
+          - generic [ref=f2e1013]: 1 section
+        - generic [ref=f2e1014] [cursor=pointer]:
+          - generic [ref=f2e1015]:
+            - generic [ref=f2e1016]: DSAA6000P
+            - generic [ref=f2e1017]: RPG
+            - generic [ref=f2e1018]: 3 cr
+          - generic [ref=f2e1019]: Game Theory
+          - generic [ref=f2e1020]: LEC L01
+          - generic [ref=f2e1021]: 1 section
+        - generic [ref=f2e1022] [cursor=pointer]:
+          - generic [ref=f2e1023]:
+            - generic [ref=f2e1024]: DSAA6000T
+            - generic [ref=f2e1025]: RPG
+            - generic [ref=f2e1026]: 3 cr
+          - generic [ref=f2e1027]: AI Infra Systems
+          - generic [ref=f2e1028]: LEC L01
+          - generic [ref=f2e1029]: 1 section
+        - generic [ref=f2e1030] [cursor=pointer]:
+          - generic [ref=f2e1031]:
+            - generic [ref=f2e1032]: DSAA6000U
+            - generic [ref=f2e1033]: RPG
+            - generic [ref=f2e1034]: 3 cr
+          - generic [ref=f2e1035]: Data-Centric AI
+          - generic [ref=f2e1036]: LEC L01
+          - generic [ref=f2e1037]: 1 section
+        - generic [ref=f2e1038] [cursor=pointer]:
+          - generic [ref=f2e1039]:
+            - generic [ref=f2e1040]: DSAA6018A
+            - generic [ref=f2e1041]: RPG
+            - generic [ref=f2e1042]: 1 cr
+          - generic [ref=f2e1043]: Independent Study
+          - generic [ref=f2e1044]: IND R01
+          - generic [ref=f2e1045]: 1 section
+        - generic [ref=f2e1046] [cursor=pointer]:
+          - generic [ref=f2e1047]:
+            - generic [ref=f2e1048]: DSAA6018B
+            - generic [ref=f2e1049]: RPG
+            - generic [ref=f2e1050]: 1 cr
+          - generic [ref=f2e1051]: Independent Study
+          - generic [ref=f2e1052]: IND R01
+          - generic [ref=f2e1053]: 1 section
+        - generic [ref=f2e1054] [cursor=pointer]:
+          - generic [ref=f2e1055]:
+            - generic [ref=f2e1056]: DSAA6100
+            - generic [ref=f2e1057]: TPG
+            - generic [ref=f2e1058]: 3 cr
+          - generic [ref=f2e1059]: Practical Lab Course
+          - generic [ref=f2e1060]: LEC L01 · LAB LA01
+          - generic [ref=f2e1061]: 2 sections · multi-component
+        - generic [ref=f2e1062] [cursor=pointer]:
+          - generic [ref=f2e1063]:
+            - generic [ref=f2e1064]: DSAA6101
+            - generic [ref=f2e1065]: RPG
+            - generic [ref=f2e1066]: 0 cr
+          - generic [ref=f2e1067]: DSA Seminar I
+          - generic [ref=f2e1068]: LEC L01
+          - generic [ref=f2e1069]: 1 section
+        - generic [ref=f2e1070] [cursor=pointer]:
+          - generic [ref=f2e1071]:
+            - generic [ref=f2e1072]: DSAA6920
+            - generic [ref=f2e1073]: TPG
+            - generic [ref=f2e1074]: 2 cr
+          - generic [ref=f2e1075]: Industry Internship Ⅰ
+          - generic [ref=f2e1076]: IND R01
+          - generic [ref=f2e1077]: 1 section
+        - generic [ref=f2e1078] [cursor=pointer]:
+          - generic [ref=f2e1079]:
+            - generic [ref=f2e1080]: DSAA6990
+            - generic [ref=f2e1081]: RPG
+            - generic [ref=f2e1082]: 0 cr
+          - generic [ref=f2e1083]: MPhil Thesis Research
+          - generic [ref=f2e1084]: IND R01
+          - generic [ref=f2e1085]: 1 section
+        - generic [ref=f2e1086] [cursor=pointer]:
+          - generic [ref=f2e1087]:
+            - generic [ref=f2e1088]: DSAA7990
+            - generic [ref=f2e1089]: RPG
+            - generic [ref=f2e1090]: 0 cr
+          - generic [ref=f2e1091]: Doctoral Thesis Research
+          - generic [ref=f2e1092]: IND R01
+          - generic [ref=f2e1093]: 1 section
+        - generic [ref=f2e1094] [cursor=pointer]:
+          - generic [ref=f2e1095]:
+            - generic [ref=f2e1096]: EOAS5000
+            - generic [ref=f2e1097]: RPG
+            - generic [ref=f2e1098]: 3 cr
+          - generic [ref=f2e1099]: Introduction to Oceanography
+          - generic [ref=f2e1100]: LEC L01
+          - generic [ref=f2e1101]: 1 section
+        - generic [ref=f2e1102] [cursor=pointer]:
+          - generic [ref=f2e1103]:
+            - generic [ref=f2e1104]: EOAS5001
+            - generic [ref=f2e1105]: RPG
+            - generic [ref=f2e1106]: 3 cr
+          - generic [ref=f2e1107]: Earth Surface
+          - generic [ref=f2e1108]: LEC L01
+          - generic [ref=f2e1109]: 1 section
+        - generic [ref=f2e1110] [cursor=pointer]:
+          - generic [ref=f2e1111]:
+            - generic [ref=f2e1112]: EOAS5005
+            - generic [ref=f2e1113]: RPG
+            - generic [ref=f2e1114]: 3 cr
+          - generic [ref=f2e1115]: Atmospheric Science
+          - generic [ref=f2e1116]: LEC L01
+          - generic [ref=f2e1117]: 1 section
+        - generic [ref=f2e1118] [cursor=pointer]:
+          - generic [ref=f2e1119]:
+            - generic [ref=f2e1120]: EOAS5006
+            - generic [ref=f2e1121]: RPG
+            - generic [ref=f2e1122]: 3 cr
+          - generic [ref=f2e1123]: Global Carbon Cycle and Climat
+          - generic [ref=f2e1124]: LEC L01
+          - generic [ref=f2e1125]: 1 section
+        - generic [ref=f2e1126] [cursor=pointer]:
+          - generic [ref=f2e1127]:
+            - generic [ref=f2e1128]: EOAS5009
+            - generic [ref=f2e1129]: RPG
+            - generic [ref=f2e1130]: 3 cr
+          - generic [ref=f2e1131]: Env. Exposure & Risk Assess
+          - generic [ref=f2e1132]: LEC L01
+          - generic [ref=f2e1133]: 1 section
+        - generic [ref=f2e1134] [cursor=pointer]:
+          - generic [ref=f2e1135]:
+            - generic [ref=f2e1136]: EOAS6000J
+            - generic [ref=f2e1137]: RPG
+            - generic [ref=f2e1138]: 3 cr
+          - generic [ref=f2e1139]: Atmospheric Chemistry Modeling
+          - generic [ref=f2e1140]: LEC L01
+          - generic [ref=f2e1141]: 1 section
+        - generic [ref=f2e1142] [cursor=pointer]:
+          - generic [ref=f2e1143]:
+            - generic [ref=f2e1144]: EOAS6000K
+            - generic [ref=f2e1145]: RPG
+            - generic [ref=f2e1146]: 3 cr
+          - generic [ref=f2e1147]: Mathematical Methods
+          - generic [ref=f2e1148]: LEC L01
+          - generic [ref=f2e1149]: 1 section
+        - generic [ref=f2e1150] [cursor=pointer]:
+          - generic [ref=f2e1151]:
+            - generic [ref=f2e1152]: EOAS6900A
+            - generic [ref=f2e1153]: RPG
+            - generic [ref=f2e1154]: 1 cr
+          - generic [ref=f2e1155]: Independent Study
+          - generic [ref=f2e1156]: IND R01
+          - generic [ref=f2e1157]: 1 section
+        - generic [ref=f2e1158] [cursor=pointer]:
+          - generic [ref=f2e1159]:
+            - generic [ref=f2e1160]: EOAS6990
+            - generic [ref=f2e1161]: RPG
+            - generic [ref=f2e1162]: 0 cr
+          - generic [ref=f2e1163]: MPhil Thesis Research
+          - generic [ref=f2e1164]: IND R01
+          - generic [ref=f2e1165]: 1 section
+        - generic [ref=f2e1166] [cursor=pointer]:
+          - generic [ref=f2e1167]:
+            - generic [ref=f2e1168]: EOAS7990
+            - generic [ref=f2e1169]: RPG
+            - generic [ref=f2e1170]: 0 cr
+          - generic [ref=f2e1171]: Doctoral Thesis Research
+          - generic [ref=f2e1172]: IND R01
+          - generic [ref=f2e1173]: 1 section
+        - generic [ref=f2e1174] [cursor=pointer]:
+          - generic [ref=f2e1175]:
+            - generic [ref=f2e1176]: FTEC1010
+            - generic [ref=f2e1177]: UG
+            - generic [ref=f2e1178]: 1 cr
+          - generic [ref=f2e1179]: Acad Orient for FTEC Ss
+          - generic [ref=f2e1180]: LEC L01
+          - generic [ref=f2e1181]: 1 section
+        - generic [ref=f2e1182] [cursor=pointer]:
+          - generic [ref=f2e1183]:
+            - generic [ref=f2e1184]: FTEC2120
+            - generic [ref=f2e1185]: UG
+            - generic [ref=f2e1186]: 4 cr
+          - generic [ref=f2e1187]: Probability
+          - generic [ref=f2e1188]: LEC L01 · TUT T01
+          - generic [ref=f2e1189]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e1190] [cursor=pointer]:
+          - generic [ref=f2e1191]:
+            - generic [ref=f2e1192]: FTEC5031
+            - generic [ref=f2e1193]: RPG
+            - generic [ref=f2e1194]: 3 cr
+          - generic [ref=f2e1195]: Advanced Probability Theory
+          - generic [ref=f2e1196]: LEC L01
+          - generic [ref=f2e1197]: 1 section
+        - generic [ref=f2e1198] [cursor=pointer]:
+          - generic [ref=f2e1199]:
+            - generic [ref=f2e1200]: FTEC5032
+            - generic [ref=f2e1201]: RPG
+            - generic [ref=f2e1202]: 3 cr
+          - generic [ref=f2e1203]: Optimization Theory
+          - generic [ref=f2e1204]: LEC L01
+          - generic [ref=f2e1205]: 1 section
+        - generic [ref=f2e1206] [cursor=pointer]:
+          - generic [ref=f2e1207]:
+            - generic [ref=f2e1208]: FTEC5050
+            - generic [ref=f2e1209]: RPG
+            - generic [ref=f2e1210]: 3 cr
+          - generic [ref=f2e1211]: Artificial Intelligence
+          - generic [ref=f2e1212]: LEC L01
+          - generic [ref=f2e1213]: 1 section
+        - generic [ref=f2e1214] [cursor=pointer]:
+          - generic [ref=f2e1215]:
+            - generic [ref=f2e1216]: FTEC5061
+            - generic [ref=f2e1217]: RPG
+            - generic [ref=f2e1218]: 3 cr
+          - generic [ref=f2e1219]: FinTech Stochastic Calculus
+          - generic [ref=f2e1220]: LEC L01
+          - generic [ref=f2e1221]: 1 section
+        - generic [ref=f2e1222] [cursor=pointer]:
+          - generic [ref=f2e1223]:
+            - generic [ref=f2e1224]: FTEC5101
+            - generic [ref=f2e1225]: RPG
+            - generic [ref=f2e1226]: 3 cr
+          - generic [ref=f2e1227]: Microeconomic Theory
+          - generic [ref=f2e1228]: LEC L01
+          - generic [ref=f2e1229]: 1 section
+        - generic [ref=f2e1230] [cursor=pointer]:
+          - generic [ref=f2e1231]:
+            - generic [ref=f2e1232]: FTEC5210
+            - generic [ref=f2e1233]: RPG
+            - generic [ref=f2e1234]: 3 cr
+          - generic [ref=f2e1235]: Quan Models Fin Derivatives
+          - generic [ref=f2e1236]: LEC L01
+          - generic [ref=f2e1237]: 1 section
+        - generic [ref=f2e1238] [cursor=pointer]:
+          - generic [ref=f2e1239]:
+            - generic [ref=f2e1240]: FTEC5230
+            - generic [ref=f2e1241]: RPG
+            - generic [ref=f2e1242]: 3 cr
+          - generic [ref=f2e1243]: Financial Risk Management
+          - generic [ref=f2e1244]: LEC L01
+          - generic [ref=f2e1245]: 1 section
+        - generic [ref=f2e1246] [cursor=pointer]:
+          - generic [ref=f2e1247]:
+            - generic [ref=f2e1248]: FTEC5250
+            - generic [ref=f2e1249]: RPG
+            - generic [ref=f2e1250]: 3 cr
+          - generic [ref=f2e1251]: Machine Learning for Finance
+          - generic [ref=f2e1252]: LEC L01
+          - generic [ref=f2e1253]: 1 section
+        - generic [ref=f2e1254] [cursor=pointer]:
+          - generic [ref=f2e1255]:
+            - generic [ref=f2e1256]: FTEC5330
+            - generic [ref=f2e1257]: RPG
+            - generic [ref=f2e1258]: 3 cr
+          - generic [ref=f2e1259]: Graph Machine Learning
+          - generic [ref=f2e1260]: LEC L01
+          - generic [ref=f2e1261]: 1 section
+        - generic [ref=f2e1262] [cursor=pointer]:
+          - generic [ref=f2e1263]:
+            - generic [ref=f2e1264]: FTEC6101H
+            - generic [ref=f2e1265]: RPG
+            - generic [ref=f2e1266]: 0 cr
+          - generic [ref=f2e1267]: FinTech Program Seminar
+          - generic [ref=f2e1268]: TUT T01
+          - generic [ref=f2e1269]: 1 section
+        - generic [ref=f2e1270] [cursor=pointer]:
+          - generic [ref=f2e1271]:
+            - generic [ref=f2e1272]: FTEC6900D
+            - generic [ref=f2e1273]: RPG
+            - generic [ref=f2e1274]: 1 cr
+          - generic [ref=f2e1275]: Independent Study
+          - generic [ref=f2e1276]: IND R01
+          - generic [ref=f2e1277]: 1 section
+        - generic [ref=f2e1278] [cursor=pointer]:
+          - generic [ref=f2e1279]:
+            - generic [ref=f2e1280]: FTEC6910J
+            - generic [ref=f2e1281]: RPG
+            - generic [ref=f2e1282]: 3 cr
+          - generic [ref=f2e1283]: Fina Data Mining & Warehousing
+          - generic [ref=f2e1284]: LEC L01
+          - generic [ref=f2e1285]: 1 section
+        - generic [ref=f2e1286] [cursor=pointer]:
+          - generic [ref=f2e1287]:
+            - generic [ref=f2e1288]: FTEC6990
+            - generic [ref=f2e1289]: RPG
+            - generic [ref=f2e1290]: 0 cr
+          - generic [ref=f2e1291]: MPhil Thesis Research
+          - generic [ref=f2e1292]: IND R01
+          - generic [ref=f2e1293]: 1 section
+        - generic [ref=f2e1294] [cursor=pointer]:
+          - generic [ref=f2e1295]:
+            - generic [ref=f2e1296]: FTEC7990
+            - generic [ref=f2e1297]: RPG
+            - generic [ref=f2e1298]: 0 cr
+          - generic [ref=f2e1299]: Doctoral Thesis Research
+          - generic [ref=f2e1300]: IND R01
+          - generic [ref=f2e1301]: 1 section
+        - generic [ref=f2e1302] [cursor=pointer]:
+          - generic [ref=f2e1303]:
+            - generic [ref=f2e1304]: FUNH5000
+            - generic [ref=f2e1305]: RPG
+            - generic [ref=f2e1306]: 2 cr
+          - generic [ref=f2e1307]: Introduction to Function Hub
+          - generic [ref=f2e1308]:
+            - text: LEC L01/L02/L03/L04/L05
+            - generic [ref=f2e1309]: 5 sections
+          - generic [ref=f2e1310]: 5 sections
+        - generic [ref=f2e1311] [cursor=pointer]:
+          - generic [ref=f2e1312]:
+            - generic [ref=f2e1313]: FUNH6770
+            - generic [ref=f2e1314]: RPG
+            - generic [ref=f2e1315]: 1 cr
+          - generic [ref=f2e1316]: Prof Dev for Function Hub
+          - generic [ref=f2e1317]: TUT T01
+          - generic [ref=f2e1318]: 1 section
+        - generic [ref=f2e1319] [cursor=pointer]:
+          - generic [ref=f2e1320]:
+            - generic [ref=f2e1321]: FUNH6800K
+            - generic [ref=f2e1322]: RPG
+            - generic [ref=f2e1323]: 0 cr
+          - generic [ref=f2e1324]: Function Hub Seminar
+          - generic [ref=f2e1325]:
+            - text: TUT T01/T02/T03/T04
+            - generic [ref=f2e1326]: 4 sections
+          - generic [ref=f2e1327]: 4 sections
+        - generic [ref=f2e1328] [cursor=pointer]:
+          - generic [ref=f2e1329]:
+            - generic [ref=f2e1330]: INFH5000
+            - generic [ref=f2e1331]: RPG
+            - generic [ref=f2e1332]: 2 cr
+          - generic [ref=f2e1333]: Info Science & Technology
+          - generic [ref=f2e1334]:
+            - text: LEC L01/L02
+            - generic [ref=f2e1335]: 2 sections
+          - generic [ref=f2e1336]: 2 sections
+        - generic [ref=f2e1337] [cursor=pointer]:
+          - generic [ref=f2e1338]:
+            - generic [ref=f2e1339]: INFH6780
+            - generic [ref=f2e1340]: RPG
+            - generic [ref=f2e1341]: 1 cr
+          - generic [ref=f2e1342]: Career Dev for Info Hub
+          - generic [ref=f2e1343]: TUT T01
+          - generic [ref=f2e1344]: 1 section
+        - generic [ref=f2e1345] [cursor=pointer]:
+          - generic [ref=f2e1346]:
+            - generic [ref=f2e1347]: INTR5100
+            - generic [ref=f2e1348]: RPG
+            - generic [ref=f2e1349]: 3 cr
+          - generic [ref=f2e1350]: Traffic Flow Theory
+          - generic [ref=f2e1351]: LEC L01
+          - generic [ref=f2e1352]: 1 section
+        - generic [ref=f2e1353] [cursor=pointer]:
+          - generic [ref=f2e1354]:
+            - generic [ref=f2e1355]: INTR5130
+            - generic [ref=f2e1356]: RPG
+            - generic [ref=f2e1357]: 3 cr
+          - generic [ref=f2e1358]: Traffic Control and Simulation
+          - generic [ref=f2e1359]: LEC L01
+          - generic [ref=f2e1360]: 1 section
+        - generic [ref=f2e1361] [cursor=pointer]:
+          - generic [ref=f2e1362]:
+            - generic [ref=f2e1363]: INTR5220
+            - generic [ref=f2e1364]: RPG
+            - generic [ref=f2e1365]: 3 cr
+          - generic [ref=f2e1366]: Wireless for Mob Auto Things
+          - generic [ref=f2e1367]: LEC L01
+          - generic [ref=f2e1368]: 1 section
+        - generic [ref=f2e1369] [cursor=pointer]:
+          - generic [ref=f2e1370]:
+            - generic [ref=f2e1371]: INTR5230
+            - generic [ref=f2e1372]: RPG
+            - generic [ref=f2e1373]: 3 cr
+          - generic [ref=f2e1374]: Data-driven Transportation
+          - generic [ref=f2e1375]: LEC L01
+          - generic [ref=f2e1376]: 1 section
+        - generic [ref=f2e1377] [cursor=pointer]:
+          - generic [ref=f2e1378]:
+            - generic [ref=f2e1379]: INTR5250
+            - generic [ref=f2e1380]: RPG
+            - generic [ref=f2e1381]: 3 cr
+          - generic [ref=f2e1382]: AI in Transportation
+          - generic [ref=f2e1383]: LEC L01
+          - generic [ref=f2e1384]: 1 section
+        - generic [ref=f2e1385] [cursor=pointer]:
+          - generic [ref=f2e1386]:
+            - generic [ref=f2e1387]: INTR5310
+            - generic [ref=f2e1388]: RPG
+            - generic [ref=f2e1389]: 3 cr
+          - generic [ref=f2e1390]: Linear Optimazation
+          - generic [ref=f2e1391]: LEC L01
+          - generic [ref=f2e1392]: 1 section
+        - generic [ref=f2e1393] [cursor=pointer]:
+          - generic [ref=f2e1394]:
+            - generic [ref=f2e1395]: INTR5330
+            - generic [ref=f2e1396]: RPG
+            - generic [ref=f2e1397]: 3 cr
+          - generic [ref=f2e1398]: Analy. Methods in HF Research
+          - generic [ref=f2e1399]: LEC L01
+          - generic [ref=f2e1400]: 1 section
+        - generic [ref=f2e1401] [cursor=pointer]:
+          - generic [ref=f2e1402]:
+            - generic [ref=f2e1403]: INTR6000P
+            - generic [ref=f2e1404]: RPG
+            - generic [ref=f2e1405]: 3 cr
+          - generic [ref=f2e1406]: Visual Navigation
+          - generic [ref=f2e1407]: LEC L01
+          - generic [ref=f2e1408]: 1 section
+        - generic [ref=f2e1409] [cursor=pointer]:
+          - generic [ref=f2e1410]:
+            - generic [ref=f2e1411]: INTR6000S
+            - generic [ref=f2e1412]: RPG
+            - generic [ref=f2e1413]: 3 cr
+          - generic [ref=f2e1414]: Deep Generative Model for ITS
+          - generic [ref=f2e1415]: LEC L01
+          - generic [ref=f2e1416]: 1 section
+        - generic [ref=f2e1417] [cursor=pointer]:
+          - generic [ref=f2e1418]:
+            - generic [ref=f2e1419]: INTR6000T
+            - generic [ref=f2e1420]: RPG
+            - generic [ref=f2e1421]: 3 cr
+          - generic [ref=f2e1422]: Swarm Intelligence
+          - generic [ref=f2e1423]: LEC L01
+          - generic [ref=f2e1424]: 1 section
+        - generic [ref=f2e1425] [cursor=pointer]:
+          - generic [ref=f2e1426]:
+            - generic [ref=f2e1427]: INTR6800L
+            - generic [ref=f2e1428]: RPG
+            - generic [ref=f2e1429]: 0 cr
+          - generic [ref=f2e1430]: Seminar in INTR
+          - generic [ref=f2e1431]: TUT T01
+          - generic [ref=f2e1432]: 1 section
+        - generic [ref=f2e1433] [cursor=pointer]:
+          - generic [ref=f2e1434]:
+            - generic [ref=f2e1435]: INTR6900B
+            - generic [ref=f2e1436]: RPG
+            - generic [ref=f2e1437]: 1 cr
+          - generic [ref=f2e1438]: Independent Study
+          - generic [ref=f2e1439]: IND R01
+          - generic [ref=f2e1440]: 1 section
+        - generic [ref=f2e1441] [cursor=pointer]:
+          - generic [ref=f2e1442]:
+            - generic [ref=f2e1443]: INTR6990
+            - generic [ref=f2e1444]: RPG
+            - generic [ref=f2e1445]: 0 cr
+          - generic [ref=f2e1446]: MPhil Thesis Research
+          - generic [ref=f2e1447]: IND R01
+          - generic [ref=f2e1448]: 1 section
+        - generic [ref=f2e1449] [cursor=pointer]:
+          - generic [ref=f2e1450]:
+            - generic [ref=f2e1451]: INTR7990
+            - generic [ref=f2e1452]: RPG
+            - generic [ref=f2e1453]: 0 cr
+          - generic [ref=f2e1454]: Doctoral Thesis Research
+          - generic [ref=f2e1455]: IND R01
+          - generic [ref=f2e1456]: 1 section
+        - generic [ref=f2e1457] [cursor=pointer]:
+          - generic [ref=f2e1458]:
+            - generic [ref=f2e1459]: IOTA5002
+            - generic [ref=f2e1460]: RPG
+            - generic [ref=f2e1461]: 3 cr
+          - generic [ref=f2e1462]: Data-driven Modeling
+          - generic [ref=f2e1463]: LEC L01
+          - generic [ref=f2e1464]: 1 section
+        - generic [ref=f2e1465] [cursor=pointer]:
+          - generic [ref=f2e1466]:
+            - generic [ref=f2e1467]: IOTA5003
+            - generic [ref=f2e1468]: RPG
+            - generic [ref=f2e1469]: 3 cr
+          - generic [ref=f2e1470]: Wireless for Mob Auto Things
+          - generic [ref=f2e1471]: LEC L01
+          - generic [ref=f2e1472]: 1 section
+        - generic [ref=f2e1473] [cursor=pointer]:
+          - generic [ref=f2e1474]:
+            - generic [ref=f2e1475]: IOTA5104
+            - generic [ref=f2e1476]: RPG
+            - generic [ref=f2e1477]: 3 cr
+          - generic [ref=f2e1478]: Discrete-Time Signal Process
+          - generic [ref=f2e1479]: LEC L01
+          - generic [ref=f2e1480]: 1 section
+        - generic [ref=f2e1481] [cursor=pointer]:
+          - generic [ref=f2e1482]:
+            - generic [ref=f2e1483]: IOTA5105
+            - generic [ref=f2e1484]: RPG
+            - generic [ref=f2e1485]: 3 cr
+          - generic [ref=f2e1486]: Fundamentals of Wireless Commu
+          - generic [ref=f2e1487]: LEC L01
+          - generic [ref=f2e1488]: 1 section
+        - generic [ref=f2e1489] [cursor=pointer]:
+          - generic [ref=f2e1490]:
+            - generic [ref=f2e1491]: IOTA5201
+            - generic [ref=f2e1492]: RPG
+            - generic [ref=f2e1493]: 3 cr
+          - generic [ref=f2e1494]: RL for Intell Decision Making
+          - generic [ref=f2e1495]: LEC L01
+          - generic [ref=f2e1496]: 1 section
+        - generic [ref=f2e1497] [cursor=pointer]:
+          - generic [ref=f2e1498]:
+            - generic [ref=f2e1499]: IOTA5203
+            - generic [ref=f2e1500]: RPG
+            - generic [ref=f2e1501]: 3 cr
+          - generic [ref=f2e1502]: SF & CI for Networked Robotics
+          - generic [ref=f2e1503]: LEC L01
+          - generic [ref=f2e1504]: 1 section
+        - generic [ref=f2e1505] [cursor=pointer]:
+          - generic [ref=f2e1506]:
+            - generic [ref=f2e1507]: IOTA5501
+            - generic [ref=f2e1508]: RPG
+            - generic [ref=f2e1509]: 3 cr
+          - generic [ref=f2e1510]: Convex & Nonconvex Optimiz I
+          - generic [ref=f2e1511]: LEC L01
+          - generic [ref=f2e1512]: 1 section
+        - generic [ref=f2e1513] [cursor=pointer]:
+          - generic [ref=f2e1514]:
+            - generic [ref=f2e1515]: IOTA5504
+            - generic [ref=f2e1516]: RPG
+            - generic [ref=f2e1517]: 3 cr
+          - generic [ref=f2e1518]: Numerical Analysis
+          - generic [ref=f2e1519]: LEC L01
+          - generic [ref=f2e1520]: 1 section
+        - generic [ref=f2e1521] [cursor=pointer]:
+          - generic [ref=f2e1522]:
+            - generic [ref=f2e1523]: IOTA6101
+            - generic [ref=f2e1524]: RPG
+            - generic [ref=f2e1525]: 0 cr
+          - generic [ref=f2e1526]: Internet of Things Seminar I
+          - generic [ref=f2e1527]: TUT T01
+          - generic [ref=f2e1528]: 1 section
+        - generic [ref=f2e1529] [cursor=pointer]:
+          - generic [ref=f2e1530]:
+            - generic [ref=f2e1531]: IOTA6900A
+            - generic [ref=f2e1532]: RPG
+            - generic [ref=f2e1533]: 3 cr
+          - generic [ref=f2e1534]: Independent Study
+          - generic [ref=f2e1535]: IND R01
+          - generic [ref=f2e1536]: 1 section
+        - generic [ref=f2e1537] [cursor=pointer]:
+          - generic [ref=f2e1538]:
+            - generic [ref=f2e1539]: IOTA6900B
+            - generic [ref=f2e1540]: RPG
+            - generic [ref=f2e1541]: 1 cr
+          - generic [ref=f2e1542]: Independent Study
+          - generic [ref=f2e1543]: IND R01
+          - generic [ref=f2e1544]: 1 section
+        - generic [ref=f2e1545] [cursor=pointer]:
+          - generic [ref=f2e1546]:
+            - generic [ref=f2e1547]: IOTA6910L
+            - generic [ref=f2e1548]: RPG
+            - generic [ref=f2e1549]: 3 cr
+          - generic [ref=f2e1550]: Multi-agent Learning
+          - generic [ref=f2e1551]: LEC L01
+          - generic [ref=f2e1552]: 1 section
+        - generic [ref=f2e1553] [cursor=pointer]:
+          - generic [ref=f2e1554]:
+            - generic [ref=f2e1555]: IOTA6910M
+            - generic [ref=f2e1556]: RPG
+            - generic [ref=f2e1557]: 3 cr
+          - generic [ref=f2e1558]: Ubiquitous Machine Learning
+          - generic [ref=f2e1559]: LEC L01
+          - generic [ref=f2e1560]: 1 section
+        - generic [ref=f2e1561] [cursor=pointer]:
+          - generic [ref=f2e1562]:
+            - generic [ref=f2e1563]: IOTA6990
+            - generic [ref=f2e1564]: RPG
+            - generic [ref=f2e1565]: 0 cr
+          - generic [ref=f2e1566]: MPhil Thesis Research
+          - generic [ref=f2e1567]: IND R01
+          - generic [ref=f2e1568]: 1 section
+        - generic [ref=f2e1569] [cursor=pointer]:
+          - generic [ref=f2e1570]:
+            - generic [ref=f2e1571]: IOTA7990
+            - generic [ref=f2e1572]: RPG
+            - generic [ref=f2e1573]: 0 cr
+          - generic [ref=f2e1574]: Doctoral Thesis Research
+          - generic [ref=f2e1575]: IND R01
+          - generic [ref=f2e1576]: 1 section
+        - generic [ref=f2e1577] [cursor=pointer]:
+          - generic [ref=f2e1578]:
+            - generic [ref=f2e1579]: IPEN5100
+            - generic [ref=f2e1580]: RPG
+            - generic [ref=f2e1581]: 3 cr
+          - generic [ref=f2e1582]: Innov, Policy & Entre
+          - generic [ref=f2e1583]: LEC L01
+          - generic [ref=f2e1584]: 1 section
+        - generic [ref=f2e1585] [cursor=pointer]:
+          - generic [ref=f2e1586]:
+            - generic [ref=f2e1587]: IPEN5110
+            - generic [ref=f2e1588]: RPG
+            - generic [ref=f2e1589]: 3 cr
+          - generic [ref=f2e1590]: Foundation in Public Policy
+          - generic [ref=f2e1591]: LEC L01
+          - generic [ref=f2e1592]: 1 section
+        - generic [ref=f2e1593] [cursor=pointer]:
+          - generic [ref=f2e1594]:
+            - generic [ref=f2e1595]: IPEN5130
+            - generic [ref=f2e1596]: RPG
+            - generic [ref=f2e1597]: 3 cr
+          - generic [ref=f2e1598]: Economics of Tech Inno & Entre
+          - generic [ref=f2e1599]: LEC L01
+          - generic [ref=f2e1600]: 1 section
+        - generic [ref=f2e1601] [cursor=pointer]:
+          - generic [ref=f2e1602]:
+            - generic [ref=f2e1603]: IPEN5140
+            - generic [ref=f2e1604]: RPG
+            - generic [ref=f2e1605]: 3 cr
+          - generic [ref=f2e1606]: Quant Analysis & Emp Methods
+          - generic [ref=f2e1607]: LEC L01
+          - generic [ref=f2e1608]: 1 section
+        - generic [ref=f2e1609] [cursor=pointer]:
+          - generic [ref=f2e1610]:
+            - generic [ref=f2e1611]: IPEN5150
+            - generic [ref=f2e1612]: TPG
+            - generic [ref=f2e1613]: 3 cr
+          - generic [ref=f2e1614]: Policy Analy for Tech & Inno
+          - generic [ref=f2e1615]: LEC L01
+          - generic [ref=f2e1616]: 1 section
+        - generic [ref=f2e1617] [cursor=pointer]:
+          - generic [ref=f2e1618]:
+            - generic [ref=f2e1619]: IPEN5250
+            - generic [ref=f2e1620]: RPG
+            - generic [ref=f2e1621]: 3 cr
+          - generic [ref=f2e1622]: Text Analysis & Machine Learn
+          - generic [ref=f2e1623]: LEC L01
+          - generic [ref=f2e1624]: 1 section
+        - generic [ref=f2e1625] [cursor=pointer]:
+          - generic [ref=f2e1626]:
+            - generic [ref=f2e1627]: IPEN5270
+            - generic [ref=f2e1628]: RPG
+            - generic [ref=f2e1629]: 3 cr
+          - generic [ref=f2e1630]: ESG Practice & Research
+          - generic [ref=f2e1631]: LEC L01
+          - generic [ref=f2e1632]: 1 section
+        - generic [ref=f2e1633] [cursor=pointer]:
+          - generic [ref=f2e1634]:
+            - generic [ref=f2e1635]: IPEN5340
+            - generic [ref=f2e1636]: RPG
+            - generic [ref=f2e1637]: 3 cr
+          - generic [ref=f2e1638]: Business Model Innov for Sust
+          - generic [ref=f2e1639]: LEC L01
+          - generic [ref=f2e1640]: 1 section
+        - generic [ref=f2e1641] [cursor=pointer]:
+          - generic [ref=f2e1642]:
+            - generic [ref=f2e1643]: IPEN5350
+            - generic [ref=f2e1644]: RPG
+            - generic [ref=f2e1645]: 3 cr
+          - generic [ref=f2e1646]: Energy Systems and Policy
+          - generic [ref=f2e1647]: LEC L01
+          - generic [ref=f2e1648]: 1 section
+        - generic [ref=f2e1649] [cursor=pointer]:
+          - generic [ref=f2e1650]:
+            - generic [ref=f2e1651]: IPEN5400
+            - generic [ref=f2e1652]: RPG
+            - generic [ref=f2e1653]: 3 cr
+          - generic [ref=f2e1654]: "Climate Change: Sc & Govern"
+          - generic [ref=f2e1655]: LEC L01
+          - generic [ref=f2e1656]: 1 section
+        - generic [ref=f2e1657] [cursor=pointer]:
+          - generic [ref=f2e1658]:
+            - generic [ref=f2e1659]: IPEN5500
+            - generic [ref=f2e1660]: RPG
+            - generic [ref=f2e1661]: 3 cr
+          - generic [ref=f2e1662]: Sc Tech & Innov Policy
+          - generic [ref=f2e1663]: LEC L01
+          - generic [ref=f2e1664]: 1 section
+        - generic [ref=f2e1665] [cursor=pointer]:
+          - generic [ref=f2e1666]:
+            - generic [ref=f2e1667]: IPEN5620
+            - generic [ref=f2e1668]: RPG
+            - generic [ref=f2e1669]: 3 cr
+          - generic [ref=f2e1670]: "Entr & Inno: Fr Idea to Impact"
+          - generic [ref=f2e1671]: LEC L01
+          - generic [ref=f2e1672]: 1 section
+        - generic [ref=f2e1673] [cursor=pointer]:
+          - generic [ref=f2e1674]:
+            - generic [ref=f2e1675]: IPEN6000B
+            - generic [ref=f2e1676]: RPG
+            - generic [ref=f2e1677]: 1 cr
+          - generic [ref=f2e1678]: Independent Study
+          - generic [ref=f2e1679]: IND R01
+          - generic [ref=f2e1680]: 1 section
+        - generic [ref=f2e1681] [cursor=pointer]:
+          - generic [ref=f2e1682]:
+            - generic [ref=f2e1683]: IPEN6100C
+            - generic [ref=f2e1684]: RPG
+            - generic [ref=f2e1685]: 3 cr
+          - generic [ref=f2e1686]: Carbon Emissions & Mitigation
+          - generic [ref=f2e1687]: LEC L01
+          - generic [ref=f2e1688]: 1 section
+        - generic [ref=f2e1689] [cursor=pointer]:
+          - generic [ref=f2e1690]:
+            - generic [ref=f2e1691]: IPEN6100H
+            - generic [ref=f2e1692]: RPG
+            - generic [ref=f2e1693]: 3 cr
+          - generic [ref=f2e1694]: NbS to Carbon Neutrality
+          - generic [ref=f2e1695]: LEC L01
+          - generic [ref=f2e1696]: 1 section
+        - generic [ref=f2e1697] [cursor=pointer]:
+          - generic [ref=f2e1698]:
+            - generic [ref=f2e1699]: IPEN6101
+            - generic [ref=f2e1700]: RPG
+            - generic [ref=f2e1701]: 1 cr
+          - generic [ref=f2e1702]: IPEN Program Seminar I
+          - generic [ref=f2e1703]: LEC L01
+          - generic [ref=f2e1704]: 1 section
+        - generic [ref=f2e1705] [cursor=pointer]:
+          - generic [ref=f2e1706]:
+            - generic [ref=f2e1707]: IPEN6110
+            - generic [ref=f2e1708]: TPG
+            - generic [ref=f2e1709]: 6 cr
+          - generic [ref=f2e1710]: Capstone Project
+          - generic [ref=f2e1711]: LEC L01
+          - generic [ref=f2e1712]: 1 section
+        - generic [ref=f2e1713] [cursor=pointer]:
+          - generic [ref=f2e1714]:
+            - generic [ref=f2e1715]: IPEN6990
+            - generic [ref=f2e1716]: RPG
+            - generic [ref=f2e1717]: 0 cr
+          - generic [ref=f2e1718]: MPhil Thesis Research
+          - generic [ref=f2e1719]: IND R01
+          - generic [ref=f2e1720]: 1 section
+        - generic [ref=f2e1721] [cursor=pointer]:
+          - generic [ref=f2e1722]:
+            - generic [ref=f2e1723]: IPEN7990
+            - generic [ref=f2e1724]: RPG
+            - generic [ref=f2e1725]: 0 cr
+          - generic [ref=f2e1726]: Doctoral Thesis Research
+          - generic [ref=f2e1727]: IND R01
+          - generic [ref=f2e1728]: 1 section
+        - generic [ref=f2e1729] [cursor=pointer]:
+          - generic [ref=f2e1730]:
+            - generic [ref=f2e1731]: LANG5000
+            - generic [ref=f2e1732]: RPG
+            - generic [ref=f2e1733]: 1 cr
+          - generic [ref=f2e1734]: Listen'g & Speak'g for PG
+          - generic [ref=f2e1735]:
+            - text: TUT T01/T02/T03/T04/T05
+            - generic [ref=f2e1736]: 5 sections
+          - generic [ref=f2e1737]: 5 sections
+        - generic [ref=f2e1738] [cursor=pointer]:
+          - generic [ref=f2e1739]:
+            - generic [ref=f2e1740]: MICS1010
+            - generic [ref=f2e1741]: UG
+            - generic [ref=f2e1742]: 1 cr
+          - generic [ref=f2e1743]: IC Chip
+          - generic [ref=f2e1744]: LEC L01
+          - generic [ref=f2e1745]: 1 section
+        - generic [ref=f2e1746] [cursor=pointer]:
+          - generic [ref=f2e1747]:
+            - generic [ref=f2e1748]: MICS2010
+            - generic [ref=f2e1749]: UG
+            - generic [ref=f2e1750]: 3 cr
+          - generic [ref=f2e1751]: Foundations of Elec. Circuits
+          - generic [ref=f2e1752]: LEC L01
+          - generic [ref=f2e1753]: 1 section
+        - generic [ref=f2e1754] [cursor=pointer]:
+          - generic [ref=f2e1755]:
+            - generic [ref=f2e1756]: MICS2020
+            - generic [ref=f2e1757]: UG
+            - generic [ref=f2e1758]: 3 cr
+          - generic [ref=f2e1759]: Digital Circuits
+          - generic [ref=f2e1760]:
+            - text: LEC L01 · LAB LA01/LA02
+            - generic [ref=f2e1761]: 2 sections
+          - generic [ref=f2e1762]: 3 sections · multi-component
+        - generic [ref=f2e1763] [cursor=pointer]:
+          - generic [ref=f2e1764]:
+            - generic [ref=f2e1765]: MICS2070
+            - generic [ref=f2e1766]: UG
+            - generic [ref=f2e1767]: 4 cr
+          - generic [ref=f2e1768]: Intro Comp Organize & Design
+          - generic [ref=f2e1769]: LEC L01 · TUT T01
+          - generic [ref=f2e1770]: 2 sections · multi-component
+        - generic [ref=f2e1771] [cursor=pointer]:
+          - generic [ref=f2e1772]:
+            - generic [ref=f2e1773]: MICS3090
+            - generic [ref=f2e1774]: UG
+            - generic [ref=f2e1775]: 4 cr
+          - generic [ref=f2e1776]: Integrated Circuit Devices
+          - generic [ref=f2e1777]:
+            - text: LEC L01 · TUT T01 · LAB LA01/LA02
+            - generic [ref=f2e1778]: 2 sections
+          - generic [ref=f2e1779]: 4 sections · multi-component · has prerequisite
+        - generic [ref=f2e1780] [cursor=pointer]:
+          - generic [ref=f2e1781]:
+            - generic [ref=f2e1782]: MICS4040
+            - generic [ref=f2e1783]: UG
+            - generic [ref=f2e1784]: 4 cr
+          - generic [ref=f2e1785]: Analog IC Design Analysis
+          - generic [ref=f2e1786]: LEC L01 · TUT T01
+          - generic [ref=f2e1787]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e1788] [cursor=pointer]:
+          - generic [ref=f2e1789]:
+            - generic [ref=f2e1790]: MICS5230
+            - generic [ref=f2e1791]: RPG
+            - generic [ref=f2e1792]: 3 cr
+          - generic [ref=f2e1793]: Modern VLSI Device Tech
+          - generic [ref=f2e1794]: LEC L01
+          - generic [ref=f2e1795]: 1 section
+        - generic [ref=f2e1796] [cursor=pointer]:
+          - generic [ref=f2e1797]:
+            - generic [ref=f2e1798]: MICS5520
+            - generic [ref=f2e1799]: RPG
+            - generic [ref=f2e1800]: 3 cr
+          - generic [ref=f2e1801]: Physical Design of VLSI
+          - generic [ref=f2e1802]: LEC L01
+          - generic [ref=f2e1803]: 1 section
+        - generic [ref=f2e1804] [cursor=pointer]:
+          - generic [ref=f2e1805]:
+            - generic [ref=f2e1806]: MICS5710
+            - generic [ref=f2e1807]: RPG
+            - generic [ref=f2e1808]: 3 cr
+          - generic [ref=f2e1809]: Computer Architecture
+          - generic [ref=f2e1810]: LEC L01
+          - generic [ref=f2e1811]: 1 section
+        - generic [ref=f2e1812] [cursor=pointer]:
+          - generic [ref=f2e1813]:
+            - generic [ref=f2e1814]: MICS5760
+            - generic [ref=f2e1815]: RPG
+            - generic [ref=f2e1816]: 3 cr
+          - generic [ref=f2e1817]: FPGA-based Custom Computing
+          - generic [ref=f2e1818]: LEC L01
+          - generic [ref=f2e1819]: 1 section
+        - generic [ref=f2e1820] [cursor=pointer]:
+          - generic [ref=f2e1821]:
+            - generic [ref=f2e1822]: MICS6001X
+            - generic [ref=f2e1823]: RPG
+            - generic [ref=f2e1824]: 3 cr
+          - generic [ref=f2e1825]: Sym. & Neurosym. Reasoning
+          - generic [ref=f2e1826]: LEC L01
+          - generic [ref=f2e1827]: 1 section
+        - generic [ref=f2e1828] [cursor=pointer]:
+          - generic [ref=f2e1829]:
+            - generic [ref=f2e1830]: MICS6001Y
+            - generic [ref=f2e1831]: RPG
+            - generic [ref=f2e1832]: 3 cr
+          - generic [ref=f2e1833]: Integrated Power Electronics
+          - generic [ref=f2e1834]: LEC L01
+          - generic [ref=f2e1835]: 1 section
+        - generic [ref=f2e1836] [cursor=pointer]:
+          - generic [ref=f2e1837]:
+            - generic [ref=f2e1838]: MICS6002H
+            - generic [ref=f2e1839]: RPG
+            - generic [ref=f2e1840]: 3 cr
+          - generic [ref=f2e1841]: Prob. & Prob. Computing Syst.
+          - generic [ref=f2e1842]: LEC L01
+          - generic [ref=f2e1843]: 1 section
+        - generic [ref=f2e1844] [cursor=pointer]:
+          - generic [ref=f2e1845]:
+            - generic [ref=f2e1846]: MICS6002I
+            - generic [ref=f2e1847]: RPG
+            - generic [ref=f2e1848]: 3 cr
+          - generic [ref=f2e1849]: Network on Chip
+          - generic [ref=f2e1850]: LEC L01
+          - generic [ref=f2e1851]: 1 section
+        - generic [ref=f2e1852] [cursor=pointer]:
+          - generic [ref=f2e1853]:
+            - generic [ref=f2e1854]: MICS6002Q
+            - generic [ref=f2e1855]: RPG
+            - generic [ref=f2e1856]: 3 cr
+          - generic [ref=f2e1857]: Biomedical Sensing Circuits
+          - generic [ref=f2e1858]: LEC L01
+          - generic [ref=f2e1859]: 1 section
+        - generic [ref=f2e1860] [cursor=pointer]:
+          - generic [ref=f2e1861]:
+            - generic [ref=f2e1862]: MICS6002R
+            - generic [ref=f2e1863]: RPG
+            - generic [ref=f2e1864]: 3 cr
+          - generic [ref=f2e1865]: Nanofab & Characterization
+          - generic [ref=f2e1866]: LEC L01
+          - generic [ref=f2e1867]: 1 section
+        - generic [ref=f2e1868] [cursor=pointer]:
+          - generic [ref=f2e1869]:
+            - generic [ref=f2e1870]: MICS6090B
+            - generic [ref=f2e1871]: RPG
+            - generic [ref=f2e1872]: 1 cr
+          - generic [ref=f2e1873]: Independent Study
+          - generic [ref=f2e1874]: IND R01
+          - generic [ref=f2e1875]: 1 section
+        - generic [ref=f2e1876] [cursor=pointer]:
+          - generic [ref=f2e1877]:
+            - generic [ref=f2e1878]: MICS6990
+            - generic [ref=f2e1879]: RPG
+            - generic [ref=f2e1880]: 0 cr
+          - generic [ref=f2e1881]: MPhil Thesis Research
+          - generic [ref=f2e1882]: IND R01
+          - generic [ref=f2e1883]: 1 section
+        - generic [ref=f2e1884] [cursor=pointer]:
+          - generic [ref=f2e1885]:
+            - generic [ref=f2e1886]: MICS7990
+            - generic [ref=f2e1887]: RPG
+            - generic [ref=f2e1888]: 0 cr
+          - generic [ref=f2e1889]: Doctoral Thesis Research
+          - generic [ref=f2e1890]: IND R01
+          - generic [ref=f2e1891]: 1 section
+        - generic [ref=f2e1892] [cursor=pointer]:
+          - generic [ref=f2e1893]:
+            - generic [ref=f2e1894]: MOES5003
+            - generic [ref=f2e1895]: RPG
+            - generic [ref=f2e1896]: 2 cr
+          - generic [ref=f2e1897]: Intro. to Chinese Culture
+          - generic [ref=f2e1898]: LEC L01
+          - generic [ref=f2e1899]: 1 section
+        - generic [ref=f2e1900] [cursor=pointer]:
+          - generic [ref=f2e1901]:
+            - generic [ref=f2e1902]: MSSM5001
+            - generic [ref=f2e1903]: TPG
+            - generic [ref=f2e1904]: 3 cr
+          - generic [ref=f2e1905]: Additive Manufacturing Intro
+          - generic [ref=f2e1906]: LEC L01
+          - generic [ref=f2e1907]: 1 section
+        - generic [ref=f2e1908] [cursor=pointer]:
+          - generic [ref=f2e1909]:
+            - generic [ref=f2e1910]: MSSM5003
+            - generic [ref=f2e1911]: TPG
+            - generic [ref=f2e1912]: 3 cr
+          - generic [ref=f2e1913]: Design for Manufactur & Assy
+          - generic [ref=f2e1914]: LEC L01
+          - generic [ref=f2e1915]: 1 section
+        - generic [ref=f2e1916] [cursor=pointer]:
+          - generic [ref=f2e1917]:
+            - generic [ref=f2e1918]: MSSM5011
+            - generic [ref=f2e1919]: TPG
+            - generic [ref=f2e1920]: 3 cr
+          - generic [ref=f2e1921]: Computerized Numerical Control
+          - generic [ref=f2e1922]: LEC L01
+          - generic [ref=f2e1923]: 1 section
+        - generic [ref=f2e1924] [cursor=pointer]:
+          - generic [ref=f2e1925]:
+            - generic [ref=f2e1926]: MSSM5013
+            - generic [ref=f2e1927]: TPG
+            - generic [ref=f2e1928]: 3 cr
+          - generic [ref=f2e1929]: Precision Engineering
+          - generic [ref=f2e1930]: LEC L01
+          - generic [ref=f2e1931]: 1 section
+        - generic [ref=f2e1932] [cursor=pointer]:
+          - generic [ref=f2e1933]:
+            - generic [ref=f2e1934]: MSSM6000
+            - generic [ref=f2e1935]: TPG
+            - generic [ref=f2e1936]: 4 cr
+          - generic [ref=f2e1937]: Independent Project
+          - generic [ref=f2e1938]: IND R01
+          - generic [ref=f2e1939]: 1 section
+        - generic [ref=f2e1940] [cursor=pointer]:
+          - generic [ref=f2e1941]:
+            - generic [ref=f2e1942]: MSSM6002
+            - generic [ref=f2e1943]: TPG
+            - generic [ref=f2e1944]: 4 cr
+          - generic [ref=f2e1945]: Industry Internship Project II
+          - generic [ref=f2e1946]: IND R01
+          - generic [ref=f2e1947]: 1 section
+        - generic [ref=f2e1948] [cursor=pointer]:
+          - generic [ref=f2e1949]:
+            - generic [ref=f2e1950]: PDEV6770K
+            - generic [ref=f2e1951]: RPG
+            - generic [ref=f2e1952]: 1 cr
+          - generic [ref=f2e1953]: PDC for RPG
+          - generic [ref=f2e1954]: TUT T01
+          - generic [ref=f2e1955]: 1 section
+        - generic [ref=f2e1956] [cursor=pointer]:
+          - generic [ref=f2e1957]:
+            - generic [ref=f2e1958]: PDEV6770L
+            - generic [ref=f2e1959]: RPG
+            - generic [ref=f2e1960]: 1 cr
+          - generic [ref=f2e1961]: PDC for RPG
+          - generic [ref=f2e1962]: TUT T01
+          - generic [ref=f2e1963]: 1 section
+        - generic [ref=f2e1964] [cursor=pointer]:
+          - generic [ref=f2e1965]:
+            - generic [ref=f2e1966]: PDEV6770M
+            - generic [ref=f2e1967]: RPG
+            - generic [ref=f2e1968]: 1 cr
+          - generic [ref=f2e1969]: PDC for RPG
+          - generic [ref=f2e1970]: TUT T01
+          - generic [ref=f2e1971]: 1 section
+        - generic [ref=f2e1972] [cursor=pointer]:
+          - generic [ref=f2e1973]:
+            - generic [ref=f2e1974]: PDEV6770N
+            - generic [ref=f2e1975]: RPG
+            - generic [ref=f2e1976]: 1 cr
+          - generic [ref=f2e1977]: PDC for RPG
+          - generic [ref=f2e1978]: TUT T01
+          - generic [ref=f2e1979]: 1 section
+        - generic [ref=f2e1980] [cursor=pointer]:
+          - generic [ref=f2e1981]:
+            - generic [ref=f2e1982]: PDEV6770S
+            - generic [ref=f2e1983]: RPG
+            - generic [ref=f2e1984]: 1 cr
+          - generic [ref=f2e1985]: PDC for RPG
+          - generic [ref=f2e1986]: TUT T01
+          - generic [ref=f2e1987]: 1 section
+        - generic [ref=f2e1988] [cursor=pointer]:
+          - generic [ref=f2e1989]:
+            - generic [ref=f2e1990]: PDEV6800K
+            - generic [ref=f2e1991]: RPG
+            - generic [ref=f2e1992]: 0 cr
+          - generic [ref=f2e1993]: T&L in HigherEd
+          - generic [ref=f2e1994]:
+            - text: TUT T1/T2/T4
+            - generic [ref=f2e1995]: 3 sections
+          - generic [ref=f2e1996]: 3 sections
+        - generic [ref=f2e1997] [cursor=pointer]:
+          - generic [ref=f2e1998]:
+            - generic [ref=f2e1999]: PDEV6800L
+            - generic [ref=f2e2000]: RPG
+            - generic [ref=f2e2001]: 0 cr
+          - generic [ref=f2e2002]: T&L in HigherEd
+          - generic [ref=f2e2003]:
+            - text: TUT T1/T2/T4
+            - generic [ref=f2e2004]: 3 sections
+          - generic [ref=f2e2005]: 3 sections
+        - generic [ref=f2e2006] [cursor=pointer]:
+          - generic [ref=f2e2007]:
+            - generic [ref=f2e2008]: PDEV6800M
+            - generic [ref=f2e2009]: RPG
+            - generic [ref=f2e2010]: 0 cr
+          - generic [ref=f2e2011]: T&L in HigherEd
+          - generic [ref=f2e2012]:
+            - text: TUT T1/T2/T4
+            - generic [ref=f2e2013]: 3 sections
+          - generic [ref=f2e2014]: 3 sections
+        - generic [ref=f2e2015] [cursor=pointer]:
+          - generic [ref=f2e2016]:
+            - generic [ref=f2e2017]: PDEV6800N
+            - generic [ref=f2e2018]: RPG
+            - generic [ref=f2e2019]: 0 cr
+          - generic [ref=f2e2020]: T&L in HigherEd
+          - generic [ref=f2e2021]:
+            - text: TUT T1/T2
+            - generic [ref=f2e2022]: 2 sections
+          - generic [ref=f2e2023]: 2 sections
+        - generic [ref=f2e2024] [cursor=pointer]:
+          - generic [ref=f2e2025]:
+            - generic [ref=f2e2026]: PDEV6800O
+            - generic [ref=f2e2027]: RPG
+            - generic [ref=f2e2028]: 0 cr
+          - generic [ref=f2e2029]: T&L in HigherEd
+          - generic [ref=f2e2030]: TUT T1
+          - generic [ref=f2e2031]: 1 section
+        - generic [ref=f2e2032] [cursor=pointer]:
+          - generic [ref=f2e2033]:
+            - generic [ref=f2e2034]: PDEV6800P
+            - generic [ref=f2e2035]: RPG
+            - generic [ref=f2e2036]: 0 cr
+          - generic [ref=f2e2037]: T&L in HigherEd
+          - generic [ref=f2e2038]: TUT T1
+          - generic [ref=f2e2039]: 1 section
+        - generic [ref=f2e2040] [cursor=pointer]:
+          - generic [ref=f2e2041]:
+            - generic [ref=f2e2042]: PDEV6800Q
+            - generic [ref=f2e2043]: RPG
+            - generic [ref=f2e2044]: 0 cr
+          - generic [ref=f2e2045]: T&L in HigherEd
+          - generic [ref=f2e2046]: TUT T1
+          - generic [ref=f2e2047]: 1 section
+        - generic [ref=f2e2048] [cursor=pointer]:
+          - generic [ref=f2e2049]:
+            - generic [ref=f2e2050]: PDEV6800R
+            - generic [ref=f2e2051]: RPG
+            - generic [ref=f2e2052]: 0 cr
+          - generic [ref=f2e2053]: T&L in HigherEd
+          - generic [ref=f2e2054]: TUT T1
+          - generic [ref=f2e2055]: 1 section
+        - generic [ref=f2e2056] [cursor=pointer]:
+          - generic [ref=f2e2057]:
+            - generic [ref=f2e2058]: PDEV6800S
+            - generic [ref=f2e2059]: RPG
+            - generic [ref=f2e2060]: 0 cr
+          - generic [ref=f2e2061]: T&L in HigherEd
+          - generic [ref=f2e2062]: TUT T1
+          - generic [ref=f2e2063]: 1 section
+        - generic [ref=f2e2064] [cursor=pointer]:
+          - generic [ref=f2e2065]:
+            - generic [ref=f2e2066]: PDEV6800X
+            - generic [ref=f2e2067]: RPG
+            - generic [ref=f2e2068]: 0 cr
+          - generic [ref=f2e2069]: T&L in HigherEd
+          - generic [ref=f2e2070]:
+            - text: TUT T01/T02/T03/T04/…/T12
+            - generic [ref=f2e2071]: 12 sections
+          - generic [ref=f2e2072]: 12 sections
+        - generic [ref=f2e2073] [cursor=pointer]:
+          - generic [ref=f2e2074]:
+            - generic [ref=f2e2075]: PDEV6800Y
+            - generic [ref=f2e2076]: RPG
+            - generic [ref=f2e2077]: 0 cr
+          - generic [ref=f2e2078]: T&L in HigherEd
+          - generic [ref=f2e2079]:
+            - text: TUT T01/T02/T03/T04/…/T10
+            - generic [ref=f2e2080]: 10 sections
+          - generic [ref=f2e2081]: 10 sections
+        - generic [ref=f2e2082] [cursor=pointer]:
+          - generic [ref=f2e2083]:
+            - generic [ref=f2e2084]: PLED5001
+            - generic [ref=f2e2085]: RPG
+            - generic [ref=f2e2086]: 1 cr
+          - generic [ref=f2e2087]: Communicating Research in Eng
+          - generic [ref=f2e2088]:
+            - text: TUT T01/T02/T03/T04/…/T18
+            - generic [ref=f2e2089]: 18 sections
+          - generic [ref=f2e2090]: 18 sections
+        - generic [ref=f2e2091] [cursor=pointer]:
+          - generic [ref=f2e2092]:
+            - generic [ref=f2e2093]: ROAS1010
+            - generic [ref=f2e2094]: UG
+            - generic [ref=f2e2095]: 1 cr
+          - generic [ref=f2e2096]: Intro to ROAS
+          - generic [ref=f2e2097]: LEC L01
+          - generic [ref=f2e2098]: 1 section
+        - generic [ref=f2e2099] [cursor=pointer]:
+          - generic [ref=f2e2100]:
+            - generic [ref=f2e2101]: ROAS5120
+            - generic [ref=f2e2102]: RPG
+            - generic [ref=f2e2103]: 3 cr
+          - generic [ref=f2e2104]: Form Veri & Contl. Dyn. Syst.
+          - generic [ref=f2e2105]: LEC L01
+          - generic [ref=f2e2106]: 1 section
+        - generic [ref=f2e2107] [cursor=pointer]:
+          - generic [ref=f2e2108]:
+            - generic [ref=f2e2109]: ROAS5200
+            - generic [ref=f2e2110]: RPG
+            - generic [ref=f2e2111]: 3 cr
+          - generic [ref=f2e2112]: Medical Microrobotics
+          - generic [ref=f2e2113]: LEC L01
+          - generic [ref=f2e2114]: 1 section
+        - generic [ref=f2e2115] [cursor=pointer]:
+          - generic [ref=f2e2116]:
+            - generic [ref=f2e2117]: ROAS5800
+            - generic [ref=f2e2118]: RPG
+            - generic [ref=f2e2119]: 3 cr
+          - generic [ref=f2e2120]: Physical-based Vision
+          - generic [ref=f2e2121]: LEC L01
+          - generic [ref=f2e2122]: 1 section
+        - generic [ref=f2e2123] [cursor=pointer]:
+          - generic [ref=f2e2124]:
+            - generic [ref=f2e2125]: ROAS5900
+            - generic [ref=f2e2126]: RPG
+            - generic [ref=f2e2127]: 3 cr
+          - generic [ref=f2e2128]: Analy. Methods in HF Research
+          - generic [ref=f2e2129]: LEC L01
+          - generic [ref=f2e2130]: 1 section
+        - generic [ref=f2e2131] [cursor=pointer]:
+          - generic [ref=f2e2132]:
+            - generic [ref=f2e2133]: ROAS6000O
+            - generic [ref=f2e2134]: RPG
+            - generic [ref=f2e2135]: 3 cr
+          - generic [ref=f2e2136]: Robotics in Healthcare
+          - generic [ref=f2e2137]: LEC L01
+          - generic [ref=f2e2138]: 1 section
+        - generic [ref=f2e2139] [cursor=pointer]:
+          - generic [ref=f2e2140]:
+            - generic [ref=f2e2141]: ROAS6800K
+            - generic [ref=f2e2142]: RPG
+            - generic [ref=f2e2143]: 0 cr
+          - generic [ref=f2e2144]: Seminar in ROAS
+          - generic [ref=f2e2145]: TUT T01
+          - generic [ref=f2e2146]: 1 section
+        - generic [ref=f2e2147] [cursor=pointer]:
+          - generic [ref=f2e2148]:
+            - generic [ref=f2e2149]: ROAS6900B
+            - generic [ref=f2e2150]: RPG
+            - generic [ref=f2e2151]: 1 cr
+          - generic [ref=f2e2152]: Independent Study
+          - generic [ref=f2e2153]: IND R01
+          - generic [ref=f2e2154]: 1 section
+        - generic [ref=f2e2155] [cursor=pointer]:
+          - generic [ref=f2e2156]:
+            - generic [ref=f2e2157]: ROAS6990
+            - generic [ref=f2e2158]: RPG
+            - generic [ref=f2e2159]: 0 cr
+          - generic [ref=f2e2160]: MPhil Thesis Research
+          - generic [ref=f2e2161]: IND R01
+          - generic [ref=f2e2162]: 1 section
+        - generic [ref=f2e2163] [cursor=pointer]:
+          - generic [ref=f2e2164]:
+            - generic [ref=f2e2165]: ROAS7990
+            - generic [ref=f2e2166]: RPG
+            - generic [ref=f2e2167]: 0 cr
+          - generic [ref=f2e2168]: Doctoral Thesis Research
+          - generic [ref=f2e2169]: IND R01
+          - generic [ref=f2e2170]: 1 section
+        - generic [ref=f2e2171] [cursor=pointer]:
+          - generic [ref=f2e2172]:
+            - generic [ref=f2e2173]: SEEN5030
+            - generic [ref=f2e2174]: RPG
+            - generic [ref=f2e2175]: 3 cr
+          - generic [ref=f2e2176]: Battery Sustainability
+          - generic [ref=f2e2177]: LEC L01
+          - generic [ref=f2e2178]: 1 section
+        - generic [ref=f2e2179] [cursor=pointer]:
+          - generic [ref=f2e2180]:
+            - generic [ref=f2e2181]: SEEN5050
+            - generic [ref=f2e2182]: RPG
+            - generic [ref=f2e2183]: 3 cr
+          - generic [ref=f2e2184]: Atmospheric Chem & Phys
+          - generic [ref=f2e2185]: LEC L01
+          - generic [ref=f2e2186]: 1 section
+        - generic [ref=f2e2187] [cursor=pointer]:
+          - generic [ref=f2e2188]:
+            - generic [ref=f2e2189]: SEEN5170
+            - generic [ref=f2e2190]: RPG
+            - generic [ref=f2e2191]: 3 cr
+          - generic [ref=f2e2192]: Electric Drives & Control Tech
+          - generic [ref=f2e2193]: LEC L01
+          - generic [ref=f2e2194]: 1 section
+        - generic [ref=f2e2195] [cursor=pointer]:
+          - generic [ref=f2e2196]:
+            - generic [ref=f2e2197]: SEEN5190
+            - generic [ref=f2e2198]: RPG
+            - generic [ref=f2e2199]: 3 cr
+          - generic [ref=f2e2200]: Carbon Capture and Utilization
+          - generic [ref=f2e2201]: LEC L01
+          - generic [ref=f2e2202]: 1 section
+        - generic [ref=f2e2203] [cursor=pointer]:
+          - generic [ref=f2e2204]:
+            - generic [ref=f2e2205]: SEEN5200
+            - generic [ref=f2e2206]: RPG
+            - generic [ref=f2e2207]: 3 cr
+          - generic [ref=f2e2208]: Air Quality Models & App
+          - generic [ref=f2e2209]: LEC L01
+          - generic [ref=f2e2210]: 1 section
+        - generic [ref=f2e2211] [cursor=pointer]:
+          - generic [ref=f2e2212]:
+            - generic [ref=f2e2213]: SEEN5250
+            - generic [ref=f2e2214]: RPG
+            - generic [ref=f2e2215]: 3 cr
+          - generic [ref=f2e2216]: Transport Phenom in Energy Sys
+          - generic [ref=f2e2217]: LEC L01
+          - generic [ref=f2e2218]: 1 section
+        - generic [ref=f2e2219] [cursor=pointer]:
+          - generic [ref=f2e2220]:
+            - generic [ref=f2e2221]: SEEN5270
+            - generic [ref=f2e2222]: RPG
+            - generic [ref=f2e2223]: 3 cr
+          - generic [ref=f2e2224]: Air Quality Measurement Tech
+          - generic [ref=f2e2225]: LEC L01
+          - generic [ref=f2e2226]: 1 section
+        - generic [ref=f2e2227] [cursor=pointer]:
+          - generic [ref=f2e2228]:
+            - generic [ref=f2e2229]: SEEN5330
+            - generic [ref=f2e2230]: RPG
+            - generic [ref=f2e2231]: 3 cr
+          - generic [ref=f2e2232]: Electrical Power Systems
+          - generic [ref=f2e2233]: LEC L01
+          - generic [ref=f2e2234]: 1 section
+        - generic [ref=f2e2235] [cursor=pointer]:
+          - generic [ref=f2e2236]:
+            - generic [ref=f2e2237]: SEEN6000U
+            - generic [ref=f2e2238]: RPG
+            - generic [ref=f2e2239]: 3 cr
+          - generic [ref=f2e2240]: Intro. to Micro/Nanofluidics
+          - generic [ref=f2e2241]: LEC L01
+          - generic [ref=f2e2242]: 1 section
+        - generic [ref=f2e2243] [cursor=pointer]:
+          - generic [ref=f2e2244]:
+            - generic [ref=f2e2245]: SEEN6000W
+            - generic [ref=f2e2246]: RPG
+            - generic [ref=f2e2247]: 3 cr
+          - generic [ref=f2e2248]: Metal-Organic Frameworks
+          - generic [ref=f2e2249]: LEC L01
+          - generic [ref=f2e2250]: 1 section
+        - generic [ref=f2e2251] [cursor=pointer]:
+          - generic [ref=f2e2252]:
+            - generic [ref=f2e2253]: SEEN6001A
+            - generic [ref=f2e2254]: RPG
+            - generic [ref=f2e2255]: 3 cr
+          - generic [ref=f2e2256]: ML for Energy Materials
+          - generic [ref=f2e2257]: LEC L01
+          - generic [ref=f2e2258]: 1 section
+        - generic [ref=f2e2259] [cursor=pointer]:
+          - generic [ref=f2e2260]:
+            - generic [ref=f2e2261]: SEEN6001B
+            - generic [ref=f2e2262]: RPG
+            - generic [ref=f2e2263]: 3 cr
+          - generic [ref=f2e2264]: Digital Energy Systems
+          - generic [ref=f2e2265]: LEC L01
+          - generic [ref=f2e2266]: 1 section
+        - generic [ref=f2e2267] [cursor=pointer]:
+          - generic [ref=f2e2268]:
+            - generic [ref=f2e2269]: SEEN6001F
+            - generic [ref=f2e2270]: RPG
+            - generic [ref=f2e2271]: 3 cr
+          - generic [ref=f2e2272]: Energy Materials Analysis
+          - generic [ref=f2e2273]: LEC L01
+          - generic [ref=f2e2274]: 1 section
+        - generic [ref=f2e2275] [cursor=pointer]:
+          - generic [ref=f2e2276]:
+            - generic [ref=f2e2277]: SEEN6001I
+            - generic [ref=f2e2278]: RPG
+            - generic [ref=f2e2279]: 3 cr
+          - generic [ref=f2e2280]: Solid Waste Treatment & Reuse
+          - generic [ref=f2e2281]: LEC L01
+          - generic [ref=f2e2282]: 1 section
+        - generic [ref=f2e2283] [cursor=pointer]:
+          - generic [ref=f2e2284]:
+            - generic [ref=f2e2285]: SEEN6001J
+            - generic [ref=f2e2286]: RPG
+            - generic [ref=f2e2287]: 3 cr
+          - generic [ref=f2e2288]: Fluid Dynamics
+          - generic [ref=f2e2289]: LEC L01
+          - generic [ref=f2e2290]: 1 section
+        - generic [ref=f2e2291] [cursor=pointer]:
+          - generic [ref=f2e2292]:
+            - generic [ref=f2e2293]: SEEN6001K
+            - generic [ref=f2e2294]: RPG
+            - generic [ref=f2e2295]: 3 cr
+          - generic [ref=f2e2296]: Foundation of Solid Mechanics
+          - generic [ref=f2e2297]: LEC L01
+          - generic [ref=f2e2298]: 1 section
+        - generic [ref=f2e2299] [cursor=pointer]:
+          - generic [ref=f2e2300]:
+            - generic [ref=f2e2301]: SEEN6100A
+            - generic [ref=f2e2302]: RPG
+            - generic [ref=f2e2303]: 1 cr
+          - generic [ref=f2e2304]: Independent Study
+          - generic [ref=f2e2305]: IND R01
+          - generic [ref=f2e2306]: 1 section
+        - generic [ref=f2e2307] [cursor=pointer]:
+          - generic [ref=f2e2308]:
+            - generic [ref=f2e2309]: SEEN6100B
+            - generic [ref=f2e2310]: RPG
+            - generic [ref=f2e2311]: 1 cr
+          - generic [ref=f2e2312]: Independent Study
+          - generic [ref=f2e2313]: IND R01
+          - generic [ref=f2e2314]: 1 section
+        - generic [ref=f2e2315] [cursor=pointer]:
+          - generic [ref=f2e2316]:
+            - generic [ref=f2e2317]: SEEN6990
+            - generic [ref=f2e2318]: RPG
+            - generic [ref=f2e2319]: 0 cr
+          - generic [ref=f2e2320]: MPhil Thesis Research
+          - generic [ref=f2e2321]: IND R01
+          - generic [ref=f2e2322]: 1 section
+        - generic [ref=f2e2323] [cursor=pointer]:
+          - generic [ref=f2e2324]:
+            - generic [ref=f2e2325]: SEEN7990
+            - generic [ref=f2e2326]: RPG
+            - generic [ref=f2e2327]: 0 cr
+          - generic [ref=f2e2328]: Doctoral Thesis Research
+          - generic [ref=f2e2329]: IND R01
+          - generic [ref=f2e2330]: 1 section
+        - generic [ref=f2e2331] [cursor=pointer]:
+          - generic [ref=f2e2332]:
+            - generic [ref=f2e2333]: SMMG2640
+            - generic [ref=f2e2334]: UG
+            - generic [ref=f2e2335]: 3 cr
+          - generic [ref=f2e2336]: Engineering Materials I
+          - generic [ref=f2e2337]: LEC L01 · LAB LA01
+          - generic [ref=f2e2338]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e2339] [cursor=pointer]:
+          - generic [ref=f2e2340]:
+            - generic [ref=f2e2341]: SMMG3040
+            - generic [ref=f2e2342]: UG
+            - generic [ref=f2e2343]: 3 cr
+          - generic [ref=f2e2344]: Intro. to NCM
+          - generic [ref=f2e2345]: LEC L01 · TUT T01 · LAB LA01
+          - generic [ref=f2e2346]: 3 sections · multi-component
+        - generic [ref=f2e2347] [cursor=pointer]:
+          - generic [ref=f2e2348]:
+            - generic [ref=f2e2349]: SMMG3050
+            - generic [ref=f2e2350]: UG
+            - generic [ref=f2e2351]: 3 cr
+          - generic [ref=f2e2352]: Industrial Data Analytics
+          - generic [ref=f2e2353]: LEC L01
+          - generic [ref=f2e2354]: 1 section · has prerequisite
+        - generic [ref=f2e2355] [cursor=pointer]:
+          - generic [ref=f2e2356]:
+            - generic [ref=f2e2357]: SMMG3080
+            - generic [ref=f2e2358]: UG
+            - generic [ref=f2e2359]: 3 cr
+          - generic [ref=f2e2360]: Mechanisms of Machinery
+          - generic [ref=f2e2361]: LEC L01 · TUT T01
+          - generic [ref=f2e2362]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e2363] [cursor=pointer]:
+          - generic [ref=f2e2364]:
+            - generic [ref=f2e2365]: SMMG3810
+            - generic [ref=f2e2366]: UG
+            - generic [ref=f2e2367]: 2 cr
+          - generic [ref=f2e2368]: SML I
+          - generic [ref=f2e2369]: LAB LA01
+          - generic [ref=f2e2370]: 1 section · has prerequisite
+        - generic [ref=f2e2371] [cursor=pointer]:
+          - generic [ref=f2e2372]:
+            - generic [ref=f2e2373]: SMMG4010
+            - generic [ref=f2e2374]: UG
+            - generic [ref=f2e2375]: 3 cr
+          - generic [ref=f2e2376]: Integrated Production Systems
+          - generic [ref=f2e2377]: LEC L01
+          - generic [ref=f2e2378]: 1 section · has prerequisite
+        - generic [ref=f2e2379] [cursor=pointer]:
+          - generic [ref=f2e2380]:
+            - generic [ref=f2e2381]: SMMG4030
+            - generic [ref=f2e2382]: UG
+            - generic [ref=f2e2383]: 3 cr
+          - generic [ref=f2e2384]: System Simulation
+          - generic [ref=f2e2385]: LEC L01 · TUT T01
+          - generic [ref=f2e2386]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e2387] [cursor=pointer]:
+          - generic [ref=f2e2388]:
+            - generic [ref=f2e2389]: SMMG4650
+            - generic [ref=f2e2390]: UG
+            - generic [ref=f2e2391]: 3 cr
+          - generic [ref=f2e2392]: Intro to Precision Engg.
+          - generic [ref=f2e2393]: LEC L01
+          - generic [ref=f2e2394]: 1 section
+        - generic [ref=f2e2395] [cursor=pointer]:
+          - generic [ref=f2e2396]:
+            - generic [ref=f2e2397]: SMMG4960
+            - generic [ref=f2e2398]: UG
+            - generic [ref=f2e2399]: 6 cr
+          - generic [ref=f2e2400]: Final Year Capstone Project
+          - generic [ref=f2e2401]: TUT T01
+          - generic [ref=f2e2402]: 1 section
+        - generic [ref=f2e2403] [cursor=pointer]:
+          - generic [ref=f2e2404]:
+            - generic [ref=f2e2405]: SMMG5100
+            - generic [ref=f2e2406]: RPG
+            - generic [ref=f2e2407]: 3 cr
+          - generic [ref=f2e2408]: MEMS Fabrication Technology
+          - generic [ref=f2e2409]: LEC L01
+          - generic [ref=f2e2410]: 1 section
+        - generic [ref=f2e2411] [cursor=pointer]:
+          - generic [ref=f2e2412]:
+            - generic [ref=f2e2413]: SMMG5120
+            - generic [ref=f2e2414]: RPG
+            - generic [ref=f2e2415]: 3 cr
+          - generic [ref=f2e2416]: CNC Technology
+          - generic [ref=f2e2417]: LEC L01
+          - generic [ref=f2e2418]: 1 section
+        - generic [ref=f2e2419] [cursor=pointer]:
+          - generic [ref=f2e2420]:
+            - generic [ref=f2e2421]: SMMG5130
+            - generic [ref=f2e2422]: RPG
+            - generic [ref=f2e2423]: 3 cr
+          - generic [ref=f2e2424]: Functional Microdevice Manuf.
+          - generic [ref=f2e2425]: LEC L01
+          - generic [ref=f2e2426]: 1 section
+        - generic [ref=f2e2427] [cursor=pointer]:
+          - generic [ref=f2e2428]:
+            - generic [ref=f2e2429]: SMMG5160
+            - generic [ref=f2e2430]: RPG
+            - generic [ref=f2e2431]: 3 cr
+          - generic [ref=f2e2432]: Bioelectronics Design & Fab
+          - generic [ref=f2e2433]: LEC L01
+          - generic [ref=f2e2434]: 1 section
+        - generic [ref=f2e2435] [cursor=pointer]:
+          - generic [ref=f2e2436]:
+            - generic [ref=f2e2437]: SMMG5170
+            - generic [ref=f2e2438]: RPG
+            - generic [ref=f2e2439]: 3 cr
+          - generic [ref=f2e2440]: Engineering Materials
+          - generic [ref=f2e2441]: LEC L01
+          - generic [ref=f2e2442]: 1 section
+        - generic [ref=f2e2443] [cursor=pointer]:
+          - generic [ref=f2e2444]:
+            - generic [ref=f2e2445]: SMMG5300
+            - generic [ref=f2e2446]: RPG
+            - generic [ref=f2e2447]: 3 cr
+          - generic [ref=f2e2448]: "Nanotechnology: Fund. App."
+          - generic [ref=f2e2449]: LEC L01
+          - generic [ref=f2e2450]: 1 section
+        - generic [ref=f2e2451] [cursor=pointer]:
+          - generic [ref=f2e2452]:
+            - generic [ref=f2e2453]: SMMG5400
+            - generic [ref=f2e2454]: RPG
+            - generic [ref=f2e2455]: 3 cr
+          - generic [ref=f2e2456]: Design for AM
+          - generic [ref=f2e2457]: LEC L01
+          - generic [ref=f2e2458]: 1 section
+        - generic [ref=f2e2459] [cursor=pointer]:
+          - generic [ref=f2e2460]:
+            - generic [ref=f2e2461]: SMMG5500
+            - generic [ref=f2e2462]: RPG
+            - generic [ref=f2e2463]: 3 cr
+          - generic [ref=f2e2464]: Additive Manufacturing Fund.
+          - generic [ref=f2e2465]: LEC L01
+          - generic [ref=f2e2466]: 1 section
+        - generic [ref=f2e2467] [cursor=pointer]:
+          - generic [ref=f2e2468]:
+            - generic [ref=f2e2469]: SMMG6000W
+            - generic [ref=f2e2470]: RPG
+            - generic [ref=f2e2471]: 3 cr
+          - generic [ref=f2e2472]: Intro. to Flex. Elect.
+          - generic [ref=f2e2473]: LEC L01
+          - generic [ref=f2e2474]: 1 section
+        - generic [ref=f2e2475] [cursor=pointer]:
+          - generic [ref=f2e2476]:
+            - generic [ref=f2e2477]: SMMG6100B
+            - generic [ref=f2e2478]: RPG
+            - generic [ref=f2e2479]: 1 cr
+          - generic [ref=f2e2480]: Independent Study
+          - generic [ref=f2e2481]: IND R01
+          - generic [ref=f2e2482]: 1 section
+        - generic [ref=f2e2483] [cursor=pointer]:
+          - generic [ref=f2e2484]:
+            - generic [ref=f2e2485]: SMMG6800L
+            - generic [ref=f2e2486]: RPG
+            - generic [ref=f2e2487]: 0 cr
+          - generic [ref=f2e2488]: Seminar in Smart Manufacturing
+          - generic [ref=f2e2489]: TUT T01
+          - generic [ref=f2e2490]: 1 section
+        - generic [ref=f2e2491] [cursor=pointer]:
+          - generic [ref=f2e2492]:
+            - generic [ref=f2e2493]: SMMG6990
+            - generic [ref=f2e2494]: RPG
+            - generic [ref=f2e2495]: 0 cr
+          - generic [ref=f2e2496]: MPhil Thesis Research
+          - generic [ref=f2e2497]: IND R01
+          - generic [ref=f2e2498]: 1 section
+        - generic [ref=f2e2499] [cursor=pointer]:
+          - generic [ref=f2e2500]:
+            - generic [ref=f2e2501]: SMMG7990
+            - generic [ref=f2e2502]: RPG
+            - generic [ref=f2e2503]: 0 cr
+          - generic [ref=f2e2504]: Doctoral Thesis Research
+          - generic [ref=f2e2505]: IND R01
+          - generic [ref=f2e2506]: 1 section
+        - generic [ref=f2e2507] [cursor=pointer]:
+          - generic [ref=f2e2508]:
+            - generic [ref=f2e2509]: SOCH5000
+            - generic [ref=f2e2510]: RPG
+            - generic [ref=f2e2511]: 2 cr
+          - generic [ref=f2e2512]: Innovation & Entrepreneurship
+          - generic [ref=f2e2513]: LEC L01 · LAB LA01
+          - generic [ref=f2e2514]: 2 sections · multi-component
+        - generic [ref=f2e2515] [cursor=pointer]:
+          - generic [ref=f2e2516]:
+            - generic [ref=f2e2517]: SOCH6780
+            - generic [ref=f2e2518]: RPG
+            - generic [ref=f2e2519]: 1 cr
+          - generic [ref=f2e2520]: Professional Dev in ITSR
+          - generic [ref=f2e2521]:
+            - text: TUT T01/T02
+            - generic [ref=f2e2522]: 2 sections
+          - generic [ref=f2e2523]: 2 sections
+        - generic [ref=f2e2524] [cursor=pointer]:
+          - generic [ref=f2e2525]:
+            - generic [ref=f2e2526]: SYSH5000
+            - generic [ref=f2e2527]: RPG
+            - generic [ref=f2e2528]: 2 cr
+          - generic [ref=f2e2529]: Model-Based Systems Engg
+          - generic [ref=f2e2530]:
+            - text: LEC L01/L02 · TUT T01/T02 · LAB LA01/LA02
+            - generic [ref=f2e2531]: 2 sections
+          - generic [ref=f2e2532]: 6 sections · multi-component
+        - generic [ref=f2e2533] [cursor=pointer]:
+          - generic [ref=f2e2534]:
+            - generic [ref=f2e2535]: SYSH6780
+            - generic [ref=f2e2536]: RPG
+            - generic [ref=f2e2537]: 1 cr
+          - generic [ref=f2e2538]: Career Dev for SYSH RPgs
+          - generic [ref=f2e2539]: TUT T01
+          - generic [ref=f2e2540]: 1 section
+        - generic [ref=f2e2541] [cursor=pointer]:
+          - generic [ref=f2e2542]:
+            - generic [ref=f2e2543]: UCMP6010
+            - generic [ref=f2e2544]: RPG
+            - generic [ref=f2e2545]: 2 cr
+          - generic [ref=f2e2546]: Cross-discip Research Method I
+          - generic [ref=f2e2547]: LEC L01
+          - generic [ref=f2e2548]: 1 section
+        - generic [ref=f2e2549] [cursor=pointer]:
+          - generic [ref=f2e2550]:
+            - generic [ref=f2e2551]: UCMP6050
+            - generic [ref=f2e2552]: RPG
+            - generic [ref=f2e2553]: 2 cr
+          - generic [ref=f2e2554]: Project-driven Design Thinking
+          - generic [ref=f2e2555]:
+            - text: LEC L01/L02/L03/L04/…/L61
+            - generic [ref=f2e2556]: 43 sections
+          - generic [ref=f2e2557]: 43 sections
+        - generic [ref=f2e2558] [cursor=pointer]:
+          - generic [ref=f2e2559]:
+            - generic [ref=f2e2560]: UCUG1000
+            - generic [ref=f2e2561]: UG
+            - generic [ref=f2e2562]: 3 cr
+          - generic [ref=f2e2563]: CTDL
+          - generic [ref=f2e2564]: LEC L01
+          - generic [ref=f2e2565]: 1 section
+        - generic [ref=f2e2566] [cursor=pointer]:
+          - generic [ref=f2e2567]:
+            - generic [ref=f2e2568]: UCUG1001
+            - generic [ref=f2e2569]: UG
+            - generic [ref=f2e2570]: 3 cr
+          - generic [ref=f2e2571]: Habits, Mindsets, and Wellness
+          - generic [ref=f2e2572]:
+            - text: LEC L01/L02/L03/L04/…/L13
+            - generic [ref=f2e2573]: 13 sections
+          - generic [ref=f2e2574]: 13 sections
+        - generic [ref=f2e2575] [cursor=pointer]:
+          - generic [ref=f2e2576]:
+            - generic [ref=f2e2577]: UCUG1002
+            - generic [ref=f2e2578]: UG
+            - generic [ref=f2e2579]: 3 cr
+          - generic [ref=f2e2580]: AI General Education
+          - generic [ref=f2e2581]: LEC L01
+          - generic [ref=f2e2582]: 1 section
+        - generic [ref=f2e2583] [cursor=pointer]:
+          - generic [ref=f2e2584]:
+            - generic [ref=f2e2585]: UCUG1050
+            - generic [ref=f2e2586]: UG
+            - generic [ref=f2e2587]: 3 cr
+          - generic [ref=f2e2588]: Intensive Eng for Uni Studies
+          - generic [ref=f2e2589]:
+            - text: TUT T01/T02
+            - generic [ref=f2e2590]: 2 sections
+          - generic [ref=f2e2591]: 2 sections · has prerequisite
+        - generic [ref=f2e2592] [cursor=pointer]:
+          - generic [ref=f2e2593]:
+            - generic [ref=f2e2594]: UCUG1051
+            - generic [ref=f2e2595]: UG
+            - generic [ref=f2e2596]: 3 cr
+          - generic [ref=f2e2597]: Eng Lang for Uni Studies
+          - generic [ref=f2e2598]:
+            - text: TUT T01/T02/T03/T04/…/T17
+            - generic [ref=f2e2599]: 17 sections
+          - generic [ref=f2e2600]: 17 sections · has prerequisite
+        - generic [ref=f2e2601] [cursor=pointer]:
+          - generic [ref=f2e2602]:
+            - generic [ref=f2e2603]: UCUG1053
+            - generic [ref=f2e2604]: UG
+            - generic [ref=f2e2605]: 3 cr
+          - generic [ref=f2e2606]: Adv Acad Eng for Uni Studies
+          - generic [ref=f2e2607]:
+            - text: TUT T01/T02
+            - generic [ref=f2e2608]: 2 sections
+          - generic [ref=f2e2609]: 2 sections · has prerequisite
+        - generic [ref=f2e2610] [cursor=pointer]:
+          - generic [ref=f2e2611]:
+            - generic [ref=f2e2612]: UCUG1070
+            - generic [ref=f2e2613]: UG
+            - generic [ref=f2e2614]: 3 cr
+          - generic [ref=f2e2615]: Elem L & S PTH
+          - generic [ref=f2e2616]: TUT T01
+          - generic [ref=f2e2617]: 1 section
+        - generic [ref=f2e2618] [cursor=pointer]:
+          - generic [ref=f2e2619]:
+            - generic [ref=f2e2620]: UCUG1077
+            - generic [ref=f2e2621]: UG
+            - generic [ref=f2e2622]: 3 cr
+          - generic [ref=f2e2623]: "Chin Comm Ess: Writ & Oral"
+          - generic [ref=f2e2624]:
+            - text: LEC L01/L02/L03/L04/L05/L06
+            - generic [ref=f2e2625]: 6 sections
+          - generic [ref=f2e2626]: 6 sections
+        - generic [ref=f2e2627] [cursor=pointer]:
+          - generic [ref=f2e2628]:
+            - generic [ref=f2e2629]: UCUG1500
+            - generic [ref=f2e2630]: UG
+            - generic [ref=f2e2631]: 3 cr
+          - generic [ref=f2e2632]: Arts and Creativity
+          - generic [ref=f2e2633]: LEC L01 · LAB LA01
+          - generic [ref=f2e2634]: 2 sections · multi-component
+        - generic [ref=f2e2635] [cursor=pointer]:
+          - generic [ref=f2e2636]:
+            - generic [ref=f2e2637]: UCUG1504
+            - generic [ref=f2e2638]: UG
+            - generic [ref=f2e2639]: 3 cr
+          - generic [ref=f2e2640]: The Art of Public Speaking
+          - generic [ref=f2e2641]:
+            - text: LEC L01/L02/L03
+            - generic [ref=f2e2642]: 3 sections
+          - generic [ref=f2e2643]: 3 sections
+        - generic [ref=f2e2644] [cursor=pointer]:
+          - generic [ref=f2e2645]:
+            - generic [ref=f2e2646]: UCUG1505
+            - generic [ref=f2e2647]: UG
+            - generic [ref=f2e2648]: 3 cr
+          - generic [ref=f2e2649]: Coding & Art
+          - generic [ref=f2e2650]:
+            - text: LEC L01/L02/L03/L04 · TUT T01/T02/T03/T04
+            - generic [ref=f2e2651]: 4 sections
+          - generic [ref=f2e2652]: 8 sections · multi-component
+        - generic [ref=f2e2653] [cursor=pointer]:
+          - generic [ref=f2e2654]:
+            - generic [ref=f2e2655]: UCUG1506
+            - generic [ref=f2e2656]: UG
+            - generic [ref=f2e2657]: 3 cr
+          - generic [ref=f2e2658]: Enjoyment of Classical Music
+          - generic [ref=f2e2659]:
+            - text: LEC L01/L02 · TUT T01/T02
+            - generic [ref=f2e2660]: 2 sections
+          - generic [ref=f2e2661]: 4 sections · multi-component
+        - generic [ref=f2e2662] [cursor=pointer]:
+          - generic [ref=f2e2663]:
+            - generic [ref=f2e2664]: UCUG1507
+            - generic [ref=f2e2665]: UG
+            - generic [ref=f2e2666]: 3 cr
+          - generic [ref=f2e2667]: Figure Drawing in Motion
+          - generic [ref=f2e2668]: LEC L01 · TUT T01
+          - generic [ref=f2e2669]: 2 sections · multi-component
+        - generic [ref=f2e2670] [cursor=pointer]:
+          - generic [ref=f2e2671]:
+            - generic [ref=f2e2672]: UCUG1600
+            - generic [ref=f2e2673]: UG
+            - generic [ref=f2e2674]: 3 cr
+          - generic [ref=f2e2675]: Intercultural Communication
+          - generic [ref=f2e2676]:
+            - text: LEC L01/L02/L03 · TUT T01/T02/T03
+            - generic [ref=f2e2677]: 3 sections
+          - generic [ref=f2e2678]: 6 sections · multi-component
+        - generic [ref=f2e2679] [cursor=pointer]:
+          - generic [ref=f2e2680]:
+            - generic [ref=f2e2681]: UCUG1603
+            - generic [ref=f2e2682]: UG
+            - generic [ref=f2e2683]: 3 cr
+          - generic [ref=f2e2684]: Sci-fi Storytelling
+          - generic [ref=f2e2685]:
+            - text: LEC L01 · TUT T01/T02
+            - generic [ref=f2e2686]: 2 sections
+          - generic [ref=f2e2687]: 3 sections · multi-component
+        - generic [ref=f2e2688] [cursor=pointer]:
+          - generic [ref=f2e2689]:
+            - generic [ref=f2e2690]: UCUG1604
+            - generic [ref=f2e2691]: UG
+            - generic [ref=f2e2692]: 3 cr
+          - generic [ref=f2e2693]: Hist of Chinese Civilization
+          - generic [ref=f2e2694]:
+            - text: LEC L01/L02/L03
+            - generic [ref=f2e2695]: 3 sections
+          - generic [ref=f2e2696]: 3 sections
+        - generic [ref=f2e2697] [cursor=pointer]:
+          - generic [ref=f2e2698]:
+            - generic [ref=f2e2699]: UCUG1702
+            - generic [ref=f2e2700]: UG
+            - generic [ref=f2e2701]: 3 cr
+          - generic [ref=f2e2702]: Intro to Materials Science
+          - generic [ref=f2e2703]: LEC L01
+          - generic [ref=f2e2704]: 1 section
+        - generic [ref=f2e2705] [cursor=pointer]:
+          - generic [ref=f2e2706]:
+            - generic [ref=f2e2707]: UCUG1800
+            - generic [ref=f2e2708]: UG
+            - generic [ref=f2e2709]: 3 cr
+          - generic [ref=f2e2710]: "Tech & Inno: Social and Biz"
+          - generic [ref=f2e2711]:
+            - text: LEC L01/L02/L03
+            - generic [ref=f2e2712]: 3 sections
+          - generic [ref=f2e2713]: 3 sections
+        - generic [ref=f2e2714] [cursor=pointer]:
+          - generic [ref=f2e2715]:
+            - generic [ref=f2e2716]: UCUG1804
+            - generic [ref=f2e2717]: UG
+            - generic [ref=f2e2718]: 3 cr
+          - generic [ref=f2e2719]: Pop & Econ Dev in China
+          - generic [ref=f2e2720]: LEC L01
+          - generic [ref=f2e2721]: 1 section
+        - generic [ref=f2e2722] [cursor=pointer]:
+          - generic [ref=f2e2723]:
+            - generic [ref=f2e2724]: UCUG1807
+            - generic [ref=f2e2725]: UG
+            - generic [ref=f2e2726]: 3 cr
+          - generic [ref=f2e2727]: Thinking like an Economist I
+          - generic [ref=f2e2728]:
+            - text: LEC L01/L02/L03 · TUT T01/T02/T03
+            - generic [ref=f2e2729]: 3 sections
+          - generic [ref=f2e2730]: 6 sections · multi-component
+        - generic [ref=f2e2731] [cursor=pointer]:
+          - generic [ref=f2e2732]:
+            - generic [ref=f2e2733]: UCUG1808
+            - generic [ref=f2e2734]: UG
+            - generic [ref=f2e2735]: 3 cr
+          - generic [ref=f2e2736]: Sports in Society
+          - generic [ref=f2e2737]: LEC L01 · TUT T01
+          - generic [ref=f2e2738]: 2 sections · multi-component
+        - generic [ref=f2e2739] [cursor=pointer]:
+          - generic [ref=f2e2740]:
+            - generic [ref=f2e2741]: UCUG1809
+            - generic [ref=f2e2742]: UG
+            - generic [ref=f2e2743]: 3 cr
+          - generic [ref=f2e2744]: Sociology of Higher Education
+          - generic [ref=f2e2745]: LEC L01 · TUT T01
+          - generic [ref=f2e2746]: 2 sections · multi-component
+        - generic [ref=f2e2747] [cursor=pointer]:
+          - generic [ref=f2e2748]:
+            - generic [ref=f2e2749]: UCUG1900
+            - generic [ref=f2e2750]: UG
+            - generic [ref=f2e2751]: 3 cr
+          - generic [ref=f2e2752]: Essential Chemistry
+          - generic [ref=f2e2753]:
+            - text: LEC L01/L02
+            - generic [ref=f2e2754]: 2 sections
+          - generic [ref=f2e2755]: 2 sections · multi-component
+        - generic [ref=f2e2756] [cursor=pointer]:
+          - generic [ref=f2e2757]:
+            - generic [ref=f2e2758]: UCUG1903
+            - generic [ref=f2e2759]: UG
+            - generic [ref=f2e2760]: 3 cr
+          - generic [ref=f2e2761]: Signals and IT
+          - generic [ref=f2e2762]:
+            - text: LEC L01/L02 · TUT T01/T02
+            - generic [ref=f2e2763]: 2 sections
+          - generic [ref=f2e2764]: 4 sections · multi-component
+        - generic [ref=f2e2765] [cursor=pointer]:
+          - generic [ref=f2e2766]:
+            - generic [ref=f2e2767]: UCUG1907
+            - generic [ref=f2e2768]: UG
+            - generic [ref=f2e2769]: 3 cr
+          - generic [ref=f2e2770]: Design Thinking for Health Inn
+          - generic [ref=f2e2771]: LEC L01
+          - generic [ref=f2e2772]: 1 section
+        - generic [ref=f2e2773] [cursor=pointer]:
+          - generic [ref=f2e2774]:
+            - generic [ref=f2e2775]: UCUG2500
+            - generic [ref=f2e2776]: UG
+            - generic [ref=f2e2777]: 3 cr
+          - generic [ref=f2e2778]: Music of China
+          - generic [ref=f2e2779]: LEC L01 · TUT T01
+          - generic [ref=f2e2780]: 2 sections · multi-component
+        - generic [ref=f2e2781] [cursor=pointer]:
+          - generic [ref=f2e2782]:
+            - generic [ref=f2e2783]: UCUG2603
+            - generic [ref=f2e2784]: UG
+            - generic [ref=f2e2785]: 3 cr
+          - generic [ref=f2e2786]: East Asian Popular Music
+          - generic [ref=f2e2787]:
+            - text: LEC L01/L02/L03 · TUT T01/T02/T03
+            - generic [ref=f2e2788]: 3 sections
+          - generic [ref=f2e2789]: 6 sections · multi-component
+        - generic [ref=f2e2790] [cursor=pointer]:
+          - generic [ref=f2e2791]:
+            - generic [ref=f2e2792]: UCUG2804
+            - generic [ref=f2e2793]: UG
+            - generic [ref=f2e2794]: 3 cr
+          - generic [ref=f2e2795]: Entrepreneurial Mindset
+          - generic [ref=f2e2796]: LEC L01 · TUT T01
+          - generic [ref=f2e2797]: 2 sections · multi-component
+        - generic [ref=f2e2798] [cursor=pointer]:
+          - generic [ref=f2e2799]:
+            - generic [ref=f2e2800]: UCUG3801
+            - generic [ref=f2e2801]: UG
+            - generic [ref=f2e2802]: 3 cr
+          - generic [ref=f2e2803]: Social Inequality and Social M
+          - generic [ref=f2e2804]:
+            - text: LEC L01/L02 · TUT T01/T02
+            - generic [ref=f2e2805]: 2 sections
+          - generic [ref=f2e2806]: 4 sections · multi-component
+        - generic [ref=f2e2807] [cursor=pointer]:
+          - generic [ref=f2e2808]:
+            - generic [ref=f2e2809]: UFUG1102
+            - generic [ref=f2e2810]: UG
+            - generic [ref=f2e2811]: 3 cr
+          - generic [ref=f2e2812]: Calculus I
+          - generic [ref=f2e2813]:
+            - text: LEC L01/L02/L03/L04/L05/L06 · TUT T01/T02/T03/T04/T05/T06
+            - generic [ref=f2e2814]: 6 sections
+          - generic [ref=f2e2815]: 12 sections · multi-component
+        - generic [ref=f2e2816] [cursor=pointer]:
+          - generic [ref=f2e2817]:
+            - generic [ref=f2e2818]: UFUG1103
+            - generic [ref=f2e2819]: UG
+            - generic [ref=f2e2820]: 3 cr
+          - generic [ref=f2e2821]: Calculus II
+          - generic [ref=f2e2822]: LEC L01 · TUT T01
+          - generic [ref=f2e2823]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e2824] [cursor=pointer]:
+          - generic [ref=f2e2825]:
+            - generic [ref=f2e2826]: UFUG1105
+            - generic [ref=f2e2827]: UG
+            - generic [ref=f2e2828]: 3 cr
+          - generic [ref=f2e2829]: Honors Calculus I
+          - generic [ref=f2e2830]:
+            - text: LEC L01/L02/L03/L04/…/L08 · TUT T01/T02/T03/T04/…/T08
+            - generic [ref=f2e2831]: 8 sections
+          - generic [ref=f2e2832]: 16 sections · multi-component · has prerequisite
+        - generic [ref=f2e2833] [cursor=pointer]:
+          - generic [ref=f2e2834]:
+            - generic [ref=f2e2835]: UFUG1106
+            - generic [ref=f2e2836]: UG
+            - generic [ref=f2e2837]: 3 cr
+          - generic [ref=f2e2838]: Honors Calculus II
+          - generic [ref=f2e2839]: LEC L01 · TUT T01
+          - generic [ref=f2e2840]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e2841] [cursor=pointer]:
+          - generic [ref=f2e2842]:
+            - generic [ref=f2e2843]: UFUG1301
+            - generic [ref=f2e2844]: UG
+            - generic [ref=f2e2845]: 3 cr
+          - generic [ref=f2e2846]: General Chemistry
+          - generic [ref=f2e2847]:
+            - text: LEC L01/L02 · TUT T01 · LAB LA01/LA02/TBA
+            - generic [ref=f2e2848]: 3 sections
+          - generic [ref=f2e2849]: 6 sections · multi-component
+        - generic [ref=f2e2850] [cursor=pointer]:
+          - generic [ref=f2e2851]:
+            - generic [ref=f2e2852]: UFUG1302
+            - generic [ref=f2e2853]: UG
+            - generic [ref=f2e2854]: 3 cr
+          - generic [ref=f2e2855]: Honors Chemistry A
+          - generic [ref=f2e2856]:
+            - text: LEC L01/L02 · TUT T01/T02 · LAB LA01/LA02/LA03/LA04/TBA
+            - generic [ref=f2e2857]: 5 sections
+          - generic [ref=f2e2858]: 9 sections · multi-component · has prerequisite
+        - generic [ref=f2e2859] [cursor=pointer]:
+          - generic [ref=f2e2860]:
+            - generic [ref=f2e2861]: UFUG1303
+            - generic [ref=f2e2862]: UG
+            - generic [ref=f2e2863]: 3 cr
+          - generic [ref=f2e2864]: Honors Chemistry B
+          - generic [ref=f2e2865]:
+            - text: LEC L01/L02 · TUT T01/T02 · LAB LA01/LA02/TBA
+            - generic [ref=f2e2866]: 3 sections
+          - generic [ref=f2e2867]: 7 sections · multi-component · has prerequisite
+        - generic [ref=f2e2868] [cursor=pointer]:
+          - generic [ref=f2e2869]:
+            - generic [ref=f2e2870]: UFUG1401
+            - generic [ref=f2e2871]: UG
+            - generic [ref=f2e2872]: 3 cr
+          - generic [ref=f2e2873]: General Biology I
+          - generic [ref=f2e2874]:
+            - text: LEC L01/L02 · LAB LA01/LA02/LA03/TBA
+            - generic [ref=f2e2875]: 4 sections
+          - generic [ref=f2e2876]: 6 sections · multi-component
+        - generic [ref=f2e2877] [cursor=pointer]:
+          - generic [ref=f2e2878]:
+            - generic [ref=f2e2879]: UFUG1403
+            - generic [ref=f2e2880]: UG
+            - generic [ref=f2e2881]: 3 cr
+          - generic [ref=f2e2882]: Intro. to BT
+          - generic [ref=f2e2883]:
+            - text: LEC L01 · LAB LA01/LA02/LA03/TBA
+            - generic [ref=f2e2884]: 4 sections
+          - generic [ref=f2e2885]: 5 sections · multi-component
+        - generic [ref=f2e2886] [cursor=pointer]:
+          - generic [ref=f2e2887]:
+            - generic [ref=f2e2888]: UFUG1501
+            - generic [ref=f2e2889]: UG
+            - generic [ref=f2e2890]: 3 cr
+          - generic [ref=f2e2891]: General Physics I
+          - generic [ref=f2e2892]:
+            - text: LEC L01 · TUT T01 · LAB LA01/LA02/TBA
+            - generic [ref=f2e2893]: 3 sections
+          - generic [ref=f2e2894]: 5 sections · multi-component · has prerequisite
+        - generic [ref=f2e2895] [cursor=pointer]:
+          - generic [ref=f2e2896]:
+            - generic [ref=f2e2897]: UFUG1502
+            - generic [ref=f2e2898]: UG
+            - generic [ref=f2e2899]: 3 cr
+          - generic [ref=f2e2900]: General Physics II
+          - generic [ref=f2e2901]: LEC L01 · TUT T01 · LAB LA01
+          - generic [ref=f2e2902]: 3 sections · multi-component · has prerequisite
+        - generic [ref=f2e2903] [cursor=pointer]:
+          - generic [ref=f2e2904]:
+            - generic [ref=f2e2905]: UFUG1503
+            - generic [ref=f2e2906]: UG
+            - generic [ref=f2e2907]: 3 cr
+          - generic [ref=f2e2908]: Honors General Physics I
+          - generic [ref=f2e2909]:
+            - text: LEC L01/L02/L03 · TUT T01 · LAB LA01/LA02/LA03/LA04/TBA
+            - generic [ref=f2e2910]: 5 sections
+          - generic [ref=f2e2911]: 9 sections · multi-component · has prerequisite
+        - generic [ref=f2e2912] [cursor=pointer]:
+          - generic [ref=f2e2913]:
+            - generic [ref=f2e2914]: UFUG1504
+            - generic [ref=f2e2915]: UG
+            - generic [ref=f2e2916]: 3 cr
+          - generic [ref=f2e2917]: Honors General Physics II
+          - generic [ref=f2e2918]:
+            - text: LEC L01/L02 · TUT T01 · LAB LA01
+            - generic [ref=f2e2919]: 2 sections
+          - generic [ref=f2e2920]: 4 sections · multi-component · has prerequisite
+        - generic [ref=f2e2921] [cursor=pointer]:
+          - generic [ref=f2e2922]:
+            - generic [ref=f2e2923]: UFUG1601
+            - generic [ref=f2e2924]: UG
+            - generic [ref=f2e2925]: 3 cr
+          - generic [ref=f2e2926]: Intro. to CS
+          - generic [ref=f2e2927]:
+            - text: LEC L01/L02/L03/L04/…/L07 · LAB LA01/LA2A/LA2B/LA3A/…/LA7B
+            - generic [ref=f2e2928]: 13 sections
+          - generic [ref=f2e2929]: 20 sections · multi-component
+        - generic [ref=f2e2930] [cursor=pointer]:
+          - generic [ref=f2e2931]:
+            - generic [ref=f2e2932]: UFUG1602
+            - generic [ref=f2e2933]: UG
+            - generic [ref=f2e2934]: 3 cr
+          - generic [ref=f2e2935]: Intro. to Java Comp.
+          - generic [ref=f2e2936]:
+            - text: LEC L01 · LAB LA01/LA02
+            - generic [ref=f2e2937]: 2 sections
+          - generic [ref=f2e2938]: 3 sections · multi-component
+        - generic [ref=f2e2939] [cursor=pointer]:
+          - generic [ref=f2e2940]:
+            - generic [ref=f2e2941]: UFUG1603
+            - generic [ref=f2e2942]: UG
+            - generic [ref=f2e2943]: 3 cr
+          - generic [ref=f2e2944]: Honors ICS
+          - generic [ref=f2e2945]:
+            - text: LEC L01 · LAB LA01/LA02
+            - generic [ref=f2e2946]: 2 sections
+          - generic [ref=f2e2947]: 3 sections · multi-component
+        - generic [ref=f2e2948] [cursor=pointer]:
+          - generic [ref=f2e2949]:
+            - generic [ref=f2e2950]: UFUG1801
+            - generic [ref=f2e2951]: UG
+            - generic [ref=f2e2952]: 3 cr
+          - generic [ref=f2e2953]: Principles of Economics
+          - generic [ref=f2e2954]:
+            - text: LEC L01/L02/L03 · TUT T01/T02/T03
+            - generic [ref=f2e2955]: 3 sections
+          - generic [ref=f2e2956]: 6 sections · multi-component
+        - generic [ref=f2e2957] [cursor=pointer]:
+          - generic [ref=f2e2958]:
+            - generic [ref=f2e2959]: UFUG1811
+            - generic [ref=f2e2960]: UG
+            - generic [ref=f2e2961]: 3 cr
+          - generic [ref=f2e2962]: Quant Data Any for Social Res
+          - generic [ref=f2e2963]: LEC L01 · TUT T01
+          - generic [ref=f2e2964]: 2 sections · multi-component
+        - generic [ref=f2e2965] [cursor=pointer]:
+          - generic [ref=f2e2966]:
+            - generic [ref=f2e2967]: UFUG2101
+            - generic [ref=f2e2968]: UG
+            - generic [ref=f2e2969]: 3 cr
+          - generic [ref=f2e2970]: Intro. to Multivar. Calc.
+          - generic [ref=f2e2971]:
+            - text: LEC L01/L02/L03 · TUT T01/T02/T03
+            - generic [ref=f2e2972]: 3 sections
+          - generic [ref=f2e2973]: 6 sections · multi-component · has prerequisite
+        - generic [ref=f2e2974] [cursor=pointer]:
+          - generic [ref=f2e2975]:
+            - generic [ref=f2e2976]: UFUG2102
+            - generic [ref=f2e2977]: UG
+            - generic [ref=f2e2978]: 3 cr
+          - generic [ref=f2e2979]: Matrix Algebra and Application
+          - generic [ref=f2e2980]:
+            - text: LEC L01/L02 · TUT T01/T02
+            - generic [ref=f2e2981]: 2 sections
+          - generic [ref=f2e2982]: 4 sections · multi-component · has prerequisite
+        - generic [ref=f2e2983] [cursor=pointer]:
+          - generic [ref=f2e2984]:
+            - generic [ref=f2e2985]: UFUG2103
+            - generic [ref=f2e2986]: UG
+            - generic [ref=f2e2987]: 3 cr
+          - generic [ref=f2e2988]: Linear Algebra
+          - generic [ref=f2e2989]:
+            - text: LEC L01/L02/L03/L04/…/L10 · TUT T01/T02/T03/T04/…/T10
+            - generic [ref=f2e2990]: 10 sections
+          - generic [ref=f2e2991]: 20 sections · multi-component · has prerequisite
+        - generic [ref=f2e2992] [cursor=pointer]:
+          - generic [ref=f2e2993]:
+            - generic [ref=f2e2994]: UFUG2104
+            - generic [ref=f2e2995]: UG
+            - generic [ref=f2e2996]: 3 cr
+          - generic [ref=f2e2997]: Appl. Stat.
+          - generic [ref=f2e2998]:
+            - text: LEC L01/L02/L03/L04/L05 · TUT T01/T02/T03/T04/T05
+            - generic [ref=f2e2999]: 5 sections
+          - generic [ref=f2e3000]: 10 sections · multi-component · has prerequisite
+        - generic [ref=f2e3001] [cursor=pointer]:
+          - generic [ref=f2e3002]:
+            - generic [ref=f2e3003]: UFUG2105
+            - generic [ref=f2e3004]: UG
+            - generic [ref=f2e3005]: 3 cr
+          - generic [ref=f2e3006]: Optimization
+          - generic [ref=f2e3007]: LEC L01 · TUT T01
+          - generic [ref=f2e3008]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e3009] [cursor=pointer]:
+          - generic [ref=f2e3010]:
+            - generic [ref=f2e3011]: UFUG2106
+            - generic [ref=f2e3012]: UG
+            - generic [ref=f2e3013]: 3 cr
+          - generic [ref=f2e3014]: Discrete Mathematics
+          - generic [ref=f2e3015]: LEC L01 · TUT T01
+          - generic [ref=f2e3016]: 2 sections · multi-component · has prerequisite
+        - generic [ref=f2e3017] [cursor=pointer]:
+          - generic [ref=f2e3018]:
+            - generic [ref=f2e3019]: UFUG2601
+            - generic [ref=f2e3020]: UG
+            - generic [ref=f2e3021]: 4 cr
+          - generic [ref=f2e3022]: C++ Programming
+          - generic [ref=f2e3023]:
+            - text: LEC L01/L02/L03/L04 · LAB LA1A/LA1B/LA2A/LA2B/…/LA4B
+            - generic [ref=f2e3024]: 8 sections
+          - generic [ref=f2e3025]: 12 sections · multi-component
+        - generic [ref=f2e3026] [cursor=pointer]:
+          - generic [ref=f2e3027]:
+            - generic [ref=f2e3028]: UFUG2602
+            - generic [ref=f2e3029]: UG
+            - generic [ref=f2e3030]: 3 cr
+          - generic [ref=f2e3031]: DSAD
+          - generic [ref=f2e3032]:
+            - text: LEC L01/L02 · LAB LA1A/LA1B/LA2A/LA2B
+            - generic [ref=f2e3033]: 4 sections
+          - generic [ref=f2e3034]: 6 sections · multi-component · has prerequisite
+        - generic [ref=f2e3035] [cursor=pointer]:
+          - generic [ref=f2e3036]:
+            - generic [ref=f2e3037]: UGOD5009
+            - generic [ref=f2e3038]: RPG
+            - generic [ref=f2e3039]: 3 cr
+          - generic [ref=f2e3040]: Infer Stat & OLS Regression
+          - generic [ref=f2e3041]: LEC L01
+          - generic [ref=f2e3042]: 1 section
+        - generic [ref=f2e3043] [cursor=pointer]:
+          - generic [ref=f2e3044]:
+            - generic [ref=f2e3045]: UGOD5010
+            - generic [ref=f2e3046]: RPG
+            - generic [ref=f2e3047]: 3 cr
+          - generic [ref=f2e3048]: Science of Cities
+          - generic [ref=f2e3049]: LEC L01
+          - generic [ref=f2e3050]: 1 section
+        - generic [ref=f2e3051] [cursor=pointer]:
+          - generic [ref=f2e3052]:
+            - generic [ref=f2e3053]: UGOD5020
+            - generic [ref=f2e3054]: RPG
+            - generic [ref=f2e3055]: 3 cr
+          - generic [ref=f2e3056]: Quantitative Social Science
+          - generic [ref=f2e3057]: LEC L01
+          - generic [ref=f2e3058]: 1 section
+        - generic [ref=f2e3059] [cursor=pointer]:
+          - generic [ref=f2e3060]:
+            - generic [ref=f2e3061]: UGOD5040
+            - generic [ref=f2e3062]: RPG
+            - generic [ref=f2e3063]: 3 cr
+          - generic [ref=f2e3064]: Social Data Acq & Ana
+          - generic [ref=f2e3065]: LEC L01
+          - generic [ref=f2e3066]: 1 section
+        - generic [ref=f2e3067] [cursor=pointer]:
+          - generic [ref=f2e3068]:
+            - generic [ref=f2e3069]: UGOD5060
+            - generic [ref=f2e3070]: RPG
+            - generic [ref=f2e3071]: 3 cr
+          - generic [ref=f2e3072]: Urban Data Analytics
+          - generic [ref=f2e3073]: LEC L01
+          - generic [ref=f2e3074]: 1 section · has prerequisite
+        - generic [ref=f2e3075] [cursor=pointer]:
+          - generic [ref=f2e3076]:
+            - generic [ref=f2e3077]: UGOD5066
+            - generic [ref=f2e3078]: RPG
+            - generic [ref=f2e3079]: 3 cr
+          - generic [ref=f2e3080]: AI Agents for Human Mobility
+          - generic [ref=f2e3081]: LEC L01
+          - generic [ref=f2e3082]: 1 section
+        - generic [ref=f2e3083] [cursor=pointer]:
+          - generic [ref=f2e3084]:
+            - generic [ref=f2e3085]: UGOD5070
+            - generic [ref=f2e3086]: RPG
+            - generic [ref=f2e3087]: 3 cr
+          - generic [ref=f2e3088]: Urban Planning and Design
+          - generic [ref=f2e3089]: LEC L01
+          - generic [ref=f2e3090]: 1 section
+        - generic [ref=f2e3091] [cursor=pointer]:
+          - generic [ref=f2e3092]:
+            - generic [ref=f2e3093]: UGOD5080
+            - generic [ref=f2e3094]: RPG
+            - generic [ref=f2e3095]: 3 cr
+          - generic [ref=f2e3096]: Econ Analysis of Cities & Envt
+          - generic [ref=f2e3097]: LEC L01
+          - generic [ref=f2e3098]: 1 section
+        - generic [ref=f2e3099] [cursor=pointer]:
+          - generic [ref=f2e3100]:
+            - generic [ref=f2e3101]: UGOD5140
+            - generic [ref=f2e3102]: RPG
+            - generic [ref=f2e3103]: 3 cr
+          - generic [ref=f2e3104]: Urban Economics & Policy Analy
+          - generic [ref=f2e3105]: LEC L01
+          - generic [ref=f2e3106]: 1 section
+        - generic [ref=f2e3107] [cursor=pointer]:
+          - generic [ref=f2e3108]:
+            - generic [ref=f2e3109]: UGOD5150
+            - generic [ref=f2e3110]: RPG
+            - generic [ref=f2e3111]: 3 cr
+          - generic [ref=f2e3112]: Big Data for Urban Modeling
+          - generic [ref=f2e3113]: LEC L01
+          - generic [ref=f2e3114]: 1 section
+        - generic [ref=f2e3115] [cursor=pointer]:
+          - generic [ref=f2e3116]:
+            - generic [ref=f2e3117]: UGOD5300
+            - generic [ref=f2e3118]: RPG
+            - generic [ref=f2e3119]: 3 cr
+          - generic [ref=f2e3120]: Introduction to GeoAI
+          - generic [ref=f2e3121]: LEC L01
+          - generic [ref=f2e3122]: 1 section
+        - generic [ref=f2e3123] [cursor=pointer]:
+          - generic [ref=f2e3124]:
+            - generic [ref=f2e3125]: UGOD5555
+            - generic [ref=f2e3126]: RPG
+            - generic [ref=f2e3127]: 3 cr
+          - generic [ref=f2e3128]: Urban Simulation
+          - generic [ref=f2e3129]: LEC L01
+          - generic [ref=f2e3130]: 1 section
+        - generic [ref=f2e3131] [cursor=pointer]:
+          - generic [ref=f2e3132]:
+            - generic [ref=f2e3133]: UGOD6000B
+            - generic [ref=f2e3134]: RPG
+            - generic [ref=f2e3135]: 1 cr
+          - generic [ref=f2e3136]: Independent Study
+          - generic [ref=f2e3137]: IND R01
+          - generic [ref=f2e3138]: 1 section
+        - generic [ref=f2e3139] [cursor=pointer]:
+          - generic [ref=f2e3140]:
+            - generic [ref=f2e3141]: UGOD6100F
+            - generic [ref=f2e3142]: RPG
+            - generic [ref=f2e3143]: 3 cr
+          - generic [ref=f2e3144]: 3D info tech
+          - generic [ref=f2e3145]: LEC L01
+          - generic [ref=f2e3146]: 1 section
+        - generic [ref=f2e3147] [cursor=pointer]:
+          - generic [ref=f2e3148]:
+            - generic [ref=f2e3149]: UGOD6100J
+            - generic [ref=f2e3150]: RPG
+            - generic [ref=f2e3151]: 3 cr
+          - generic [ref=f2e3152]: Digital Traces of Cities
+          - generic [ref=f2e3153]: LEC L01
+          - generic [ref=f2e3154]: 1 section
+        - generic [ref=f2e3155] [cursor=pointer]:
+          - generic [ref=f2e3156]:
+            - generic [ref=f2e3157]: UGOD6100K
+            - generic [ref=f2e3158]: RPG
+            - generic [ref=f2e3159]: 3 cr
+          - generic [ref=f2e3160]: AI for Social Good
+          - generic [ref=f2e3161]: LEC L01
+          - generic [ref=f2e3162]: 1 section
+        - generic [ref=f2e3163] [cursor=pointer]:
+          - generic [ref=f2e3164]:
+            - generic [ref=f2e3165]: UGOD6100L
+            - generic [ref=f2e3166]: RPG
+            - generic [ref=f2e3167]: 3 cr
+          - generic [ref=f2e3168]: AI Soc and Urb Gov
+          - generic [ref=f2e3169]: LEC L01
+          - generic [ref=f2e3170]: 1 section
+        - generic [ref=f2e3171] [cursor=pointer]:
+          - generic [ref=f2e3172]:
+            - generic [ref=f2e3173]: UGOD6101
+            - generic [ref=f2e3174]: RPG
+            - generic [ref=f2e3175]: 0 cr
+          - generic [ref=f2e3176]: UGOD Program Seminar I
+          - generic [ref=f2e3177]: TUT T01
+          - generic [ref=f2e3178]: 1 section
+        - generic [ref=f2e3179] [cursor=pointer]:
+          - generic [ref=f2e3180]:
+            - generic [ref=f2e3181]: UGOD6990
+            - generic [ref=f2e3182]: RPG
+            - generic [ref=f2e3183]: 0 cr
+          - generic [ref=f2e3184]: MPhil Thesis Research
+          - generic [ref=f2e3185]: IND R01
+          - generic [ref=f2e3186]: 1 section
+        - generic [ref=f2e3187] [cursor=pointer]:
+          - generic [ref=f2e3188]:
+            - generic [ref=f2e3189]: UGOD7990
+            - generic [ref=f2e3190]: RPG
+            - generic [ref=f2e3191]: 0 cr
+          - generic [ref=f2e3192]: Doctoral Thesis Research
+          - generic [ref=f2e3193]: IND R01
+          - generic [ref=f2e3194]: 1 section
+    - generic [ref=f2e3196]:
+      - generic [ref=f2e3197]:
+        - generic [ref=f2e3198]: Timetable
+        - generic "UFUG1301 · 3 cr" [ref=f2e4554]:
+          - text: 3 cr
+          - generic [ref=f2e3200]: 1 course
+        - generic "Drag a course from search or the grid onto any of its official section times" [ref=f2e3201]:
+          - checkbox "Enable cross-section dragging" [ref=f2e3202]
+          - text: Enable cross-section dragging
+        - generic [ref=f2e3203]: Drag a section onto the grid — it stays at its official class time
+        - generic [ref=f2e3204]:
+          - generic [ref=f2e3205]: section colors
+          - generic [ref=f2e3207]: conflict
+      - generic [ref=f2e3209]:
+        - generic [ref=f2e3211]: Mon
+        - generic [ref=f2e3212]: Tue
+        - generic [ref=f2e3213]: Wed
+        - generic [ref=f2e3214]: Thu
+        - generic [ref=f2e3215]: Fri
+        - generic [ref=f2e3216]: 08:00
+        - generic [ref=f2e3217]: 09:00
+        - generic [ref=f2e3218]: 10:00
+        - generic [ref=f2e3219]: 11:00
+        - generic [ref=f2e3220]: 12:00
+        - generic [ref=f2e3221]: 13:00
+        - generic [ref=f2e3222]: 14:00
+        - generic [ref=f2e3223]: 15:00
+        - generic [ref=f2e3224]: 16:00
+        - generic [ref=f2e3225]: 17:00
+        - generic [ref=f2e3226]: 18:00
+        - generic [ref=f2e3227]: 19:00
+        - generic [ref=f2e3228]: 20:00
+        - generic [ref=f2e3229]: 21:00
+        - generic [ref=f2e4555]:
+          - generic [ref=f2e4556]: UFUG1301 L01
+          - generic [ref=f2e4557]: Rm 149, E1
+          - button "✕" [ref=f2e4558] [cursor=pointer]
+        - generic [ref=f2e4559]:
+          - generic [ref=f2e4560]: UFUG1301 L01
+          - generic [ref=f2e4561]: Rm 149, E1
+          - button "✕" [ref=f2e4562] [cursor=pointer]
+        - generic [ref=f2e4563]:
+          - generic [ref=f2e4564]: UFUG1301 L01
+          - generic [ref=f2e4565]: Rm 149, E1
+          - button "✕" [ref=f2e4566] [cursor=pointer]
+        - generic [ref=f2e4567]:
+          - generic [ref=f2e4568]: UFUG1301 T01
+          - generic [ref=f2e4569]: Rm 149, E1
+          - button "✕" [ref=f2e4570] [cursor=pointer]
+        - generic [ref=f2e4571]:
+          - generic [ref=f2e4572]: UFUG1301 LA01
+          - generic [ref=f2e4573]: Mendeleev Lab (E3-232C)
+          - button "✕" [ref=f2e4574] [cursor=pointer]
+        - generic [ref=f2e4575]:
+          - generic [ref=f2e4576]: UFUG1301 LA01
+          - generic [ref=f2e4577]: Mendeleev Lab (E3-232C)
+          - button "✕" [ref=f2e4578] [cursor=pointer]
+    - complementary [ref=f2e3230]:
+      - generic [ref=f2e3231]:
+        - button "Auto Scheduler" [ref=f2e3232] [cursor=pointer]
+        - button "Dependencies" [ref=f2e3233] [cursor=pointer]
+        - button "›" [ref=f2e3234] [cursor=pointer]
+      - generic [ref=f2e3236]:
+        - generic [ref=f2e3237]:
+          - generic [ref=f2e3238]: Pin by
+          - generic [ref=f2e3239]:
+            - button "Time first" [ref=f2e3240] [cursor=pointer]
+            - button "Course first" [ref=f2e3241] [cursor=pointer]
+          - generic [ref=f2e3242]: Pick a class time, or All to search every section
+        - generic [ref=f2e4487]:
+          - generic [ref=f2e4488]: Rank by
+          - generic [ref=f2e4489]:
+            - button "Evenness first" [ref=f2e4490] [cursor=pointer]
+            - button "Distance first" [ref=f2e4491] [cursor=pointer]
+          - generic [ref=f2e4492]: Spread daily hours first, then prefer same-building transfers
+        - generic [ref=f2e3243]: Add courses from the searchable list. A generated plan adds new courses, or replaces their sections if they are already on the timetable — other classes stay untouched. In Course first, choose All to search every section and rank by evenness / walking distance. Lecture/Tutorial same-index pairing is honoured.
+        - generic [ref=f2e3244]:
+          - generic [ref=f2e3246]:
+            - button "Exclude from scheduling" [pressed] [ref=f2e3248] [cursor=pointer]
+            - generic [ref=f2e3249]:
+              - generic [ref=f2e3250]:
+                - textbox "Search course code / name" [ref=f2e3252]: UFUG1301 General Chemistry
+                - button "Remove" [ref=f2e3253] [cursor=pointer]
+              - generic [ref=f2e3254]:
+                - generic [ref=f2e3255]:
+                  - combobox [ref=f2e3256]:
+                    - option "All sections" [selected]
+                    - option "LA01 (Laboratory) · Wed 13:30–16:20 / Wed 13:30–16:20"
+                    - option "LA02 (Laboratory) · Tue 09:00–11:50 / Tue 09:00–11:50"
+                    - option "L01 (Lecture) · Wed 13:30–16:20 / Wed 13:30–16:20 / Wed 13:30–16:20"
+                    - option "L02 (Lecture) · Tue 09:00–11:50 / Tue 09:00–11:50 / Tue 09:00–11:50"
+                    - option "T01 (Tutorial) · Thu 18:00–18:50"
+                  - button "Use all sections" [ref=f2e4493] [cursor=pointer]
+                - generic [ref=f2e4500]: 2 section bundle(s)
+                - generic [ref=f2e4501]:
+                  - text: All sections
+                  - button "×" [ref=f2e4502] [cursor=pointer]
+          - generic [ref=f2e4583]:
+            - button "Exclude from scheduling" [pressed] [ref=f2e4585] [cursor=pointer]
+            - generic [ref=f2e4586]:
+              - generic [ref=f2e4587]:
+                - textbox "Search course code / name" [ref=f2e4589]: UFUG1302 Honors Chemistry A
+                - button "Remove" [ref=f2e4590] [cursor=pointer]
+              - generic [ref=f2e4591]:
+                - generic [ref=f2e4592]:
+                  - combobox [ref=f2e4593]:
+                    - option "All sections" [selected]
+                    - option "LA01 (Laboratory) · Thu 13:30–16:20 / Thu 13:30–16:20 / Thu 13:30–16:20 / Thu 13:30–16:20"
+                    - option "LA02 (Laboratory) · Fri 15:00–17:50 / Fri 15:00–17:50 / Fri 15:00–17:50 / Fri 15:00–17:50"
+                    - option "LA03 (Laboratory) · Mon 15:00–17:50 / Mon 15:00–17:50 / Mon 15:00–17:50 / Mon 15:00–17:50"
+                    - option "LA04 (Laboratory) · Mon 09:00–11:50 / Mon 09:00–11:50 / Mon 09:00–11:50 / Mon 09:00–11:50"
+                    - option "L01 (Lecture) · Tue 12:00–13:20 / Tue 12:00–13:20 / Tue 12:00–13:20 / Thu 12:00–13:20 / Thu 12:00–13:20 / Thu 12:00–13:20"
+                    - option "L02 (Lecture) · Tue 09:00–10:20 / Tue 09:00–10:20 / Tue 09:00–10:20 / Thu 09:00–10:20 / Thu 09:00–10:20 / Thu 09:00–10:20"
+                    - option "T01 (Tutorial) · Fri 14:00–14:50"
+                    - option "T02 (Tutorial) · Tue 17:00–17:50"
+                  - button "Use all sections" [active] [ref=f2e4594] [cursor=pointer]
+                - generic [ref=f2e4601]: 8 section bundle(s)
+                - generic [ref=f2e4602]:
+                  - text: All sections
+                  - button "×" [ref=f2e4603] [cursor=pointer]
+          - button "+ Add course" [ref=f2e3259] [cursor=pointer]
+        - generic [ref=f2e3260]:
+          - button "Generate Schedule" [ref=f2e3261] [cursor=pointer]
+          - button "Load current" [ref=f2e3262] [cursor=pointer]
+          - generic [ref=f2e3263]: 2 course(s) selected
+  - button "Selected courses" [ref=f2e3265] [cursor=pointer]:
+    - generic [ref=f2e4581]: "1"

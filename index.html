@@ -226,6 +226,9 @@ input,textarea,select{font:inherit}
 .sched-add{width:100%;margin-top:2px;border:1px dashed #c9d3e3;background:#fff;border-radius:9px;padding:7px;font-weight:700;font-size:12.5px;color:#46536e}
 .sched-add:hover{border-color:var(--accent);color:var(--accent);background:#f8fafd}
 .sched-actions{display:flex;gap:8px;align-items:center;margin:10px 0}
+.sched-filter{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#f8fafd}
+.sched-filter select{height:28px;border:1px solid var(--line);border-radius:7px;padding:0 6px;background:#fff;font-size:11.5px}
+.sched-filter .sbtn{padding:4px 10px}
 .sched-btn{background:var(--accent);border:1px solid var(--accent);color:#fff;font-weight:700;font-size:13px;padding:8px 16px;border-radius:9px}
 .sched-btn:hover{background:#1d4ed8}
 .sched-btn:disabled{background:#aeb9d2;border-color:#aeb9d2;cursor:not-allowed}
@@ -1952,6 +1955,9 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
   const rank = planner.rank || 'even';
   const [result, setResult] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
+  const [filterSlots, setFilterSlots] = React.useState([]);
+  const [fDay, setFDay] = React.useState(1);
+  const [fTime, setFTime] = React.useState(START_HOUR);
   const firstRef = React.useRef(null);
   React.useEffect(() => { if (focusTick && firstRef.current) firstRef.current.focus(); }, [focusTick]);
   const used = {};
@@ -1969,13 +1975,6 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     });
     setResult(null);
   }
-  const lastLockedRef = React.useRef(lockedSchedule);
-  React.useEffect(() => {
-    if (lastLockedRef.current !== lockedSchedule){
-      lastLockedRef.current = lockedSchedule;
-      setResult(null);
-    }
-  }, [lockedSchedule]);
   function loadCurrent(){
     const seen = {};
     const next = [];
@@ -1993,15 +1992,20 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
     setResult(null);
     setTimeout(() => {
       const reqs = items.filter(it => it.code && it.enabled !== false).map(it => ({ code: it.code, times: it.all ? [] : (it.times || []) }));
-      const useAll = mode === 'course' && items.some(it => it.code && it.enabled !== false && (it.all || !(it.times && it.times.length)));
-      const opts = useAll
-        ? { collectLimit: COURSE_ONLY_COLLECT, showLimit: 8, rankBy: rank }
-        : { collectLimit: MAX_SOLUTIONS, showLimit: MAX_SOLUTIONS, rankBy: rank };
+      const opts = { collectLimit: 1000, showLimit: 1000, rankBy: rank };
       const r = generateSchedules(reqs, coursesById, Object.assign({ locked: lockedSchedule || [] }, opts));
       setResult(r);
       setBusy(false);
     }, 30);
   }
+  function addFilterSlot(){
+    const slot = { day: fDay, time: fTime };
+    if (filterSlots.some(sl => sl.day === slot.day && sl.time === slot.time)) return;
+    setFilterSlots(prev => prev.concat([slot]));
+  }
+  const shown = result ? result.solutions.filter(sol =>
+    filterSlots.every(slot => (sol.entries || []).some(en =>
+      (en.meetings || []).some(m => meetingContains(m, slot.day, slot.time))))) : [];
   const hint = mode === 'course'
     ? 'Pick a class time, or All to search every section'
     : 'Pick any clock time, keep sections that cover it';
@@ -2043,6 +2047,26 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
       </div>
       {result ? (
         <div>
+          {result.solutions.length ? (
+            <div className="sched-filter">
+              <span className="sched-note">Filter plans by class time:</span>
+              <select value={fDay} onChange={(e) => setFDay(Number(e.target.value))}>
+                {[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri']].map(p => <option key={p[0]} value={p[0]}>{p[1]}</option>)}
+              </select>
+              <select value={fTime} onChange={(e) => setFTime(Number(e.target.value))}>
+                {hourOptions().map(h => <option key={h} value={h}>{fmtDec(h)}</option>)}
+              </select>
+              <button className="sbtn" onClick={addFilterSlot}>Add slot</button>
+              {filterSlots.map((sl, i) => (
+                <span className="tchip" key={i}>
+                  {DAY_NAMES[sl.day]} {fmtDec(sl.time)}
+                  <button type="button" onClick={() => setFilterSlots(prev => prev.filter((_, j) => j !== i))}>×</button>
+                </span>
+              ))}
+              {filterSlots.length ? <button className="sbtn ghost" onClick={() => setFilterSlots([])}>Clear</button> : null}
+              {filterSlots.length ? <span className="sched-note">Showing {shown.length} of {result.solutions.length} plan{result.solutions.length === 1 ? '' : 's'}</span> : null}
+            </div>
+          ) : null}
           {result.warnings.length ? (
             <div className="warn">{result.warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}</div>
           ) : null}
@@ -2050,10 +2074,13 @@ function SchedulerTab({ courses, coursesById, onApply, focusTick, planner, onPla
             <div className="warn bad">No conflict-free schedule found for these courses.</div>
           ) : null}
           {result.truncated ? <div className="warn">Search space exceeded — showing partial results.</div> : null}
-          {result.found && result.found > result.solutions.length ? (
-            <div className="sched-note" style={{ marginTop: 8 }}>Ranked top {result.solutions.length} of {result.found} conflict-free timetable{result.found === 1 ? '' : 's'}.</div>
+          {result.found ? (
+            <div className="sched-note" style={{ marginTop: 8 }}>{result.found} conflict-free timetable{result.found === 1 ? '' : 's'} found.</div>
           ) : null}
-          {result.solutions.map((sol, i) => (
+          {!shown.length && result.solutions.length ? (
+            <div className="warn">No plans cover the filtered time slots — adjust or clear the filter.</div>
+          ) : null}
+          {shown.map((sol, i) => (
             <div className="solution" key={i}>
               <h4>
                 Plan {i + 1}
