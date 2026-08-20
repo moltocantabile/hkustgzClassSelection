@@ -328,6 +328,22 @@ input,textarea,select{font:inherit}
 .cart-x:hover{color:#b91c1c}
 .cart-item-rm{border:0;background:transparent;color:#b91c1c;font-size:11px;font-weight:700;padding:0;margin-left:auto}
 .cart-item-rm:hover{text-decoration:underline}
+.proxy-overlay{position:fixed;inset:0;background:rgba(16,24,40,.42);z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
+.proxy-modal{width:430px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 60px rgba(16,24,40,.28);padding:14px 16px}
+.proxy-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.proxy-head h3{margin:0;font-size:15px;font-weight:800}
+.proxy-note{font-size:12px;color:var(--muted);margin:0 0 12px}
+.proxy-field{display:block;margin-bottom:10px}
+.proxy-field span{display:block;font-size:11px;font-weight:700;color:#46536e;margin-bottom:3px}
+.proxy-field input{width:100%;border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#fff}
+.proxy-field input:focus{outline:2px solid var(--accent2);border-color:var(--accent)}
+.proxy-field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:13px;background:#fff;color:var(--ink)}
+.proxy-field select:focus{outline:2px solid var(--accent2);border-color:var(--accent)}
+.proxy-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 10px}
+.proxy-actions .hbtn{flex:1;min-width:132px}
+.proxy-actions .hbtn:disabled{opacity:.55;cursor:default}
+.proxy-foot{display:flex;align-items:center;gap:8px}
+.proxy-hint{flex:1;font-size:11px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -391,6 +407,41 @@ function loadPlannerState(){
   }catch(e){
     return defaultPlanner();
   }
+}
+const PROXY_LS_KEY = 'hkust-course-planner-proxy-v1';
+function defaultProxyCfg(){
+  return { url: 'https://getclasslist.moltocantabile.workers.dev/', token: '', termId: '2610' };
+}
+function loadProxyCfg(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(PROXY_LS_KEY) || '{}');
+    const d = defaultProxyCfg();
+    return {
+      url: typeof parsed.url === 'string' && parsed.url ? parsed.url : d.url,
+      token: typeof parsed.token === 'string' ? parsed.token : '',
+      termId: typeof parsed.termId === 'string' && parsed.termId ? parsed.termId : d.termId
+    };
+  }catch(e){
+    return defaultProxyCfg();
+  }
+}
+function saveProxyCfg(cfg){
+  try{ localStorage.setItem(PROXY_LS_KEY, JSON.stringify(cfg || {})); }catch(e){ /* storage blocked */ }
+}
+function proxyDataTag(type, termId){
+  return 'proxy · ' + type + ' ' + (String(termId || '').trim() || '?');
+}
+function academicTermOptions(){
+  const seasons = [['Fall', 10], ['Winter', 20], ['Spring', 30], ['Summer', 40]];
+  const now = new Date().getFullYear();
+  const out = [];
+  for (let y = now - 4; y <= now + 2; y++){
+    const yy = String(y).slice(-2);
+    for (const [name, code] of seasons){
+      out.push({ id: yy + code, label: y + '-' + String(y + 1).slice(-2) + ' ' + name });
+    }
+  }
+  return out;
 }
 function plannerForSave(planner){
   return {
@@ -2910,6 +2961,50 @@ function CartFab({ schedule, coursesById, open, onToggle, onClose, onOpenCourse,
     </div>
   );
 }
+function ProxyModal({ cfg, busy, onCfg, onLoad, onClose }){
+  const termOptions = React.useMemo(() => academicTermOptions(), []);
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  const set = (k) => (e) => onCfg(Object.assign({}, cfg, { [k]: e.target.value }));
+  return (
+    <div className="proxy-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="proxy-modal">
+        <div className="proxy-head">
+          <h3>Course data proxy</h3>
+          <button className="cart-close" onClick={onClose} title="Close">✕</button>
+        </div>
+        <p className="proxy-note">Loads HKUST(GZ) course data through the Cloudflare Workers proxy (TYPE=data / sisn / klms). The TOKEN is sent as a URL query parameter.</p>
+        <label className="proxy-field">
+          <span>Proxy URL</span>
+          <input value={cfg.url} onChange={set('url')} placeholder="https://…workers.dev/" spellCheck={false} />
+        </label>
+        <label className="proxy-field">
+          <span>TOKEN</span>
+          <input value={cfg.token} onChange={set('token')} type="password" autoComplete="off" placeholder="authorization token" />
+        </label>
+        <label className="proxy-field">
+          <span>TERM (academic term)</span>
+          <select value={cfg.termId} onChange={set('termId')}>
+            {termOptions.map(o => <option key={o.id} value={o.id}>{o.label} ({o.id})</option>)}
+            {termOptions.some(o => o.id === cfg.termId) || !cfg.termId ? null : <option value={cfg.termId}>{cfg.termId}</option>}
+          </select>
+        </label>
+        <div className="proxy-actions">
+          <button className="hbtn" type="button" disabled={!!busy} onClick={() => onLoad('data')}>{busy === 'data' ? 'Loading…' : 'Load catalog (data)'}</button>
+          <button className="hbtn" type="button" disabled={!!busy} onClick={() => onLoad('sisn')}>{busy === 'sisn' ? 'Loading…' : 'Load courses (sisn)'}</button>
+          <button className="hbtn" type="button" disabled={!!busy} onClick={() => onLoad('klms')}>{busy === 'klms' ? 'Loading…' : 'Load KLMS courses'}</button>
+        </div>
+        <div className="proxy-foot">
+          <span className="proxy-hint">Settings are stored in this browser after a successful load.</span>
+          <button className="hbtn" type="button" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 function App(){
   const [status, setStatus] = React.useState('loading');
   const [courses, setCourses] = React.useState([]);
@@ -2931,6 +3026,9 @@ function App(){
   const [crossDrag, setCrossDrag] = React.useState(false);
   const [hydrated, setHydrated] = React.useState(false);
   const [cartOpen, setCartOpen] = React.useState(false);
+  const [proxyCfg, setProxyCfg] = React.useState(loadProxyCfg);
+  const [proxyOpen, setProxyOpen] = React.useState(false);
+  const [proxyBusy, setProxyBusy] = React.useState(null);
   const [blockedPeriods, setBlockedPeriods] = React.useState([]);
   const [containsSlots, setContainsSlots] = React.useState([]);
   const gridRef = React.useRef(null);
@@ -2963,7 +3061,7 @@ function App(){
     const cm = buildCatalog(rawCatalog || []);
     const klmsRaw = rawKlms !== undefined ? (rawKlms || []) : (rawKlmsRef.current || []);
     const cs = mergeCourses(normalizeCourses(Array.isArray(rawCourses) ? rawCourses : [], cm), normalizeKlmsCourses(klmsRaw, cm));
-    if (!cs.length) throw new Error('no courses could be parsed');
+    if (!cs.length && !Object.keys(cm).length) throw new Error('no courses could be parsed');
     rawCoursesRef.current = rawCourses;
     rawCatalogRef.current = rawCatalog;
     rawKlmsRef.current = klmsRaw;
@@ -3003,6 +3101,49 @@ function App(){
       }
     }catch(ex){
       toast('Could not load ' + (f && f.name ? f.name : 'file') + ': ' + ex.message);
+    }
+  }
+
+  async function fetchProxyPayload(type){
+    const cfg = proxyCfg;
+    const base = String(cfg.url || '').trim().replace(/\/+$/, '');
+    if (!base) throw new Error('proxy URL is empty');
+    const qs = new URLSearchParams();
+    qs.set('TYPE', type);
+    if (String(cfg.termId || '').trim()) qs.set('TERM_ID', String(cfg.termId).trim());
+    if (String(cfg.token || '').trim()) qs.set('TOKEN', String(cfg.token).trim());
+    const res = await fetch(base + '/?' + qs.toString(), { cache: 'no-store' });
+    let body = null;
+    try{ body = await res.json(); }catch(ex){ throw new Error('proxy returned non-JSON (HTTP ' + res.status + ')'); }
+    if (!res.ok || (body && typeof body === 'object' && body.error)){
+      throw new Error((body && body.error) ? String(body.error) : 'HTTP ' + res.status);
+    }
+    const payload = Array.isArray(body) ? body
+      : (body && Array.isArray(body.data) ? body.data
+      : (body && Array.isArray(body.records) ? body.records : null));
+    if (!payload) throw new Error('proxy response has no data array');
+    return payload;
+  }
+  async function onProxyLoad(type){
+    try{
+      setProxyBusy(type);
+      const payload = await fetchProxyPayload(type);
+      const tag = proxyDataTag(type, proxyCfg.termId);
+      if (type === 'data'){
+        applyLoadedData(rawCoursesRef.current, payload, { courses: dataLabels.courses, catalog: tag });
+        toast('Loaded catalog from proxy · ' + payload.length + ' record(s)');
+      } else if (type === 'klms'){
+        applyLoadedData(rawCoursesRef.current, rawCatalogRef.current, { courses: dataLabels.courses, catalog: dataLabels.catalog, klms: tag }, payload);
+        toast('Loaded KLMS courses from proxy · ' + payload.length + ' course(s)');
+      } else {
+        applyLoadedData(payload, rawCatalogRef.current, { courses: tag, catalog: dataLabels.catalog });
+        toast('Loaded courses from proxy · ' + payload.length + ' course(s)');
+      }
+      saveProxyCfg(proxyCfg);
+    }catch(ex){
+      toast('Proxy load failed: ' + ex.message);
+    }finally{
+      setProxyBusy(null);
     }
   }
 
@@ -3332,6 +3473,7 @@ function App(){
           Load catalog
           <input className="hfile" type="file" accept=".json,application/json" onChange={(e) => onPickCustom('catalog', e)} />
         </label>
+        <button className="hbtn" title="Configure the course-data proxy (URL / token / term) and load catalog / SISN / KLMS from it" onClick={() => setProxyOpen(true)}>Proxy</button>
         <div className="save-group">
           <button className="hbtn" title="Save timetable and auto-schedule list in this browser" onClick={saveLocal}>Save</button>
           <button className="hbtn" title="Download a JSON backup" onClick={exportSave}>Export</button>
@@ -3418,6 +3560,7 @@ function App(){
         onRemoveSection={removeSection}
         onRemoveCourse={(code) => { setSchedule(prev => prev.filter(en => en.course !== code)); toast('Removed ' + code); }}
       />
+      {proxyOpen ? <ProxyModal cfg={proxyCfg} busy={proxyBusy} onCfg={setProxyCfg} onLoad={onProxyLoad} onClose={() => setProxyOpen(false)} /> : null}
       <Toasts items={toasts} />
     </div>
   );
