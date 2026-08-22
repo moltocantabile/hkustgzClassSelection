@@ -692,8 +692,20 @@ function normalizeKlmsCourses(raw, catalogMap){
 function mergeCourses(sisCourses, klmsCourses){
   const sis = sisCourses || [];
   const klms = klmsCourses || [];
-  const sisCodes = new Set(sis.map(c => c.code));
-  return sis.concat(klms.filter(c => !sisCodes.has(c.code)));
+  const out = sis.slice();
+  const idxByCode = {};
+  out.forEach((c, i) => { idxByCode[c.code] = i; });
+  for (const k of klms){
+    const idx = idxByCode[k.code];
+    if (idx != null){
+      // Same course in both systems: count it as SIS, but keep the KLMS course
+      // data (real sections with class times); its classIds live in KLMS.
+      out[idx] = Object.assign({}, k, { klms: false, cartSystem: 'klms' });
+    } else {
+      out.push(k);
+    }
+  }
+  return out;
 }
 
 const COMP_ORDER = ['LEC', 'TUT', 'LAB', 'SEM', 'IND', 'PRJ'];
@@ -3177,7 +3189,7 @@ function App(){
       if (seen[en.section]) continue;
       seen[en.section] = true;
       const c = en.course && coursesById[en.course];
-      const type = (c && c.klms) ? 'klms' : 'sisn';
+      const type = (c && c.cartSystem) ? c.cartSystem : ((c && c.klms) ? 'klms' : 'sisn');
       idsByType[type].push(en.section);
     }
     setCartBusy(true);
