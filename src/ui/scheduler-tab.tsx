@@ -3,6 +3,7 @@ import { bundleCoversTimes, generateSchedules, sortScored } from '../schedule/sc
 import { courseBundles, parallelClassCount } from '../schedule/sections';
 import { searchCourses } from './search';
 import { fmtDec, fmtRange, summaryOf, uid } from '../utils';
+import { CloseIcon, TrashIcon } from './icons';
 
 /* ================= auto scheduler tab ================= */
 export function hourOptions(){
@@ -143,7 +144,7 @@ export function SchedCourseRow({ item, courses, used, mode, onChange, onRemove, 
         <div className="sched-radio-body">
       <div className="sched-row-top">
         <CourseCombo value={item.code} courses={courses} used={used} onChange={(code) => onChange(Object.assign({}, item, { code: code, times: [], all: false, enabled: true }))} inputRef={inputRef} />
-        <button className="sbtn rm" onClick={onRemove}>Remove</button>
+        <button className="sbtn rm icon" title="Remove course" aria-label="Remove course" onClick={onRemove}><TrashIcon /></button>
       </div>
       <div className="sched-row-times">
         {mode === 'course' ? (
@@ -314,7 +315,7 @@ export function SchedulerTab({ courses, coursesById, onApply, focusTick, planner
               <button type="button" onClick={() => onContainsChange(containsSlots.filter(c => c.id !== sl.id))}>×</button>
             </span>
           ))}
-          <button className="sbtn ghost" onClick={() => onContainsChange([])}>Clear</button>
+          <button className="sbtn ghost icon" title="Clear contains filter" aria-label="Clear contains filter" onClick={() => onContainsChange([])}><CloseIcon /></button>
           {!result ? <span className="sched-note">Generate to apply this filter</span> : null}
         </div>
       ) : null}
@@ -349,7 +350,7 @@ export function SchedulerTab({ courses, coursesById, onApply, focusTick, planner
                   <button type="button" onClick={() => setFilterSlots(prev => prev.filter((_, j) => j !== i))}>×</button>
                 </span>
               ))}
-              {filterSlots.length ? <button className="sbtn ghost" onClick={() => setFilterSlots([])}>Clear</button> : null}
+              {filterSlots.length ? <button className="sbtn ghost icon" title="Clear periods" aria-label="Clear periods" onClick={() => setFilterSlots([])}><CloseIcon /></button> : null}
               {(filterSlots.length || containsSlots.length || blockedPeriods.length) ? <span className="sched-note">Showing {shown.length} of {result.solutions.length} plan{result.solutions.length === 1 ? '' : 's'}</span> : null}
               <span className="sched-note">All classes on that day must fit inside the period</span>
             </div>
@@ -402,4 +403,3 @@ export function SchedulerTab({ courses, coursesById, onApply, focusTick, planner
     </div>
   );
 }
-

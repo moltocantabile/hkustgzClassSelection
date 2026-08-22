@@ -3,6 +3,7 @@ import { findConflicts, conflictCount } from '../schedule/conflict';
 import { boxRanges, ghostSliceBox, layoutGhostOverlays, meetingsOverlap, pickTarget, pointerCellClamped, pointerOverCalendar } from '../schedule/drag';
 import { formatCredits, scheduleCreditSummary } from '../schedule/sections';
 import { courseColor, fmtDec, fmtRange, sectionTint } from '../utils';
+import { CloseIcon, DownloadIcon } from './icons';
 
 /* ================= timetable ================= */
 export function CalBlockTip({ tip }){
@@ -368,7 +369,7 @@ export function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragO
           {creditSum.klms.courses ? <small>+ {formatCredits(creditSum.klms.total)} cr KLMS</small> : null}
           <small>{creditSum.courses} course{creditSum.courses === 1 ? '' : 's'}</small>
         </div>
-        <button className="cal-export" type="button" onClick={() => exportTimetableImage(schedule, coursesById)} disabled={!schedule.length} title="Download the timetable as a PNG image with full course details">Export image</button>
+        <button className="cal-export" type="button" onClick={() => exportTimetableImage(schedule, coursesById)} disabled={!schedule.length} title="Download the timetable as a PNG image with full course details" aria-label="Export timetable image"><DownloadIcon size={15} /></button>
         <label className="xdrag" title="Drag a course from search or the grid onto any of its official section times">
           <input type="checkbox" checked={!!crossDrag} onChange={(e) => onToggleCrossDrag(e.target.checked)} />
           Enable cross-section dragging
@@ -443,7 +444,7 @@ export function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragO
               <div className="cal-block-code" style={{ color: col.text }}>{en.course} <span className="cal-block-sec">{en.label}</span></div>
               <div className="cal-block-room">{m.room || 'TBA'}</div>
               {conf.length ? <div className="cal-block-warn">⚠</div> : null}
-              <button className="cal-block-x" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveEntry(en.section); }}>✕</button>
+              <button className="cal-block-x" title="Remove from timetable" aria-label="Remove from timetable" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveEntry(en.section); }}><CloseIcon size={10} /></button>
             </div>
           );
         }))}

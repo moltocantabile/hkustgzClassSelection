@@ -1,5 +1,6 @@
 import { formatCredits, scheduleCreditSummary } from '../schedule/sections';
 import { summaryOf } from '../utils';
+import { CloseIcon, TrashIcon } from './icons';
 
 /* ================= app shell ================= */
 export function Toasts({ items }){
@@ -53,7 +54,7 @@ export function CartFab({ schedule, coursesById, open, onToggle, onClose, onOpen
           <div className="cart-head">
             <h3>Selected courses</h3>
             <span className="cart-cr">{formatCredits(creditSum.total)} cr</span>
-            <button className="cart-close" onClick={onClose} title="Close">✕</button>
+            <button className="cart-close" onClick={onClose} title="Close" aria-label="Close"><CloseIcon size={14} /></button>
           </div>
           <div className="cart-tabs">
             <button type="button" className={cartTab === 'sis' ? 'on' : ''} onClick={() => setCartTab('sis')}>
@@ -70,14 +71,14 @@ export function CartFab({ schedule, coursesById, open, onToggle, onClose, onOpen
                 <div className="cart-item-top">
                   <button className="cart-item-code" onClick={() => onOpenCourse(g.code)}>{g.code}</button>
                   <span className="cart-item-cr">{formatCredits(g.credits)} cr</span>
-                  <button className="cart-item-rm" onClick={() => onRemoveCourse(g.code)}>Remove</button>
+                  <button className="cart-item-rm" title="Remove course" aria-label="Remove course" onClick={() => onRemoveCourse(g.code)}><TrashIcon size={13} /></button>
                 </div>
                 {g.name ? <div className="cart-item-name">{g.name}</div> : null}
                 {g.entries.map(en => (
                   <div className="cart-sec" key={en.section}>
                     <b>{en.label}</b>
                     <span>{summaryOf(en.meetings)}</span>
-                    <button className="cart-x" title="Remove section" onClick={() => onRemoveSection(en.section)}>✕</button>
+                    <button className="cart-x" title="Remove section" aria-label="Remove section" onClick={() => onRemoveSection(en.section)}><CloseIcon size={12} /></button>
                   </div>
                 ))}
               </div>

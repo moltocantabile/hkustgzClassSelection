@@ -123,13 +123,16 @@ input,textarea,select{font:inherit}
 .sbtn.add:disabled{background:#aeb9d2;border-color:#aeb9d2;cursor:not-allowed}
 .sbtn.rm{color:#b91c1c}
 .sbtn.rm:hover{background:#fdeaea;border-color:#f3c0c0}
+.sbtn.icon{width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.sbtn.icon svg{width:14px;height:14px}
 .no-sections{font-size:12px;color:var(--muted);padding:8px 2px}
 .cal-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 .cal-head{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .cal-title{font-weight:800;font-size:15px}
 .cal-credits{display:inline-flex;align-items:baseline;gap:6px;padding:3px 9px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-weight:800;font-size:12.5px;white-space:nowrap}
 .cal-credits small{font-weight:600;font-size:11px;color:#5a6580}
-.cal-export{border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:8px;cursor:pointer}
+.cal-export{border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:700;font-size:11.5px;padding:5px 8px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.cal-export svg{width:15px;height:15px}
 .cal-export:hover{border-color:var(--accent);color:var(--accent)}
 .cal-export:disabled{opacity:.5;cursor:not-allowed}
 .cal-hint{font-size:11.5px;color:var(--muted)}
@@ -165,6 +168,7 @@ input,textarea,select{font:inherit}
 .cal-block-conf{box-shadow:0 0 0 1.5px var(--bad);}
 .cal-block-warn{position:absolute;top:2px;right:16px;color:#b91c1c;font-weight:800;font-size:11px}
 .cal-block-x{position:absolute;top:1px;right:2px;border:0;background:transparent;color:inherit;opacity:0;font-size:10px;padding:1px 4px;border-radius:4px}
+.cal-block-x svg{display:block}
 .cal-block:hover .cal-block-x{opacity:.85}
 .cal-block-x:hover{opacity:1;background:rgba(0,0,0,.12)}
 .cal-blocked{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;background:repeating-linear-gradient(135deg,rgba(220,38,38,.10) 0 8px,rgba(220,38,38,.20) 8px 16px);border:1.5px dashed rgba(220,38,38,.55);z-index:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:rgba(185,28,28,.9);letter-spacing:.5px;cursor:pointer}
@@ -303,7 +307,7 @@ input,textarea,select{font:inherit}
 .cart-tabs button{flex:1;border:0;border-bottom:2px solid transparent;background:transparent;padding:6px 4px;font-size:11.5px;font-weight:700;color:var(--muted);border-radius:8px 8px 0 0;white-space:nowrap}
 .cart-tabs button:hover{color:var(--accent)}
 .cart-tabs button.on{color:var(--accent);border-bottom-color:var(--accent);background:#eef4ff}
-.cart-close{width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:8px;color:#46536e}
+.cart-close{width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:8px;color:#46536e;display:inline-flex;align-items:center;justify-content:center}
 .cart-list{overflow:auto;padding:8px}
 .cart-empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13px}
 .cart-item{border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin-bottom:8px;background:#fbfcfe}
@@ -315,9 +319,10 @@ input,textarea,select{font:inherit}
 .cart-sec{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;color:#46536e;padding:2px 0}
 .cart-sec b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-width:28px}
 .cart-sec span{flex:1;color:#5a6580}
-.cart-x{border:0;background:transparent;color:#94a3b8;font-size:13px;padding:0 2px;line-height:1}
+.cart-x{border:0;background:transparent;color:#94a3b8;font-size:13px;padding:0 2px;line-height:1;display:inline-flex;align-items:center}
+.cart-x svg{display:block}
 .cart-x:hover{color:#b91c1c}
-.cart-item-rm{border:0;background:transparent;color:#b91c1c;font-size:11px;font-weight:700;padding:0;margin-left:auto}
+.cart-item-rm{border:0;background:transparent;color:#b91c1c;font-size:11px;font-weight:700;padding:0;margin-left:auto;display:inline-flex;align-items:center}
 .cart-item-rm:hover{text-decoration:underline}
 .api-overlay{position:fixed;inset:0;background:rgba(16,24,40,.42);z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
 .api-modal{width:430px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 60px rgba(16,24,40,.28);padding:14px 16px}

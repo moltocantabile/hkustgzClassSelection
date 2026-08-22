@@ -2,6 +2,7 @@ import { DAY_NAMES } from '../constants';
 import { findConflicts } from '../schedule/conflict';
 import { groupSections, isWildcardAssoc, parallelClassCount, sectionSummary } from '../schedule/sections';
 import { fmtRange, truncate } from '../utils';
+import { PlusIcon, TrashIcon } from './icons';
 
 /* ================= search & detail ================= */
 export function searchCourses(courses, q){
@@ -245,8 +246,8 @@ export function SectionCard({ course, s, scheduledIds, conflictSections, onAdd, 
       ))}
       <div className="sec-actions">
         {has
-          ? <button className="sbtn rm" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); e.preventDefault(); onRemove(s.id); }}>Remove from timetable</button>
-          : <button className="sbtn add" disabled={!s.meetings.length} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onAdd(course, s); }}>Add this class</button>}
+          ? <button className="sbtn rm icon" title="Remove from timetable" aria-label="Remove from timetable" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); e.preventDefault(); onRemove(s.id); }}><TrashIcon /></button>
+          : <button className="sbtn add icon" disabled={!s.meetings.length} title="Add this class" aria-label="Add this class" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onAdd(course, s); }}><PlusIcon /></button>}
         {s.meetings.length ? <span className="mtg-tag" style={{ alignSelf: 'center' }}>⋮⋮ drag to place</span> : null}
         {s.capacity ? <span className="mtg-tag" style={{ marginLeft: 'auto', alignSelf: 'center' }}>{s.enrolled}/{s.capacity}</span> : null}
       </div>
