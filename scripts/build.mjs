@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Build pipeline: TypeScript check -> esbuild bundle (minified in prod, plain in dev) ->
-// inline CSS + bundle into a single dist/index.html. React / ReactDOM / ReactFlow
-// are served from dist/vendor/ (same-origin copies downloaded by `npm run vendor`).
+// Build pipeline: TypeScript check -> esbuild bundle (minified in prod, plain in dev).
+// Output is a static page in dist/: index.html references external styles.css and
+// app.js (no inlining); React / ReactDOM / ReactFlow live in dist/vendor/ (same-origin
+// copies downloaded by `npm run vendor`).
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -10,7 +11,6 @@ import { fileURLToPath } from 'node:url';
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DEV = process.argv.includes('--dev');
 const DIST = join(ROOT, 'dist');
-const TMP = join(DIST, '.tmp');
 
 function bin(name){
   const p = join(ROOT, 'node_modules', '.bin', name);
@@ -27,8 +27,7 @@ function bin(name){
 console.log('[build] TypeScript type check (tsc --noEmit)…');
 execFileSync(bin('tsc'), ['--noEmit', '-p', join(ROOT, 'tsconfig.json')], { stdio: 'inherit' });
 
-mkdirSync(TMP, { recursive: true });
-const bundlePath = join(TMP, 'app.js');
+mkdirSync(DIST, { recursive: true });
 console.log('[build] esbuild bundle' + (DEV ? ' (dev, unminified)' : ' (minified)') + '…');
 execFileSync(bin('esbuild'), [
   join(ROOT, 'src', 'main.tsx'),
@@ -39,23 +38,18 @@ execFileSync(bin('esbuild'), [
   '--jsx-fragment=window.React.Fragment',
   '--target=es2020',
   ...(DEV ? [] : ['--minify']),
-  '--outfile=' + bundlePath
+  '--outfile=' + join(DIST, 'app.js')
 ], { stdio: 'inherit' });
 
-const js = readFileSync(bundlePath, 'utf8');
-
 const template = readFileSync(join(ROOT, 'build', 'template.html'), 'utf8');
-const css = readFileSync(join(ROOT, 'src', 'styles.css'), 'utf8');
-const html = template
-  .replace('{{STYLES}}', () => css)
-  .replace('{{APP_BUNDLE}}', () => js);
-writeFileSync(join(DIST, 'index.html'), html);
+writeFileSync(join(DIST, 'index.html'), template);
+copyFileSync(join(ROOT, 'src', 'styles.css'), join(DIST, 'styles.css'));
 
 // Copy the same-origin runtime files next to the built page so a static host
-// (GitHub Pages, file://) can serve them relative to dist/index.html.
+// (GitHub Pages, Vercel, file://) can serve them relative to dist/index.html.
 const vendorDst = join(DIST, 'vendor');
 mkdirSync(vendorDst, { recursive: true });
-let copied = 0;
+let copied = 2;
 for (const name of ['courses.json', 'data.json', 'courses_klms.json']){
   const src = join(ROOT, name);
   if (existsSync(src)){
@@ -71,4 +65,4 @@ for (const name of ['react.production.min.js', 'react-dom.production.min.js', 'r
   }
 }
 
-console.log('[build] wrote dist/index.html (' + (DEV ? 'dev' : 'prod') + ') — ' + Math.round(html.length / 1024) + ' KB · copied ' + copied + ' runtime/data file(s)');
+console.log('[build] wrote dist/index.html + dist/app.js + dist/styles.css (' + (DEV ? 'dev' : 'prod') + ') · copied ' + copied + ' runtime/data file(s)');

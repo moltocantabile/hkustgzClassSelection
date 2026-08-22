@@ -5,9 +5,10 @@ timetable, auto-generate conflict-free schedules, inspect prerequisite graphs, a
 your timetable to the SISN / KLMS course cart.
 
 This repository contains a **modular TypeScript source tree** (`src/`) that is compiled
-and minified into a **single-file app** (`dist/index.html`) by `npm run build`. All
-runtime libraries (React, React-DOM, React Flow and the Babel runtime used by the legacy
-page) are vendored in `vendor/` and loaded same-origin — no CDN at runtime.
+by `npm run build` into a static app in `dist/`: `index.html` references an external
+`app.js` (the bundle) and `styles.css` (the app CSS), so the built page is not a single
+monolithic file. All runtime libraries (React, React-DOM and React Flow) are vendored in
+`dist/vendor/` and loaded same-origin — no CDN at runtime.
 The old monolithic `backup.html` at the repo root is kept as a frozen legacy fallback —
 do not edit it; `src/` is the source of truth.
 
@@ -52,7 +53,7 @@ src/
   constants.ts             Grid constants, day names, storage keys, code regex
   utils.ts                 normCode / time formatting / colours / uid / summaryOf
   state.ts                 Planner + API config persistence (localStorage), hydrateSchedule
-  styles.css               All app CSS (inlined into the build)
+  styles.css               All app CSS (built out to dist/styles.css)
   data/
     catalog.ts             buildCatalog(raw data.json records)
     normalizer.ts          courses.json / courses_klms.json -> app model, mergeCourses
@@ -112,16 +113,16 @@ The header has three extra load buttons for replacing any of the two custom JSON
 
 ## Running
 
-### Pre-built single file
+### Pre-built static page
 
 ```bash
-npm run build        # -> dist/index.html (minified, no CDN)
+npm run build        # -> dist/ (index.html + app.js + styles.css, no CDN)
 ```
 
-Open `dist/index.html` in a browser. React, React-DOM and React Flow are copied into
-`dist/vendor/` during the build and loaded same-origin, so no internet connection is
-needed for the runtime libraries. Over HTTP it auto-loads the three JSON files; over
-`file://` use the manual loader.
+Open `dist/index.html` in a browser. The page loads its bundle from `dist/app.js`, the
+app CSS from `dist/styles.css`, and React, React-DOM and React Flow from `dist/vendor/` —
+all same-origin, so no internet connection is needed for the runtime libraries. Over
+HTTP it auto-loads the three JSON files; over `file://` use the manual loader.
 
 ### Development
 
@@ -132,8 +133,8 @@ npm run vendor       # (re)downloads the pinned runtime libraries into vendor/
 npm run build:dev    # dist/index.html with an unminified bundle
 ```
 
-`dist/index.html` is the single-file output of both build modes; the difference is only
-the embedded JavaScript.
+Both build modes produce the same `dist/` layout (`index.html` + external `app.js` +
+`styles.css` + `vendor/`); the difference is only whether `app.js` is minified.
 
 ### GitHub Pages
 
@@ -176,9 +177,10 @@ needs `package-lock.json` (committed) so `npm ci` installs reproducibly.
      `window.React.Fragment`), so the bundle keeps using the vendored UMD globals — no
      bundling of React itself, matching the original app's runtime architecture.
    - Prod build is minified; dev build (`--dev`) is not. No obfuscation.
-3. **Assemble** — injects `src/styles.css` and the bundle into `build/template.html`
-   and writes the single-file `dist/index.html`. Script tags point at `vendor/`
-   (React, React-DOM, `@xyflow/react`); Babel-in-browser is no longer needed at runtime.
+3. **Assemble** — writes `dist/index.html` from `build/template.html` with a
+   `<link>` to `dist/styles.css` and a `<script>` to `dist/app.js` (no inlining), plus
+   script/link tags pointing at `dist/vendor/` (React, React-DOM, `@xyflow/react`);
+   Babel-in-browser is no longer needed at runtime.
 4. **Copy assets** — copies the three JSON datasets and the four runtime files
    (React, React-DOM, React Flow JS + CSS) into `dist/`, keeping the page fully
    same-origin. Re-run `npm run vendor` to refresh the pinned vendor files.
