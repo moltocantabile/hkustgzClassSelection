@@ -1031,10 +1031,7 @@ function bundleCoversTimes(bundle, times){
   if (!times || !times.length) return true;
   const meetings = [];
   for (const e of bundle) for (const mt of (e.meetings || [])) meetings.push(mt);
-  for (const t of times){
-    if (!meetings.some(m => meetingCoversTime(m, t.day, t.time))) return false;
-  }
-  return true;
+  return times.some(t => meetings.some(m => meetingCoversTime(m, t.day, t.time)));
 }
 function normalizeSchedRequests(input){
   if (Array.isArray(input)){
