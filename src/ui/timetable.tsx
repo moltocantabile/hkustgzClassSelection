@@ -359,6 +359,9 @@ export function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragO
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
   }, [ctxMenu]);
+  React.useEffect(() => {
+    if (tip && !schedule.some(en => en.section === tip.en.section)) setTip(null);
+  }, [schedule, tip]);
   const ghosts = drag && drag.mode === 'cross' ? (drag.targets || []) : [];
   return (
     <div className="cal-wrap">
@@ -444,7 +447,7 @@ export function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragO
               <div className="cal-block-code" style={{ color: col.text }}>{en.course} <span className="cal-block-sec">{en.label}</span></div>
               <div className="cal-block-room">{m.room || 'TBA'}</div>
               {conf.length ? <div className="cal-block-warn">⚠</div> : null}
-              <button className="cal-block-x" title="Remove from timetable" aria-label="Remove from timetable" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveEntry(en.section); }}><CloseIcon size={10} /></button>
+              <button className="cal-block-x" title="Remove from timetable" aria-label="Remove from timetable" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTip(null); onRemoveEntry(en.section); }}><CloseIcon size={10} /></button>
             </div>
           );
         }))}
@@ -474,7 +477,6 @@ export function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragO
             </div>
           );
         }) : null}
-        {!schedule.length && !drag ? <div className="cal-empty">Drag course sections here to build your schedule</div> : null}
         {sel && sel.ranges.length ? sel.ranges.map((r, i) => (
           <div key={'sel' + i} className={'cal-sel ' + (sel.kind === 'block' ? 'block' : 'contains')}
             style={{ gridColumn: r.day + 1, top: (r.start - START_HOUR) * HOUR_H + 4, height: Math.max(10, (r.end - r.start) * HOUR_H - 8) }}>
