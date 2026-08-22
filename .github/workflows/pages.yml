@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
-# Builds the modular src/ into dist/index.html (TypeScript check -> esbuild ->
-# javascript-obfuscator) and publishes dist/ to GitHub Pages.
+# Builds the modular src/ into dist/index.html (TypeScript check -> esbuild
+# minify) and publishes dist/ to GitHub Pages.
 #
 # Setup (once, in the repo settings):
 #   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions"
@@ -38,7 +38,7 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
-      - name: Build (minified + obfuscated)
+      - name: Build (minified)
         run: npm run build
 
       - name: Upload Pages artifact

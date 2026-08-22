@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HKUST SIS Course Planner</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-<link rel="stylesheet" href="https://unpkg.com/@xyflow/react@12.3.5/dist/style.css">
+<link rel="stylesheet" href="vendor/reactflow.style.css">
 <style>
 {{STYLES}}
 </style>
 </head>
 <body>
 <div id="root"></div>
-<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
 <script>
 // Required at runtime by the @xyflow/react UMD bundle (it calls jsxRuntime.jsx),
 // independent of the Babel-in-browser runtime the legacy app used.
@@ -23,7 +23,7 @@ window.jsxRuntime = {
   jsxs: function(type, props, key){ if (key != null){ props = Object.assign({}, props, {key: key}); } return window.React.createElement(type, props); }
 };
 </script>
-<script src="https://unpkg.com/@xyflow/react@12.3.5/dist/umd/index.js"></script>
+<script src="vendor/reactflow.umd.js"></script>
 <script>
 {{APP_BUNDLE}}
 </script>

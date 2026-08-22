@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "HKUST(GZ) course planner — modular TypeScript source, bundled into a single-file React app",
+  "description": "HKUST(GZ) course planner — modular TypeScript source, bundled into a single-file React app (same-origin vendor assets)",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "node scripts/build.mjs",
-    "build:dev": "node scripts/build.mjs --dev"
+    "build:dev": "node scripts/build.mjs --dev",
+    "vendor": "node scripts/vendor.mjs"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
     "esbuild": "^0.24.0",
-    "javascript-obfuscator": "^4.1.1",
     "typescript": "^5.6.3"
   }
 }

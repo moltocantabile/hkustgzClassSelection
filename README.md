@@ -5,8 +5,10 @@ timetable, auto-generate conflict-free schedules, inspect prerequisite graphs, a
 your timetable to the SISN / KLMS course cart.
 
 This repository contains a **modular TypeScript source tree** (`src/`) that is compiled
-and obfuscated into a **single-file app** (`dist/index.html`) by `npm run build`.
-The old monolithic `index.html` at the repo root is kept as a frozen legacy fallback —
+and minified into a **single-file app** (`dist/index.html`) by `npm run build`. All
+runtime libraries (React, React-DOM, React Flow and the Babel runtime used by the legacy
+page) are vendored in `vendor/` and loaded same-origin — no CDN at runtime.
+The old monolithic `backup.html` at the repo root is kept as a frozen legacy fallback —
 do not edit it; `src/` is the source of truth.
 
 ---
@@ -75,10 +77,18 @@ src/
     api-modal.tsx          API configuration modal
 
 build/
-  template.html            HTML shell used by the build (CDN scripts + placeholders)
+  template.html            HTML shell used by the build (vendor scripts + placeholders)
 
 scripts/
   build.mjs                The build pipeline (see below)
+  vendor.mjs               Re-downloads the pinned libraries into vendor/
+
+vendor/
+  react.production.min.js  React 18.3.1 UMD (same-origin, used by dist and backup.html)
+  react-dom.production.min.js  ReactDOM 18.3.1 UMD
+  reactflow.umd.js         @xyflow/react 12.3.5 UMD
+  reactflow.style.css      React Flow stylesheet
+  babel.min.js             Babel standalone (in-browser JSX for the legacy backup.html)
 ```
 
 ---
@@ -105,19 +115,21 @@ The header has three extra load buttons for replacing any of the two custom JSON
 ### Pre-built single file
 
 ```bash
-npm run build        # -> dist/index.html (minified + obfuscated)
+npm run build        # -> dist/index.html (minified, no CDN)
 ```
 
-Open `dist/index.html` in a browser. It still needs the internet for the React /
-React-DOM / React-Flow CDN scripts (the same CDNs the legacy `index.html` uses).
-Over HTTP it auto-loads the three JSON files; over `file://` use the manual loader.
+Open `dist/index.html` in a browser. React, React-DOM and React Flow are copied into
+`dist/vendor/` during the build and loaded same-origin, so no internet connection is
+needed for the runtime libraries. Over HTTP it auto-loads the three JSON files; over
+`file://` use the manual loader.
 
 ### Development
 
 ```bash
-npm install          # typescript, esbuild, javascript-obfuscator, @types/react
+npm install          # typescript, esbuild, @types/react
 npm run typecheck    # tsc --noEmit only
-npm run build:dev    # dist/index.html with an unminified, unobfuscated bundle
+npm run vendor       # (re)downloads the pinned runtime libraries into vendor/
+npm run build:dev    # dist/index.html with an unminified bundle
 ```
 
 `dist/index.html` is the single-file output of both build modes; the difference is only
@@ -129,8 +141,9 @@ The repository includes a GitHub Actions workflow (`.github/workflows/pages.yml`
 on every push to `main` (or via manual `workflow_dispatch`) runs
 `npm ci` → `npm run typecheck` → `npm run build` and publishes `dist/` to GitHub Pages.
 
-The build copies `courses.json`, `data.json` and `courses_klms.json` into `dist/`, so the
-published site auto-loads the datasets the same way as a local HTTP server.
+The build copies `courses.json`, `data.json`, `courses_klms.json` and the `vendor/`
+runtime files into `dist/`, so the published site auto-loads the datasets and needs no
+CDN, exactly like a local HTTP server.
 
 To enable it, in the GitHub repo settings select
 **Settings → Pages → Build and deployment → Source: GitHub Actions** once. The workflow
@@ -146,15 +159,15 @@ needs `package-lock.json` (committed) so `npm ci` installs reproducibly.
    (`jsx: react-jsx`, `strict: false`, no emit).
 2. **Bundle** — `esbuild` bundles `src/main.tsx` into one IIFE.
    - JSX is compiled with the classic factory (`window.React.createElement`,
-     `window.React.Fragment`), so the bundle keeps using the CDN UMD globals — no
+     `window.React.Fragment`), so the bundle keeps using the vendored UMD globals — no
      bundling of React itself, matching the original app's runtime architecture.
-   - Prod build is minified; dev build (`--dev`) is not.
-3. **Obfuscate** (prod only) — `javascript-obfuscator` with compact output, hex
-   identifier names and string-array encoding (`--self-defending false` so the page
-   stays fast and avoids anti-debug traps).
-4. **Assemble** — injects `src/styles.css` and the bundle into `build/template.html`
-   and writes the single-file `dist/index.html`. CDN script tags (React, React-DOM,
-   `@xyflow/react`) are kept; Babel-in-browser is no longer needed at runtime.
+   - Prod build is minified; dev build (`--dev`) is not. No obfuscation.
+3. **Assemble** — injects `src/styles.css` and the bundle into `build/template.html`
+   and writes the single-file `dist/index.html`. Script tags point at `vendor/`
+   (React, React-DOM, `@xyflow/react`); Babel-in-browser is no longer needed at runtime.
+4. **Copy assets** — copies the three JSON datasets and the four runtime files
+   (React, React-DOM, React Flow JS + CSS) into `dist/`, keeping the page fully
+   same-origin. Re-run `npm run vendor` to refresh the pinned vendor files.
 
 The build requires `node_modules`; run `npm install` first.
 
@@ -186,7 +199,7 @@ check at least:
   automatically) and sent as a URL query parameter to the Workers endpoints.
 - The Workers API returns only the first page (`pageSize: 1000`); very large datasets
   may be incomplete.
-- The obfuscated prod bundle is harder to debug — use `npm run build:dev` when
-  investigating issues, then reproduce against `dist/index.html`.
-- `index.html` at the repo root is the legacy monolithic app and is intentionally left
+- The prod bundle is minified — use `npm run build:dev` when investigating issues,
+  then reproduce against `dist/index.html`.
+- `backup.html` at the repo root is the legacy monolithic app and is intentionally left
   unchanged so the project always has a working fallback.
