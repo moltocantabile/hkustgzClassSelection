@@ -183,7 +183,7 @@ input,textarea,select{font:inherit}
 .cal-sel{grid-row:2 / -1;position:relative;margin:0 4px;border-radius:8px;z-index:6;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.5px}
 .cal-sel.block{border:2px dashed rgba(220,38,38,.8);background:rgba(220,38,38,.14);color:#b91c1c}
 .cal-sel.contains{border:2px dashed rgba(36,86,230,.85);background:rgba(36,86,230,.14);color:#1d4ed8}
-.cal-ctx{position:fixed;z-index:120;min-width:280px;max-width:370px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(16,24,40,.18);padding:8px;font-size:12px}
+.cal-ctx{position:fixed;z-index:120;min-width:280px;max-width:370px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(16,24,40,.18);padding:8px;font-size:12px;max-height:min(70vh,520px);overflow-y:auto}
 .cal-ctx-head{padding:4px 8px 9px;font-weight:800;color:#334155;border-bottom:1px solid var(--line);margin-bottom:6px;font-size:12.5px;line-height:1.4}
 .cal-ctx-item{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--ink)}
 .cal-ctx-item:hover{background:#f1f5ff}
@@ -2266,7 +2266,7 @@ function Timetable({ schedule, coursesById, drag, hover, gridRef, onDragOver, on
     if (!course) return;
     const day = m.day;
     const alts = (course.sections || []).filter(s => s.id !== en.section && (s.meetings || []).some(mt => mt.day === day && mt.start < m.end && m.start < mt.end));
-    const w = 340, hh = Math.min(380, 96 + alts.length * 56);
+    const w = 340, maxH = Math.min(520, window.innerHeight - 16), hh = Math.min(96 + alts.length * 56, maxH);
     const x = Math.max(8, Math.min(e.clientX, window.innerWidth - w - 8));
     const y = Math.max(8, Math.min(e.clientY, window.innerHeight - hh - 8));
     setCtxMenu({ x: x, y: y, en: en, m: m, alts: alts });
