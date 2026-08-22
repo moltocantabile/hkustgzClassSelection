@@ -149,6 +149,20 @@ To enable it, in the GitHub repo settings select
 **Settings → Pages → Build and deployment → Source: GitHub Actions** once. The workflow
 needs `package-lock.json` (committed) so `npm ci` installs reproducibly.
 
+### Vercel
+
+`vercel.json` at the repo root deploys the same build as a static site:
+
+- Import this repository in the Vercel dashboard (or run `vercel` CLI from the repo
+  root). No framework preset is required — Vercel runs `npm ci` → `npm run build`
+  (`vercel.json` sets `installCommand` / `buildCommand` / `outputDirectory`) and serves
+  `dist/`.
+- Every push to `main` triggers a production deployment automatically. Preview
+  deployments are created for pull requests.
+- The build output is fully self-contained (data JSONs + `vendor/` runtimes are copied
+  into `dist/`), so the deployed site needs no CDN and auto-loads its datasets over
+  HTTP.
+
 ---
 
 ## Build pipeline

@@ -4,5 +4,6 @@ dist/
 
 # Local tooling / OS junk
 .playwright-cli/
+.vercel/
 .DS_Store
 *.log
