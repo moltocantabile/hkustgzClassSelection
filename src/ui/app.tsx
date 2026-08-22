@@ -158,7 +158,10 @@ export function App(){
     setCartBusy(true);
     try{
       const r = await addToSystemCart(apiCfg, schedule, coursesById);
-      toast('Added ' + r.added + ' section(s) to the system cart' + (r.failed.length ? ' · failed: ' + r.failed.join(', ') : ''));
+      let msg = 'Added ' + r.added + ' section(s) to the system cart';
+      if (r.failed.length) msg += ' · failed: ' + r.failed.join(', ');
+      if (r.errors.length) msg += ' · errors: ' + r.errors.join('; ');
+      toast(msg);
     }catch(ex){
       toast('Add to cart failed: ' + ex.message);
     }finally{

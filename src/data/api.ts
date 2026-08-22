@@ -38,31 +38,45 @@ export async function addToSystemCart(cfg: ApiConfig, schedule: Entry[], courses
     idsByType[type].push(en.section);
   }
   let added = 0, failed = [];
+  const errors = [];
+  // SISN and KLMS are independent systems: one failing (network / auth / upstream)
+  // must not prevent the other request from being sent. Failures are collected
+  // per system and reported alongside the combined result.
   for (const type of ['sisn', 'klms']){
     const ids = idsByType[type];
     if (!ids.length) continue;
-    const qs = new URLSearchParams();
-    qs.set('TOKEN', token);
-    qs.set('TYPE', type);
-    const res = await fetch(base + '/?' + qs.toString(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ classIds: ids })
-    });
-    let body = null;
-    try{ body = await res.json(); }catch(ex){ throw new Error('cart API returned non-JSON (HTTP ' + res.status + ')'); }
-    if (!res.ok || (body && body.error)){
-      throw new Error((body && body.error) ? String(body.error) : 'HTTP ' + res.status);
+    try{
+      const r = await postToCart(base, token, type, ids);
+      added += r.added;
+      failed = failed.concat(r.failedIds);
+    }catch(ex){
+      errors.push(type.toUpperCase() + ': ' + (ex && ex.message ? ex.message : String(ex)));
     }
-    if (body && body._decryptError) throw new Error('cart response decryption failed: ' + body._decryptError);
-    if (body && body.code !== undefined && body.code !== null && String(body.code) !== '0'){
-      throw new Error((body && body.message) ? String(body.message) : 'upstream error ' + body.code);
-    }
-    const data = body && typeof body.data === 'object' ? body.data : null;
-    const failedIds = (data && Array.isArray(data.failedIds)) ? data.failedIds.map(String) : [];
-    const successCount = (data && isFinite(Number(data.successCount))) ? Number(data.successCount) : null;
-    added += successCount != null ? Math.max(0, successCount) : Math.max(0, ids.length - failedIds.length);
-    failed = failed.concat(failedIds);
   }
-  return { added: added, failed: failed };
+  return { added: added, failed: failed, errors: errors };
+}
+
+async function postToCart(base: string, token: string, type: string, ids: string[]){
+  const qs = new URLSearchParams();
+  qs.set('TOKEN', token);
+  qs.set('TYPE', type);
+  const res = await fetch(base + '/?' + qs.toString(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ classIds: ids })
+  });
+  let body = null;
+  try{ body = await res.json(); }catch(ex){ throw new Error('cart API returned non-JSON (HTTP ' + res.status + ')'); }
+  if (!res.ok || (body && body.error)){
+    throw new Error((body && body.error) ? String(body.error) : 'HTTP ' + res.status);
+  }
+  if (body && body._decryptError) throw new Error('cart response decryption failed: ' + body._decryptError);
+  if (body && body.code !== undefined && body.code !== null && String(body.code) !== '0'){
+    throw new Error((body && body.message) ? String(body.message) : 'upstream error ' + body.code);
+  }
+  const data = body && typeof body.data === 'object' ? body.data : null;
+  const failedIds = (data && Array.isArray(data.failedIds)) ? data.failedIds.map(String) : [];
+  const successCount = (data && isFinite(Number(data.successCount))) ? Number(data.successCount) : null;
+  const added = successCount != null ? Math.max(0, successCount) : Math.max(0, ids.length - failedIds.length);
+  return { added: added, failedIds: failedIds };
 }
